@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "565Pathtracer", "565Pathtracer\565Pathtracer.vcxproj", "{FF21CA49-522E-4E86-B508-EE515B248FC4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug (v4.0)|Win32 = Debug (v4.0)|Win32
+		Debug (v4.0)|x64 = Debug (v4.0)|x64
+		Debug (v5.5)|Win32 = Debug (v5.5)|Win32
+		Debug (v5.5)|x64 = Debug (v5.5)|x64
+		Release (v4.0)|Win32 = Release (v4.0)|Win32
+		Release (v4.0)|x64 = Release (v4.0)|x64
+		Release (v5.5)|Win32 = Release (v5.5)|Win32
+		Release (v5.5)|x64 = Release (v5.5)|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Debug (v4.0)|Win32.ActiveCfg = Debug|Win32
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Debug (v4.0)|Win32.Build.0 = Debug|Win32
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Debug (v4.0)|x64.ActiveCfg = Debug|Win32
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Debug (v5.5)|Win32.ActiveCfg = Debug (v5.5)|Win32
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Debug (v5.5)|Win32.Build.0 = Debug (v5.5)|Win32
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Debug (v5.5)|x64.ActiveCfg = Debug (v5.5)|Win32
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Release (v4.0)|Win32.ActiveCfg = Release|Win32
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Release (v4.0)|Win32.Build.0 = Release|Win32
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Release (v4.0)|x64.ActiveCfg = Release|Win32
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Release (v5.5)|Win32.ActiveCfg = Release (v5.5)|Win32
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Release (v5.5)|Win32.Build.0 = Release (v5.5)|Win32
+		{FF21CA49-522E-4E86-B508-EE515B248FC4}.Release (v5.5)|x64.ActiveCfg = Release (v5.5)|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

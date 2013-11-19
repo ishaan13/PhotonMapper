@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\src\glslUtility.cpp" />
+    <ClCompile Include="..\..\src\image.cpp" />
+    <ClCompile Include="..\..\src\main.cpp" />
+    <ClCompile Include="..\..\src\scene.cpp" />
+    <ClCompile Include="..\..\src\utilities.cpp" />
+    <ClCompile Include="..\..\src\stb_image\stb_image.c">
+      <Filter>stb_image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\stb_image\stb_image_write.c">
+      <Filter>stb_image</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\cudaMat4.h" />
+    <ClInclude Include="..\..\src\glslUtility.h" />
+    <ClInclude Include="..\..\src\image.h" />
+    <ClInclude Include="..\..\src\interactions.h" />
+    <ClInclude Include="..\..\src\intersections.h" />
+    <ClInclude Include="..\..\src\main.h" />
+    <ClInclude Include="..\..\src\raytraceKernel.h" />
+    <ClInclude Include="..\..\src\scene.h" />
+    <ClInclude Include="..\..\src\sceneStructs.h" />
+    <ClInclude Include="..\..\src\utilities.h" />
+    <ClInclude Include="..\..\src\stb_image\stb_image_write.h">
+      <Filter>stb_image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\stb_image\stb_image.h">
+      <Filter>stb_image</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="..\..\src\raytraceKernel.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="stb_image">
+      <UniqueIdentifier>{011aa553-95e8-4e59-b7ff-1bb89aebe21d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
