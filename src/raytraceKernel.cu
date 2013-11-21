@@ -902,7 +902,7 @@ __global__ void displayPhotons(photon* photonPool, int numPhotons, glm::vec2 res
 	}
 }
 
-__global__ void tracePhotons(photon* photonPool, int numPhotons, staticGeom* geoms, int numberOfGeoms, material* materials, float time)
+__global__ void bouncePhotons(photon* photonPool, int numPhotons, staticGeom* geoms, int numberOfGeoms, material* materials, float time)
 {
 	// CopyCode from raytraceRay code.
 }
@@ -918,7 +918,52 @@ void cleanPhotonMap(photon* cudaPhotonPool)
 {
 	cudaFree(cudaPhotonPool);
 }
+
+void tracePhotons(int photonThreadsPerBlock, int photonBlocksPerGrid, photon* cudaPhotonPool, int numPhotons, staticGeom* cudaGeoms, int numberOfGeoms, material* cudaMaterials, float time)
+{
+	// Convert to Russian Roulette
+	int numberOfBounces = 20;
+
+	for(int i=0; i < numberOfBounces; i++)
+	{
+		// Bounce Photons Around
+		bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool,numPhotons,cudaGeoms,numberOfGeoms,cudaMaterials,time);
+#if COMPACTION
+		// Do some compaction
+
 #endif
+	}
+}
+
+void photonMapCore(glm::vec2 resolution, photon* cudaPhotonPool, int numPhotons, staticGeom* cudaLights, int numberOfLights, material* cudaMaterials, int numberOfMaterials,
+									staticGeom* cudaGeoms, int numberOfGeoms, cameraData cam, float time)
+{
+	glm::vec3* cudaPhotonMapImage = NULL;
+	cudaMalloc((void**)&cudaPhotonMapImage, (int)resolution.x*(int)resolution.y*sizeof(glm::vec3));
+
+	// Set up crucial magic
+	int tileSize = 8;
+	dim3 pixelThreadsPerBlock(tileSize, tileSize);
+	dim3 pixelBlocksPerGrid((int)ceil(float(resolution.x)/float(tileSize)), (int)ceil(float(resolution.y)/float(tileSize)));
+
+	// Clear photon image buffer
+	clearImage<<<pixelBlocksPerGrid,pixelThreadsPerBlock>>>(resolution, cudaPhotonMapImage);
+
+	// Generate Photon List
+	int photonThreadsPerBlock = 512;
+	int photonBlocksPerGrid = ceil(numPhotons * 1.0f/photonThreadsPerBlock);
+	fillPhotonMap<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool,numPhotons,cudaLights,numberOfLights,cudaMaterials,numberOfMaterials);
+
+	// Trace all photons with all bounces
+	tracePhotons(photonThreadsPerBlock,photonBlocksPerGrid,cudaPhotonPool,numPhotons,cudaGeoms,numberOfGeoms,cudaMaterials,time);
+
+	// Calculate Viewport * Projection * View matrix from camera info
+	cudaMat4 viewProjectionViewPort;
+
+	// Display all photons in the photonImage buffer
+	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool,numPhotons,resolution,cam,cudaPhotonMapImage,viewProjectionViewPort);
+}
+#endif	
 
 
 
