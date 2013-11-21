@@ -201,9 +201,9 @@ c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\swprintf.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\sceneStructs.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core/_fixes.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\sceneStructs.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\climits
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cfloat
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\float.h
@@ -218,112 +218,112 @@ c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xstddef
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cstddef
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cstdio
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core/setup.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/_detail.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\setup.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/setup.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/_detail.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\setup.hpp
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cassert
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\assert.h
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/type.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_half.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_half.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_detail.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_float.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_half.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\setup.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_int.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\setup.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_detail.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_gentype.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_size.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec1.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_gentype.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_float.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_int.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_size.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_swizzle.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_swizzle_func.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec1.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec2.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_float.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_int.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_size.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_swizzle.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec2.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec3.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_float.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_int.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_size.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_swizzle.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec3.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec4.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_float.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_int.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_size.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_swizzle.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_vec4.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat2x2.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_gentype.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat2x2.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat2x3.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat2x3.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat2x4.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat2x4.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat3x2.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat3x2.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat3x3.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat3x3.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat3x4.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat3x4.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat4x2.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat4x2.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat4x3.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat4x3.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat4x4.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\type_mat4x4.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/func_trigonometric.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\func_trigonometric.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/func_exponential.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\func_exponential.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/func_common.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_fixes.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\func_common.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/func_packing.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\func_packing.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/func_geometric.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\func_geometric.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/func_matrix.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\func_matrix.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/func_vector_relational.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_detail.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\func_vector_relational.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/func_integer.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\func_integer.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/func_noise.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core\func_noise.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\./core/_swizzle.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\cudaMat4.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core/_fixes.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/type.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_half.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_half.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_detail.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_half.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\setup.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\setup.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_detail.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec1.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle_func.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec1.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec2.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec2.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec3.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec3.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec4.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec4.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x2.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x2.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x3.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x3.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x4.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x4.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x2.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x2.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x3.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x3.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x4.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x4.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x2.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x2.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x3.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x3.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x4.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x4.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_trigonometric.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_trigonometric.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_exponential.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_exponential.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_common.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_fixes.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_common.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_packing.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_packing.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_geometric.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_geometric.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_matrix.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_matrix.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_vector_relational.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_detail.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_vector_relational.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_integer.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_integer.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_noise.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_noise.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/_swizzle.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\cudaMat4.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda_runtime.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda_runtime.h
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\string
@@ -387,11 +387,15 @@ c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cerrno
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\errno.h
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\share.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core/_fixes.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\utilities.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core/_fixes.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/gtc/matrix_transform.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\gtc\../glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\gtc\matrix_transform.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\utilities.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\algorithm
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\memory
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\intrin.h
@@ -485,8 +489,8 @@ c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\iterator
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\sstream
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\vector
 c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfunctional
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\cudaMat4.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\raytraceKernel.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\cudaMat4.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\raytraceKernel.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/config.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/config/config.h
@@ -528,15 +532,15 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/de
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/normal_distribution.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/normal_distribution.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\sceneStructs.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\sceneStructs.h
 C:/ProgramData/NVIDIA Corporation/NVIDIA GPU Computing SDK 4.2/C/common/inc\cutil_math.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda_runtime.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\intersections.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\sceneStructs.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\cudaMat4.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\glm\core/_fixes.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\utilities.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\interactions.h
-c:\users\ishaan\documents\penn\565 gpu progamming\project2-pathtracer\src\intersections.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\intersections.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\sceneStructs.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\cudaMat4.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\utilities.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\interactions.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\intersections.h
 C:/ProgramData/NVIDIA Corporation/NVIDIA GPU Computing SDK 4.2/C/common/inc\cutil_math.h

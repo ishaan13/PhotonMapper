@@ -14,6 +14,7 @@
 enum GEOMTYPE{ SPHERE, CUBE, MESH };
 
 #define COMPACTION 1
+#define PHOTONMAP 1
 
 struct ray {
 	glm::vec3 origin;
@@ -26,6 +27,18 @@ struct ray {
 	glm::vec3 transmission;
 
 };
+
+#if PHOTONMAP
+struct photon {
+	bool stored;			// Check if the current photon has been stored, i.e. do not bounce this photon further
+	glm::vec3 position;		// Position of photon
+	glm::vec3 direction;	// Incoming direction of photon (potentially use theta phi?)
+	glm::vec3 color;		// I think this essentially stores flux as well. : change to spectral eventually?
+#if COMPACTION
+	int originalIndex;		// If using stream compaction
+#endif
+};
+#endif
 
 struct geom {
 	enum GEOMTYPE type;

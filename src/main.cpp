@@ -227,7 +227,7 @@ void runCuda(){
 
 		runCuda();
 
-		string title = "565PathTracer | " + utilityCore::convertIntToString(iterations) + " Iterations";
+		string title = "MMFAPhoMap | " + utilityCore::convertIntToString(iterations) + " Iterations";
 		glutSetWindowTitle(title.c_str());
 
 		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, pbo);

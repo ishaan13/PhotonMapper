@@ -10,6 +10,7 @@
 #include <cmath>
 #include "sceneStructs.h"
 #include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #include "utilities.h"
 #include "raytraceKernel.h"
 #include "intersections.h"
@@ -23,13 +24,18 @@
 #define DOF 1
 #define FRESNEL 1
 #define SCHLICK 0
-#define PATHTRACER 1
+#define PATHTRACER 0	
 #define PAINTERLY 0
+#define PHOTONMAP 1
 
 #if CUDA_VERSION >= 5000
     #include <helper_math.h>
 #else
     #include <cutil_math.h>
+#endif
+
+#if PHOTONMAP
+int numPhotons = 20000;
 #endif
 
 glm::vec3* accumulatorImage = NULL;
@@ -782,6 +788,139 @@ int streamCompactRayPool(ray* inputRays, ray* outputRays, int size)
 
 
 #endif
+
+
+
+#if PHOTONMAP
+
+// Create a helper function to call these functions
+
+__global__ void fillPhotonMap(photon* photonPool, int numPhotons, staticGeom* lights, int numberOfLights, material* materials, int numberOfMaterials)
+{
+	int index = blockIdx.x * blockDim.x + threadIdx.x;
+	if(index < numPhotons)
+	{
+		photon p;
+		
+		// Do a random-check to choose a certain light: take into consideration area of lights
+		// Do a better random generation
+		glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),index%37,index%377,index%23);
+		int lightIndex = randoms.x / (1.0f / numberOfLights);
+
+		staticGeom lightChosen = lights[lightIndex];
+
+		// Right now only support sphere
+		if(lightChosen.type == SPHERE)
+		{
+			p.position = getRandomPointOnSphere(lightChosen,index);
+		}
+		
+		// Get center of sphere by transforming origin into world space.
+		glm::vec3 sphereCenter = multiplyMV(lightChosen.transform, glm::vec4(0.0,0.0,0.0,1.0));
+		
+		// Get normal at current point.
+		glm::vec3 normal = glm::normalize(p.position- sphereCenter);
+
+		// Shooting direction is normal at the point or random direction?
+		// I think the lecture said choose random direction.
+		/* p.direction = normal; */
+		p.direction = calculateRandomDirectionInHemisphere(normal,randoms.y,randoms.z);
+		
+		// Set color of photon
+		material lightMaterial = materials[lightChosen.materialid];
+		p.color = lightMaterial.emittance * lightMaterial.color;
+
+		// Set whether photon has been stored/absorbed (dead)
+		p.stored = false;
+
+		photonPool[index] = p;
+	}
+
+}
+
+__global__ void displayPhotons(photon* photonPool, int numPhotons, glm::vec2 resolution, cameraData cam, glm::vec3* colors, cudaMat4 viewProjectionViewport)
+{
+	int index = blockIdx.x * blockDim.x + threadIdx.x;
+	if(index < numPhotons)
+	{
+		photon p = photonPool[index];
+		glm::vec3 photonToEye = cam.position - p.position;
+		
+		// Do this assuming view, projection and viewport matrices are provided
+		glm::vec3 screenPosition = multiplyMV(viewProjectionViewport,glm::vec4(p.position,1.0f));
+
+		if(screenPosition.x >=0 && screenPosition.x <= resolution.x && screenPosition.y >=0 && screenPosition.y <= resolution.y)
+		{
+			// write to the color buffer!
+			// race conditions?
+			int x = screenPosition.x;
+			int y = screenPosition.y;
+			int pixelIndex = x + (y * resolution.x);
+			colors[pixelIndex] = glm::abs(p.direction);
+		}
+
+		/*
+
+		Do this purely by calculation
+
+		// Create a ray for this
+		ray r;
+		r.direction = glm::normalize(photonToEye);
+		r.origin = p.position;
+
+		// Equation of plane is related to midpoint and view direction as normal
+		glm::vec3 view = cam.view;
+		glm::vec3 midPoint = cam.position + view;
+
+		// Intersect ray from photon to eye with this image plane
+		glm::vec3 screenPlanePoint;
+		planeIntersectionTest(midPoint,view,r,screenPlanePoint);
+
+		// Check whether the screen plane point is in the field of view
+		glm::vec3 axis_a = glm::cross(cam.view, cam.up);
+		glm::vec3 axis_b = glm::cross(axis_a, cam.view);
+		glm::vec3 viewPlaneX = axis_a * tan(PI_F * cam.fov.x/180.0f) * glm::length(cam.view)/glm::length(axis_a);
+		glm::vec3 viewPlaneY = axis_b * tan(PI_F * cam.fov.y/180.0f) * glm::length(cam.view)/glm::length(axis_b);
+
+		// Reverse engineer this equation to solve for x and y
+		
+		 // glm::vec3 screenPoint = midPoint +
+			//				(2.0f * (1.0f * x / (resolution.x-1)) - 1.0f) * viewPlaneX + 
+			//				(1.0f - 2.0f * (1.0f * y / (resolution.y-1))) * viewPlaneY;
+			//
+			//s = m + (2 (x/rx) - 1) * vx + (1 - 2(y/ry)) * vy
+			//s - m = (2 (x/rx) - 1) * vx + (1 - 2(y/ry)) * vy
+
+			//Potentially; construct a coordinate space with midpoint as origin, axisa and axisb being x and y, z being view.
+			//project (s - m) onto axisa and axisb ?
+		
+
+		glm::vec2 worldSpaceSpan = glm::vec2 ( glm::dot(viewPlaneX,axis_a), glm::dot(viewPlaneY,axis_b) );
+		glm::vec2 worldSpacePixelRes = 1.0f / (2.0f * worldSpaceSpan);
+		*/
+
+	}
+}
+
+__global__ void tracePhotons(photon* photonPool, int numPhotons, staticGeom* geoms, int numberOfGeoms, material* materials, float time)
+{
+	// CopyCode from raytraceRay code.
+}
+
+void initPhotonMap(photon* cudaPhotonPool)
+{
+	//Create Memory for RayPool
+	cudaPhotonPool = NULL;
+	cudaMalloc((void**)&cudaPhotonPool, numPhotons * sizeof(photon));
+}
+
+void cleanPhotonMap(photon* cudaPhotonPool)
+{
+	cudaFree(cudaPhotonPool);
+}
+#endif
+
+
 
 //TODO: FINISH THIS FUNCTION
 // Wrapper for the __global__ call that sets up the kernel calls and does a ton of memory management
