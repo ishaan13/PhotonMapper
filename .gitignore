@@ -27,7 +27,9 @@ sph/output/*
 # Build results
 
 [Dd]ebug/
-*/[Rr]elease*/
+PROJ1_WIN/565Pathtracer/Release (v5.5)/
+PROJ1_WIN/Release (v5.5)/
+PROJ1_WIN/565Pathtracer/Win32/Release (v5.5)/
 x64/
 build/
 [Bb]in/
