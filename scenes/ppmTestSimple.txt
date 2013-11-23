@@ -118,15 +118,15 @@ UP          0 1 0
 APERTURE    0
 FOCUSPLANE  12.5
 
-OBJECT 0		//
+OBJECT 0		//floor
 cube
-material 8
+material 0
 frame 0
 TRANS       0 0 0
 ROTAT       0 0 90
 SCALE       .01 10 10 
 
-OBJECT 1
+OBJECT 1		//back wall
 cube
 material 0
 frame 0
@@ -136,13 +136,13 @@ SCALE       .01 10 10
 
 OBJECT 2
 cube
-material 0
+material 0		//ceiling
 frame 0
 TRANS       0 10 0
 ROTAT       0 0 90
 SCALE       .01 10 10
 
-OBJECT 3
+OBJECT 3		//left wall
 cube
 material 1
 frame 0
@@ -150,7 +150,7 @@ TRANS       -5 5 0
 ROTAT       0 0 0
 SCALE       .01 10 10
 
-OBJECT 4
+OBJECT 4		//right wall
 cube
 material 2
 frame 0
@@ -162,7 +162,7 @@ OBJECT 5
 sphere
 material 5
 frame 0
-TRANS       2 3 0
+TRANS       2 5 0
 ROTAT       0 0 0
 SCALE       2 2 2
 
@@ -170,31 +170,23 @@ OBJECT 6
 sphere
 material 4
 frame 0
-TRANS       -2 3 0
+TRANS       -2 5 0
 ROTAT       0 0 0
 SCALE       2 2 2
 
 OBJECT 7
 sphere
-material 0
+material 6
 frame 0
-TRANS       0 1 2
+TRANS       0 2 2
 ROTAT       0 0 0
 SCALE       2 2 2
 
 OBJECT 8
 sphere
-material 0
+material 8
 frame 0
 TRANS       0 8 0
 ROTAT       0 0 0
 SCALE       1 1 1
-
-OBJECT 9
-cube
-material 5
-frame 0
-TRANS       0 8 0
-ROTAT       0 0 0
-SCALE       1.2 1.2 1.2
 

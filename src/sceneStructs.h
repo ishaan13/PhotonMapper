@@ -34,6 +34,7 @@ struct photon {
 	glm::vec3 position;		// Position of photon
 	glm::vec3 direction;	// Incoming direction of photon (potentially use theta phi?)
 	glm::vec3 color;		// I think this essentially stores flux as well. : change to spectral eventually?
+	unsigned short arrayIdx;	//for most basic linear data structure
 #if COMPACTION
 	int originalIndex;		// If using stream compaction
 #endif

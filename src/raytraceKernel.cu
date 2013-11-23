@@ -35,7 +35,11 @@
 #endif
 
 #if PHOTONMAP
-int numPhotons = 20000;
+int numPhotons = 1000;
+int numBounces = 3;			//hard limit of 3 bounces for now
+
+photon* cudaPhotonPool;		//global variable of photons
+
 #endif
 
 glm::vec3* accumulatorImage = NULL;
@@ -462,8 +466,6 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 		colors[index] = glm::vec3(minNormal);
 		colors[index] = glm::vec3( fabs(minNormal.x), fabs(minNormal.y), fabs(minNormal.z));
 	*/
-
-	
 	
    }
 }
@@ -795,7 +797,8 @@ int streamCompactRayPool(ray* inputRays, ray* outputRays, int size)
 
 // Create a helper function to call these functions
 
-__global__ void fillPhotonMap(photon* photonPool, int numPhotons, staticGeom* lights, int numberOfLights, material* materials, int numberOfMaterials)
+//function for emitting photons from a sphere light
+__global__ void emitPhotons(photon* photonPool, int numPhotons, staticGeom* geoms, int* lights, int numberOfLights, material* materials, int numberOfMaterials)
 {
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 	if(index < numPhotons)
@@ -807,7 +810,7 @@ __global__ void fillPhotonMap(photon* photonPool, int numPhotons, staticGeom* li
 		glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),index%37,index%377,index%23);
 		int lightIndex = randoms.x / (1.0f / numberOfLights);
 
-		staticGeom lightChosen = lights[lightIndex];
+		staticGeom lightChosen = geoms[lights[lightIndex]];			//get the light using the index from the lights array
 
 		// Right now only support sphere
 		if(lightChosen.type == SPHERE)
@@ -860,7 +863,6 @@ __global__ void displayPhotons(photon* photonPool, int numPhotons, glm::vec2 res
 		}
 
 		/*
-
 		Do this purely by calculation
 
 		// Create a ray for this
@@ -907,25 +909,140 @@ __global__ void tracePhotons(photon* photonPool, int numPhotons, staticGeom* geo
 	// CopyCode from raytraceRay code.
 }
 
-void initPhotonMap(photon* cudaPhotonPool)
+void initPhotonMap()
 {
 	//Create Memory for RayPool
 	cudaPhotonPool = NULL;
-	cudaMalloc((void**)&cudaPhotonPool, numPhotons * sizeof(photon));
+	cudaMalloc((void**)&cudaPhotonPool, numBounces * numPhotons * sizeof(photon));
 }
 
-void cleanPhotonMap(photon* cudaPhotonPool)
+void cleanPhotonMap()
 {
 	cudaFree(cudaPhotonPool);
 }
 #endif
 
-
-
-//TODO: FINISH THIS FUNCTION
+/*
 // Wrapper for the __global__ call that sets up the kernel calls and does a ton of memory management
 void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iterations, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms, cameraData liveCamera){
 
+  if(iterations == 1)
+  {
+    // Allocate Accumulator Image
+    cudaAllocateAccumulatorImage(renderCam);
+  }
+
+  int traceDepth = 1; //determines how many bounces the raytracer traces
+
+  // set up crucial magic
+  int tileSize = 8;
+  dim3 threadsPerBlock(tileSize, tileSize);
+  dim3 fullBlocksPerGrid((int)ceil(float(renderCam->resolution.x)/float(tileSize)), (int)ceil(float(renderCam->resolution.y)/float(tileSize)));
+
+  //send image to GPU
+  glm::vec3* cudaimage = NULL;
+  cudaMalloc((void**)&cudaimage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3));
+  cudaMemcpy( cudaimage, renderCam->image, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyHostToDevice);
+
+  //package geometry and materials and sent to GPU
+  staticGeom* geomList = new staticGeom[numberOfGeoms];
+
+  //for storing the lights
+  std::vector<int> lightVector;			//for storing light's indices
+
+  for(int i=0; i<numberOfGeoms; i++){
+    staticGeom newStaticGeom;
+    newStaticGeom.type = geoms[i].type;
+    newStaticGeom.materialid = geoms[i].materialid;
+    newStaticGeom.translation = geoms[i].translations[frame];
+    newStaticGeom.rotation = geoms[i].rotations[frame];
+    newStaticGeom.scale = geoms[i].scales[frame];
+    newStaticGeom.transform = geoms[i].transforms[frame];
+    newStaticGeom.inverseTransform = geoms[i].inverseTransforms[frame];
+    geomList[i] = newStaticGeom;
+
+	//store the lights
+	if (materials[geoms[i].materialid].emittance > 0) {
+		lightVector.push_back(i);
+	}
+  }
+  
+  staticGeom* cudageoms = NULL;
+  cudaMalloc((void**)&cudageoms, numberOfGeoms*sizeof(staticGeom));
+  cudaMemcpy( cudageoms, geomList, numberOfGeoms*sizeof(staticGeom), cudaMemcpyHostToDevice);
+
+  //copy the lights vector to the gpu
+  int numLights = lightVector.size();
+
+  //copy lights over to int array
+  int* lightArray = new int[numLights];
+  for (int i = 0; i < numLights; ++i) {
+	  lightArray[i] = lightVector[i];
+  }
+
+  int* cudaLights = NULL;
+  cudaMalloc((void**)&cudaLights, numLights*sizeof(int));
+  cudaMemcpy( cudaLights, lightArray, numLights*sizeof(int), cudaMemcpyHostToDevice);
+  
+  delete[] lightArray;
+
+  //package camera
+  cameraData cam;
+  cam.resolution = renderCam->resolution;
+  cam.position = renderCam->positions[frame];
+  cam.view = renderCam->views[frame];
+  cam.up = renderCam->ups[frame];
+  cam.aperture = renderCam->apertures[frame];
+  cam.focusPlane = renderCam->focusPlanes[frame];
+  cam.fov = renderCam->fov;
+
+  //user interaction
+  cam.position +=  (liveCamera.position);
+  cam.view = glm::normalize(cam.view + liveCamera.view);
+  cam.aperture += liveCamera.aperture;
+  cam.focusPlane += liveCamera.focusPlane;
+
+  //Transfer materials
+  material* cudamaterials = NULL;
+  cudaMalloc((void**)&cudamaterials, numberOfMaterials*sizeof(material));
+  cudaMemcpy( cudamaterials, materials, numberOfMaterials*sizeof(material), cudaMemcpyHostToDevice);
+
+  //clear On screen buffer
+    combineIntoAccumulatorImage<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cudaimage, accumulatorImage);
+  sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, accumulatorImage, (float)iterations);
+  //clearImage<<<fullBlocksPerGrid,threadsPerBlock>>>(renderCam->resolution, cudaimage);
+
+
+  //-----------------------------------BASIC LINEAR PHOTON MAP-------------------------------------//
+  initPhotonMap();			//shouldn't actually have to do this every iteration
+
+  //emit photons
+  //emitPhotons<<<fullBlocksPerGrid, threadsPerBlock>>>(cudaPhotonPool, numPhotons, cudageoms, cudaLights, numLights, cudamaterials, numberOfMaterials);
+
+	
+  cleanPhotonMap();
+  //-----------------------------------END PHOTON MAP-------------------------------------//
+
+  sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, cudaimage);
+
+  //retrieve image from GPU for sending to bmp file
+	cudaMemcpy( renderCam->image, cudaimage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
+
+  //free up stuff, or else we'll leak memory like a madman
+  cudaFree( cudaimage );
+  cudaFree( cudageoms );
+  cudaFree( cudamaterials );
+  delete geomList;
+
+  // make certain the kernel has completed
+  cudaThreadSynchronize();
+
+  checkCUDAError("Kernel failed!");
+} */
+
+
+// Wrapper for the __global__ call that sets up the kernel calls and does a ton of memory management
+void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iterations, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms, cameraData liveCamera){
 
   // testing 
   //streamCompact();
@@ -1058,6 +1175,7 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
 
   checkCUDAError("Kernel failed!");
 }
+
 
 //Clear AccumulatorImage. For an interactive application, this needs to be called everytime the camera moves or the scene changes
 void cudaClearAccumulatorImage(camera *renderCam)
