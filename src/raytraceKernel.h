@@ -25,7 +25,15 @@ extern glm::vec3* accumulatorImage;
 void cudaAllocateAccumulatorImage(camera *renderCam);
 void cudaFreeAccumulatorImage();
 void cudaClearAccumulatorImage(camera *renderCam);
-void cudaRaytraceCore(uchar4* pos, camera* renderCam, int frame, int iterations, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms, cameraData liveCamera);
+void cudaRaytraceCore(uchar4* pos, camera* renderCam, int frame, int iterations, 
+					  material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms, cameraData liveCamera);
+
+//photon mapping
+void cudaPhotonMapCore(camera* renderCam, int frame, int time, uchar4* PBOPos);
+
+//for allocating and deallocating memory
+void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms);
+void cudaFreeMemory();
 
 __host__ __device__ glm::vec3 generateRandomNumberFromThread(glm::vec2 resolution, float time, int x, int y);
 

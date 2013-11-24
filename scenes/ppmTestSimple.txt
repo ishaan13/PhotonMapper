@@ -120,7 +120,7 @@ FOCUSPLANE  12.5
 
 OBJECT 0		//floor
 cube
-material 0
+material 1
 frame 0
 TRANS       0 0 0
 ROTAT       0 0 90
@@ -128,7 +128,7 @@ SCALE       .01 10 10
 
 OBJECT 1		//back wall
 cube
-material 0
+material 2
 frame 0
 TRANS       0 5 -5
 ROTAT       0 90 0

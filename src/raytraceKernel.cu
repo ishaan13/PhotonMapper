@@ -35,15 +35,24 @@
 #endif
 
 #if PHOTONMAP
-int numPhotons = 1000;
+int numPhotons = 5000;
 int numBounces = 3;			//hard limit of 3 bounces for now
 
 photon* cudaPhotonPool;		//global variable of photons
+glm::vec3* cudaPhotonMapImage;
 
 #endif
 
 glm::vec3* accumulatorImage = NULL;
 extern bool singleFrameMode;
+
+//scene data
+glm::vec3* cudaimage;
+staticGeom* cudageoms;
+material* cudamaterials;
+int* cudaLights;
+int numLights;
+int numGeoms;
 
 void checkCUDAError(const char *msg) {
   cudaError_t err = cudaGetLastError();
@@ -134,9 +143,13 @@ __global__ void sendImageToPBO(uchar4* PBOpos, glm::vec2 resolution, glm::vec3* 
   if(x<=resolution.x && y<=resolution.y){
 
       glm::vec3 color;
-      color.x = image[index].x*255.0 / frames;
-      color.y = image[index].y*255.0 / frames;
-      color.z = image[index].z*255.0 / frames;
+      //color.x = image[index].x*255.0 / frames;
+      //color.y = image[index].y*255.0 / frames;
+      //color.z = image[index].z*255.0 / frames;
+
+	  color.x = image[index].x*255.0;
+      color.y = image[index].y*255.0;
+      color.z = image[index].z*255.0;
 
       if(color.x>255){
         color.x = 255;
@@ -573,7 +586,6 @@ __global__ void prescan(float *g_odata, float *g_idata, int n)
 	g_odata[2*thid+1] = temp[2*thid+1]; 
 }
 
-
 // Mark with predicate whether active or inactive
 __global__ void predicateMark(ray* inputRays, int* outputPredicate, int size)
 {
@@ -798,7 +810,7 @@ int streamCompactRayPool(ray* inputRays, ray* outputRays, int size)
 // Create a helper function to call these functions
 
 //function for emitting photons from a sphere light
-__global__ void emitPhotons(photon* photonPool, int numPhotons, staticGeom* geoms, int* lights, int numberOfLights, material* materials, int numberOfMaterials)
+__global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, staticGeom* geoms, int* lights, int numberOfLights, material* materials)
 {
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 	if(index < numPhotons)
@@ -836,30 +848,62 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, staticGeom* geom
 		// Set whether photon has been stored/absorbed (dead)
 		p.stored = false;
 
+		p.bounces = 0;		//increment the number of bounces by 1
+
 		photonPool[index] = p;
+
+		//set the rest of the photons in the array to not stored
+		for (int i = 1; i < numBounces; ++i) {
+			photon placeHolder;
+			placeHolder.stored = false;
+			photonPool[numPhotons * i + index] = placeHolder;
+		}
 	}
 
 }
 
-__global__ void displayPhotons(photon* photonPool, int numPhotons, glm::vec2 resolution, cameraData cam, glm::vec3* colors, cudaMat4 viewProjectionViewport)
+__global__ void displayPhotons(photon* photonPool, int numPhotons, int numBounces, glm::vec2 resolution, cameraData cam, glm::vec3* colors, cudaMat4 viewProjectionViewport)
 {
+
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
+	
 	if(index < numPhotons)
 	{
-		photon p = photonPool[index];
-		glm::vec3 photonToEye = cam.position - p.position;
 		
-		// Do this assuming view, projection and viewport matrices are provided
-		glm::vec3 screenPosition = multiplyMV(viewProjectionViewport,glm::vec4(p.position,1.0f));
+		for (int i = 0; i < numBounces; ++i) {
+		
+			photon p = photonPool[numPhotons * i + index];
 
-		if(screenPosition.x >=0 && screenPosition.x <= resolution.x && screenPosition.y >=0 && screenPosition.y <= resolution.y)
-		{
-			// write to the color buffer!
-			// race conditions?
-			int x = screenPosition.x;
-			int y = screenPosition.y;
-			int pixelIndex = x + (y * resolution.x);
-			colors[pixelIndex] = glm::abs(p.direction);
+			//only display color if photon is not dead at that position
+			if (!p.stored) {
+				glm::vec3 photonToEye = cam.position - p.position;
+				
+				// Do this assuming view, projection and viewport matrices are provided
+				//glm::vec3 screenPosition = multiplyMV(viewProjectionViewport,glm::vec4(p.position,1.0f));
+				
+				glm::vec4 screenPosition = multiplyMV_4(viewProjectionViewport, glm::vec4(p.position, 1.0f));
+
+				//transform to clip
+				screenPosition.x /= screenPosition.w;
+				screenPosition.y /= screenPosition.w;
+				screenPosition.z /= screenPosition.w;
+
+				//transform to screen coord
+				screenPosition.x = (screenPosition.x+1) * resolution.x/2.0f;
+				screenPosition.y = (-screenPosition.y+1) * resolution.y/2.0f;
+
+				if(screenPosition.x >=0 && screenPosition.x <= resolution.x && screenPosition.y >=0 && screenPosition.y <= resolution.y)
+				{
+					// write to the color buffer!
+					// race conditions?
+					int x = screenPosition.x;
+					int y = screenPosition.y;
+					int pixelIndex = x + (y * resolution.x);
+					//colors[pixelIndex] = glm::abs(p.direction);		//glm::abs causes a kernel failure on my computer...
+					colors[pixelIndex] = p.color;
+				}
+			}
+
 		}
 
 		/*
@@ -904,21 +948,95 @@ __global__ void displayPhotons(photon* photonPool, int numPhotons, glm::vec2 res
 	}
 }
 
-__global__ void bouncePhotons(photon* photonPool, int numPhotons, staticGeom* geoms, int numberOfGeoms, material* materials, float time)
-{
-	// CopyCode from raytraceRay code.
+__global__ void testImage(glm::vec3* colors, glm::vec2 resolution) {
+	
+    int x = (blockIdx.x * blockDim.x) + threadIdx.x;
+	int y = (blockIdx.y * blockDim.y) + threadIdx.y;
+	int index = x + (y * resolution.x);
+
+	if (x <= resolution.x && y <= resolution.y) { 
+		colors[index] = glm::vec3(1.0);
+	}
+
 }
 
-void initPhotonMap()
+__global__ void bouncePhotons(photon* photonPool, int numPhotons, int numBounces, staticGeom* geoms, int numberOfGeoms, material* materials, float time)
 {
-	//Create Memory for RayPool
-	cudaPhotonPool = NULL;
-	cudaMalloc((void**)&cudaPhotonPool, numBounces * numPhotons * sizeof(photon));
-}
+	//bounce photons around
+	int index = blockIdx.x * blockDim.x + threadIdx.x; 
 
-void cleanPhotonMap()
-{
-	cudaFree(cudaPhotonPool);
+	if (index < numPhotons){
+	
+		//load a photon from memory
+		photon p = photonPool[index];
+
+		//bounce it around until max bounce is reached
+
+		while (p.bounces < numBounces && !p.stored) {
+			
+			//create ray using photon
+			ray r;
+			r.origin = p.position + 0.1f*p.direction;		//offset point a little to avoid self intersection
+			r.direction = p.direction;
+
+			//intersection testing
+			int intersectedGeom = -1;
+			int intersectedMaterial = -1;
+			float minDepth = 1000000.0f;
+			glm::vec3 minIntersectionPoint;
+			glm::vec3 minNormal = glm::vec3(0.0f);
+			
+			for (int iter=0; iter < numberOfGeoms; iter++)
+			{
+					float depth=-1;
+					glm::vec3 intersection;
+					glm::vec3 normal;
+					staticGeom currentGeometry = geoms[iter];
+					if (currentGeometry.type == CUBE)
+					{
+							depth = boxIntersectionTest(currentGeometry,r,intersection,normal);
+					}
+					
+					else if (geoms[iter].type == SPHERE)
+					{
+							depth = sphereIntersectionTest(currentGeometry,r,intersection,normal);
+					}
+					
+
+					if (depth > 0 && depth < minDepth)
+					{
+							minDepth = depth;
+							minIntersectionPoint = intersection;
+							minNormal = normal;
+							intersectedGeom = iter;
+							intersectedMaterial = currentGeometry.materialid;
+					}
+			}
+
+			//if intersection occurs, accumulate color and keep bouncing
+			if (intersectedGeom > -1) {
+
+				material m = materials[intersectedMaterial];
+				p.color *= m.color;
+				//p.color = glm::vec3(1);
+				//assume diffuse surfaces only for now, so bounce in random direction
+				glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),index%37,index%377,index%23);
+				p.direction = calculateRandomDirectionInHemisphere(minNormal,randoms.y,randoms.z);
+				p.position = minIntersectionPoint;
+				
+			}
+			else {
+				//kill the photon if it doesn't intersect with anything
+				p.stored = true;
+				
+			}
+
+			p.bounces ++;
+			//write new bounced photon into memory
+			photonPool[p.bounces*numPhotons+index] = p;
+		}
+	}
+
 }
 
 void tracePhotons(int photonThreadsPerBlock, int photonBlocksPerGrid, photon* cudaPhotonPool, int numPhotons, staticGeom* cudaGeoms, int numberOfGeoms, material* cudaMaterials, float time)
@@ -929,7 +1047,7 @@ void tracePhotons(int photonThreadsPerBlock, int photonBlocksPerGrid, photon* cu
 	for(int i=0; i < numberOfBounces; i++)
 	{
 		// Bounce Photons Around
-		bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool,numPhotons,cudaGeoms,numberOfGeoms,cudaMaterials,time);
+		//bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool,numPhotons,cudaGeoms,numberOfGeoms,cudaMaterials,time);
 #if COMPACTION
 		// Do some compaction
 
@@ -937,16 +1055,117 @@ void tracePhotons(int photonThreadsPerBlock, int photonBlocksPerGrid, photon* cu
 	}
 }
 
-void photonMapCore(glm::vec2 resolution, photon* cudaPhotonPool, int numPhotons, staticGeom* cudaLights, int numberOfLights, material* cudaMaterials, int numberOfMaterials,
-									staticGeom* cudaGeoms, int numberOfGeoms, cameraData cam, float time)
-{
-	glm::vec3* cudaPhotonMapImage = NULL;
-	cudaMalloc((void**)&cudaPhotonMapImage, (int)resolution.x*(int)resolution.y*sizeof(glm::vec3));
 
+void initPhotonMap()
+{
+	//Create Memory for RayPool
+	cudaPhotonPool = NULL;
+	cudaMalloc((void**)&cudaPhotonPool, numBounces * numPhotons * sizeof(photon));
+	
+}
+
+void cleanPhotonMap()
+{
+	cudaFree(cudaPhotonPool);
+}
+
+//allocate memory for geometry data
+void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms) {
+
+	int size = (int)renderCam->resolution.x*(int)renderCam->resolution.y;
+	
+	//send image to GPU
+	cudaimage = NULL;
+	cudaMalloc((void**)&cudaimage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3));
+	cudaMemcpy( cudaimage, renderCam->image, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyHostToDevice);
+	
+	//package geometry and materials and sent to GPU
+	staticGeom* geomList = new staticGeom[numberOfGeoms];
+	std::vector<int> lightVec;
+	numGeoms = numberOfGeoms;
+
+	//get geom from frame 0
+	for(int i=0; i<numberOfGeoms; i++){
+			staticGeom newStaticGeom;
+			newStaticGeom.type = geoms[i].type;
+			newStaticGeom.materialid = geoms[i].materialid;
+			newStaticGeom.translation = geoms[i].translations[0];
+			newStaticGeom.rotation = geoms[i].rotations[0];
+			newStaticGeom.scale = geoms[i].scales[0];
+			newStaticGeom.transform = geoms[i].transforms[0];
+			newStaticGeom.inverseTransform = geoms[i].inverseTransforms[0];
+			geomList[i] = newStaticGeom;
+
+			//store which objects are lights
+			if(materials[geoms[i].materialid].emittance > 0)
+					lightVec.push_back(i);
+	}
+
+	cudageoms = NULL;
+	cudaMalloc((void**)&cudageoms, numberOfGeoms*sizeof(staticGeom));
+	cudaMemcpy( cudageoms, geomList, numberOfGeoms*sizeof(staticGeom), cudaMemcpyHostToDevice);
+
+	//copy materials to memory
+	cudamaterials = NULL;
+	cudaMalloc((void**)&cudamaterials, numberOfMaterials*sizeof(material));
+	cudaMemcpy( cudamaterials, materials, numberOfMaterials*sizeof(material), cudaMemcpyHostToDevice);
+
+	//copy light ID to memeory
+	numLights = lightVec.size();
+
+	int* lightID = new int[numLights];
+	for(int i = 0; i <numLights; ++i)
+			lightID[i] = lightVec[i];
+
+	cudaLights = NULL;
+	cudaMalloc((void**)&cudaLights, numLights*sizeof(int));
+	cudaMemcpy( cudaLights, lightID, numLights*sizeof(int), cudaMemcpyHostToDevice);
+
+#if PHOTONMAP
+	cudaPhotonPool = NULL;
+	cudaMalloc((void**)&cudaPhotonPool, numBounces * numPhotons * sizeof(photon));
+
+	cudaPhotonMapImage = NULL;
+	cudaMalloc((void**)&cudaPhotonMapImage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3));
+#endif
+
+	delete[] geomList;
+	delete[] lightID;
+}
+
+//free up memory
+void cudaFreeMemory() {
+
+	cudaFree( cudaimage);
+	cudaFree( cudageoms );
+	cudaFree( cudamaterials);
+	cudaFree( cudaLights);
+
+#if PHOTONMAP
+	cudaFree(cudaPhotonPool);
+	cudaFree(cudaPhotonMapImage);
+#endif
+
+}
+
+
+void cudaPhotonMapCore(camera* renderCam, int frame, int time, uchar4* PBOpos)
+{
 	// Set up crucial magic
+	glm::vec2 resolution = renderCam->resolution;
 	int tileSize = 8;
 	dim3 pixelThreadsPerBlock(tileSize, tileSize);
 	dim3 pixelBlocksPerGrid((int)ceil(float(resolution.x)/float(tileSize)), (int)ceil(float(resolution.y)/float(tileSize)));
+
+	//package camera data
+	cameraData cam;
+	cam.resolution = renderCam->resolution;
+	cam.position = renderCam->positions[frame];
+	cam.view = renderCam->views[frame];
+	cam.up = renderCam->ups[frame];
+	cam.fov = renderCam->fov;
+	cam.focusPlane = renderCam->focusPlanes[frame];
+	cam.aperture = renderCam->apertures[frame];
 
 	// Clear photon image buffer
 	clearImage<<<pixelBlocksPerGrid,pixelThreadsPerBlock>>>(resolution, cudaPhotonMapImage);
@@ -954,16 +1173,40 @@ void photonMapCore(glm::vec2 resolution, photon* cudaPhotonPool, int numPhotons,
 	// Generate Photon List
 	int photonThreadsPerBlock = 512;
 	int photonBlocksPerGrid = ceil(numPhotons * 1.0f/photonThreadsPerBlock);
-	fillPhotonMap<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool,numPhotons,cudaLights,numberOfLights,cudaMaterials,numberOfMaterials);
+	
+	emitPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, cudageoms, 
+																		   cudaLights, numLights, cudamaterials);
+	 
+	bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces,
+																			 cudageoms, numGeoms, cudamaterials, time);
 
 	// Trace all photons with all bounces
-	tracePhotons(photonThreadsPerBlock,photonBlocksPerGrid,cudaPhotonPool,numPhotons,cudaGeoms,numberOfGeoms,cudaMaterials,time);
+	//tracePhotons(photonThreadsPerBlock, photonBlocksPerGrid, cudaPhotonPool, numPhotons, cudageoms, numGeoms, cudamaterials, time);
 
 	// Calculate Viewport * Projection * View matrix from camera info
-	cudaMat4 viewProjectionViewPort;
+	glm::vec3 center = cam.position + cam.view;
+
+	glm::mat4 viewMat = glm::lookAt(cam.position, center, cam.up);
+	glm::mat4 projectionMat = glm::perspective(35.0f, 1.0f, 0.1f, 1000.0f);
+
+	cudaMat4 viewProjectionViewPort = utilityCore::glmMat4ToCudaMat4(projectionMat*viewMat);
+	
+	//utilityCore::printCudaMat4(viewProjectionViewPort);
 
 	// Display all photons in the photonImage buffer
-	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool,numPhotons,resolution,cam,cudaPhotonMapImage,viewProjectionViewPort);
+	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, resolution, 
+																			  cam, cudaPhotonMapImage, viewProjectionViewPort);
+
+	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaPhotonMapImage, (float)time); 
+
+	//retrive image from GPU
+	int imageSize = (int)resolution.x * (int) resolution.y;
+	cudaMemcpy(renderCam->image, cudaimage, imageSize*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
+
+	cudaThreadSynchronize();
+
+	checkCUDAError("Photon mapping kernel failed!");
+
 }
 #endif	
 
@@ -983,53 +1226,6 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
   int tileSize = 8;
   dim3 threadsPerBlock(tileSize, tileSize);
   dim3 fullBlocksPerGrid((int)ceil(float(renderCam->resolution.x)/float(tileSize)), (int)ceil(float(renderCam->resolution.y)/float(tileSize)));
-
-  //send image to GPU
-  glm::vec3* cudaimage = NULL;
-  cudaMalloc((void**)&cudaimage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3));
-  cudaMemcpy( cudaimage, renderCam->image, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyHostToDevice);
-
-  //package geometry and materials and sent to GPU
-  staticGeom* geomList = new staticGeom[numberOfGeoms];
-
-  //for storing the lights
-  std::vector<int> lightVector;			//for storing light's indices
-
-  for(int i=0; i<numberOfGeoms; i++){
-    staticGeom newStaticGeom;
-    newStaticGeom.type = geoms[i].type;
-    newStaticGeom.materialid = geoms[i].materialid;
-    newStaticGeom.translation = geoms[i].translations[frame];
-    newStaticGeom.rotation = geoms[i].rotations[frame];
-    newStaticGeom.scale = geoms[i].scales[frame];
-    newStaticGeom.transform = geoms[i].transforms[frame];
-    newStaticGeom.inverseTransform = geoms[i].inverseTransforms[frame];
-    geomList[i] = newStaticGeom;
-
-	//store the lights
-	if (materials[geoms[i].materialid].emittance > 0) {
-		lightVector.push_back(i);
-	}
-  }
-  
-  staticGeom* cudageoms = NULL;
-  cudaMalloc((void**)&cudageoms, numberOfGeoms*sizeof(staticGeom));
-  cudaMemcpy( cudageoms, geomList, numberOfGeoms*sizeof(staticGeom), cudaMemcpyHostToDevice);
-
-  //copy the lights vector to the gpu
-  int numLights = lightVector.size();
-
-  //copy lights over to int array
-  int* lightArray = new int[numLights];
-  for (int i = 0; i < numLights; ++i) {
-	  lightArray[i] = lightVector[i];
-  }
-
-  int* cudaLights = NULL;
-  cudaMalloc((void**)&cudaLights, numLights*sizeof(int));
-  cudaMemcpy( cudaLights, lightArray, numLights*sizeof(int), cudaMemcpyHostToDevice);
-  
-  delete[] lightArray;
 
   //package camera
   cameraData cam;
@@ -1105,29 +1301,6 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
   dim3 threadsPerBlock(tileSize, tileSize);
   dim3 fullBlocksPerGrid((int)ceil(float(renderCam->resolution.x)/float(tileSize)), (int)ceil(float(renderCam->resolution.y)/float(tileSize)));
 
-  //send image to GPU
-  glm::vec3* cudaimage = NULL;
-  cudaMalloc((void**)&cudaimage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3));
-  cudaMemcpy( cudaimage, renderCam->image, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyHostToDevice);
-  
-  //package geometry and materials and sent to GPU
-  staticGeom* geomList = new staticGeom[numberOfGeoms];
-  for(int i=0; i<numberOfGeoms; i++){
-    staticGeom newStaticGeom;
-    newStaticGeom.type = geoms[i].type;
-    newStaticGeom.materialid = geoms[i].materialid;
-    newStaticGeom.translation = geoms[i].translations[frame];
-    newStaticGeom.rotation = geoms[i].rotations[frame];
-    newStaticGeom.scale = geoms[i].scales[frame];
-    newStaticGeom.transform = geoms[i].transforms[frame];
-    newStaticGeom.inverseTransform = geoms[i].inverseTransforms[frame];
-    geomList[i] = newStaticGeom;
-  }
-  
-  staticGeom* cudageoms = NULL;
-  cudaMalloc((void**)&cudageoms, numberOfGeoms*sizeof(staticGeom));
-  cudaMemcpy( cudageoms, geomList, numberOfGeoms*sizeof(staticGeom), cudaMemcpyHostToDevice);
-  
   //package camera
   cameraData cam;
   cam.resolution = renderCam->resolution;
@@ -1144,11 +1317,6 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
   cam.aperture += liveCamera.aperture;
   cam.focusPlane += liveCamera.focusPlane;
 
-  //Transfer materials
-  material* cudamaterials = NULL;
-  cudaMalloc((void**)&cudamaterials, numberOfMaterials*sizeof(material));
-  cudaMemcpy( cudamaterials, materials, numberOfMaterials*sizeof(material), cudaMemcpyHostToDevice);
-
   //Create Memory for RayPool
   ray* cudarays = NULL;
   cudaMalloc((void**)&cudarays, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
@@ -1164,7 +1332,6 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
   //Fill ray pool with rays from camera for first iteration
   fillRayPoolFromCamera<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, traceDepth, cudaimage, cudageoms,
 																numberOfGeoms, cudarays);
-  
   int numberOfRays = (int)renderCam->resolution.x * (int)renderCam->resolution.y;
 
   //std::cout<<"StreamCompaction: ";
@@ -1207,11 +1374,7 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
 #endif
 
   //free up stuff, or else we'll leak memory like a madman
-  cudaFree( cudaimage );
-  cudaFree( cudageoms );
-  cudaFree( cudamaterials );
   cudaFree( cudarays );
-  delete geomList;
 #if COMPACTION
   cudaFree( cudarays2);
 #endif

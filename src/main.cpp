@@ -129,21 +129,10 @@ void runCuda(){
     iterations++;
     cudaGLMapBufferObject((void**)&dptr, pbo);
   
-    //pack geom and material arrays
-    geom* geoms = new geom[renderScene->objects.size()];
-    material* materials = new material[renderScene->materials.size()];
-    
-    for(int i=0; i<renderScene->objects.size(); i++){
-      geoms[i] = renderScene->objects[i];
-    }
-    for(int i=0; i<renderScene->materials.size(); i++){
-      materials[i] = renderScene->materials[i];
-    }
-    
-  
     // execute the kernel
-    cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera );
-    
+    //cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera);
+    cudaPhotonMapCore(renderCam, targetFrame, iterations, dptr);
+
     // unmap buffer object
     cudaGLUnmapBufferObject(pbo);
   }else{
@@ -411,6 +400,24 @@ void initCuda(){
 
   // Clean up on program exit
   atexit(cleanupCuda);
+  atexit(cudaFreeMemory);
+
+      //pack geom and material arrays
+    geoms = new geom[renderScene->objects.size()];
+    materials = new material[renderScene->materials.size()];
+    
+    for(int i=0; i<renderScene->objects.size(); i++){
+      geoms[i] = renderScene->objects[i];
+    }
+    for(int i=0; i<renderScene->materials.size(); i++){
+      materials[i] = renderScene->materials[i];
+    }
+
+	 //copy stuff to the gpu
+	cudaAllocateMemory(renderCam, materials, renderScene->materials.size(), geoms, renderScene->objects.size());
+
+	delete[] geoms;
+	delete[] materials;
 
   runCuda();
 }
