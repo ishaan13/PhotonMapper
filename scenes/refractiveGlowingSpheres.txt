@@ -181,7 +181,7 @@ EMITTANCE   3
 CAMERA
 RES         800 800
 FOVY        35
-ITERATIONS  250
+ITERATIONS  1
 FILE        SphereGlow.png
 frame 0
 EYE         0 5 12

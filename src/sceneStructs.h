@@ -32,7 +32,8 @@ struct ray {
 struct photon {
 	bool stored;			// Check if the current photon has been stored, i.e. do not bounce this photon further
 	glm::vec3 position;		// Position of photon
-	glm::vec3 direction;	// Incoming direction of photon (potentially use theta phi?)
+	glm::vec3 din;	// Incoming direction of photon (potentially use theta phi?)
+	glm::vec3 dout; // Outgoing direction
 	glm::vec3 color;		// I think this essentially stores flux as well. : change to spectral eventually?
 	unsigned short bounces;
 #if COMPACTION

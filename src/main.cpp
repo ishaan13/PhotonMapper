@@ -164,7 +164,8 @@ void runCuda(){
       cout << "Saved frame " << s << " to " << filename << endl;
       finishedRender = true;
       if(singleFrameMode==true){
-        cudaDeviceReset(); 
+        cudaDeviceReset();
+				system("pause");
         exit(0);
       }
     }

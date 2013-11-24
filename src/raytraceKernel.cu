@@ -41,6 +41,9 @@ int numBounces = 3;			//hard limit of 3 bounces for now
 photon* cudaPhotonPool;		//global variable of photons
 glm::vec3* cudaPhotonMapImage;
 
+#define DISPLAYMODE 0 //0 for scene, 1 for photons, 2 for both
+#define RADIUS 1
+
 #endif
 
 glm::vec3* accumulatorImage = NULL;
@@ -483,8 +486,7 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
    }
 }
 
-__global__ void fillRayPoolFromCamera(glm::vec2 resolution, float time, cameraData cam, int rayDepth, glm::vec3* colors,
-                            staticGeom* geoms, int numberOfGeoms, ray* rayPool){
+__global__ void fillRayPoolFromCamera(glm::vec2 resolution, float time, cameraData cam, ray* rayPool){
 
   int x = (blockIdx.x * blockDim.x) + threadIdx.x;
   int y = (blockIdx.y * blockDim.y) + threadIdx.y;
@@ -838,8 +840,9 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 
 		// Shooting direction is normal at the point or random direction?
 		// I think the lecture said choose random direction.
-		/* p.direction = normal; */
-		p.direction = calculateRandomDirectionInHemisphere(normal,randoms.y,randoms.z);
+		p.dout = normal;
+		p.din = -normal; // fake, used for brdf in gatherPhotons
+		//p.direction = calculateRandomDirectionInHemisphere(normal,randoms.y,randoms.z);
 		
 		// Set color of photon
 		material lightMaterial = materials[lightChosen.materialid];
@@ -976,8 +979,8 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int numBounces
 			
 			//create ray using photon
 			ray r;
-			r.origin = p.position + 0.1f*p.direction;		//offset point a little to avoid self intersection
-			r.direction = p.direction;
+			r.origin = p.position + 0.01f*p.dout;		//offset point a little to avoid self intersection
+			r.direction = p.dout;
 
 			//intersection testing
 			int intersectedGeom = -1;
@@ -1021,7 +1024,8 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int numBounces
 				//p.color = glm::vec3(1);
 				//assume diffuse surfaces only for now, so bounce in random direction
 				glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),index%37,index%377,index%23);
-				p.direction = calculateRandomDirectionInHemisphere(minNormal,randoms.y,randoms.z);
+				p.din = p.dout;
+				p.dout = calculateRandomDirectionInHemisphere(minNormal,randoms.y,randoms.z);
 				p.position = minIntersectionPoint;
 				
 			}
@@ -1039,15 +1043,77 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int numBounces
 
 }
 
-void tracePhotons(int photonThreadsPerBlock, int photonBlocksPerGrid, photon* cudaPhotonPool, int numPhotons, staticGeom* cudaGeoms, int numberOfGeoms, material* cudaMaterials, float time)
-{
-	// Convert to Russian Roulette
-	int numberOfBounces = 20;
+// Caculate radiances from photons
+__global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, glm::vec3* colors, staticGeom* geoms,
+                            int numberOfGeoms, ray* rayPool, photon* photons, int numStoredPhotons) {
 
-	for(int i=0; i < numberOfBounces; i++)
+	int x = (blockIdx.x * blockDim.x) + threadIdx.x;
+	int y = (blockIdx.y * blockDim.y) + threadIdx.y;
+	int index = x + (y * resolution.x);
+	if((x<=resolution.x && y<=resolution.y) && glm::length(rayPool[index].transmission) > FLOAT_EPSILON){
+		ray r = rayPool[index];	
+
+		//Check all geometry for intersection
+		int intersectedGeom = -1;
+		int intersectedMaterial = -1;
+		float minDepth = 1000000.0f;
+		glm::vec3 minIntersectionPoint;
+		glm::vec3 minNormal = glm::vec3(0.0f);
+		for(int iter=0; iter < numberOfGeoms; iter++)
+		{
+			float depth=-1;
+			glm::vec3 intersection;
+			glm::vec3 normal;
+			staticGeom currentGeometry = geoms[iter];
+			if(currentGeometry.type == CUBE)
+			{
+				depth = boxIntersectionTest(currentGeometry,r,intersection,normal);
+			}
+		
+			else if(geoms[iter].type == SPHERE)
+			{
+				depth = sphereIntersectionTest(currentGeometry,r,intersection,normal);
+			}
+		
+
+			if(depth > 0 && depth < minDepth)
+			{
+				minDepth = depth;
+				minIntersectionPoint = intersection;
+				minNormal = normal;
+				intersectedGeom = iter;
+				intersectedMaterial = currentGeometry.materialid;
+			}
+		}
+
+		//Calculate radiance if any geometry is intersected
+		if(intersectedGeom > -1)
+		{
+			glm::vec3 accumColor(0);
+			//Use brute force search to find the photons that are within a certain radius
+			for (int i=0; i<numStoredPhotons; ++i) {
+				photon p = photons[i];
+				if (glm::distance(minIntersectionPoint, p.position) <= RADIUS) {
+					//Is lambert brdf cos(theta_i)?
+					accumColor += glm::dot(minNormal, glm::normalize(-p.din)) * p.color;
+				}
+			}
+			colors[index] += glm::clamp(accumColor / (float)(PI_F*RADIUS*RADIUS), glm::vec3(0), glm::vec3(1));
+		}
+	}
+}
+
+
+void tracePhotons(int photonThreadsPerBlock, int photonBlocksPerGrid, photon* cudaPhotonPool,
+									int numPhotons, staticGeom* cudaGeoms, int numberOfGeoms, material* cudaMaterials,
+									float time)
+{
+	for(int i=0; i < numBounces; i++)
 	{
 		// Bounce Photons Around
-		//bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool,numPhotons,cudaGeoms,numberOfGeoms,cudaMaterials,time);
+		bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces,
+			cudageoms, numGeoms, cudamaterials, time);
+
 #if COMPACTION
 		// Do some compaction
 
@@ -1176,18 +1242,28 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int time, uchar4* PBOpos)
 	
 	emitPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, cudageoms, 
 																		   cudaLights, numLights, cudamaterials);
-	 
-	bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces,
-																			 cudageoms, numGeoms, cudamaterials, time);
 
 	// Trace all photons with all bounces
-	//tracePhotons(photonThreadsPerBlock, photonBlocksPerGrid, cudaPhotonPool, numPhotons, cudageoms, numGeoms, cudamaterials, time);
+	tracePhotons(photonThreadsPerBlock, photonBlocksPerGrid, cudaPhotonPool, numPhotons, cudageoms, numGeoms, cudamaterials, time);
+
+#if DISPLAYMODE != 1
+	// Compute radiance from photons
+	// Generate rays first
+  ray* cudarays = NULL;
+  cudaMalloc((void**)&cudarays, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
+	fillRayPoolFromCamera<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)time, cam, cudarays);
+
+	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)time, cam, cudaimage, cudageoms, numGeoms,
+		cudarays, cudaPhotonPool, numPhotons * numBounces);
+
+	cudaFree(cudarays);
+#endif
 
 	// Calculate Viewport * Projection * View matrix from camera info
 	glm::vec3 center = cam.position + cam.view;
 
 	glm::mat4 viewMat = glm::lookAt(cam.position, center, cam.up);
-	glm::mat4 projectionMat = glm::perspective(35.0f, 1.0f, 0.1f, 1000.0f);
+	glm::mat4 projectionMat = glm::perspective(cam.fov.y*2, cam.resolution.x/cam.resolution.y, 0.1f, 1000.0f);
 
 	cudaMat4 viewProjectionViewPort = utilityCore::glmMat4ToCudaMat4(projectionMat*viewMat);
 	
@@ -1197,7 +1273,11 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int time, uchar4* PBOpos)
 	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, resolution, 
 																			  cam, cudaPhotonMapImage, viewProjectionViewPort);
 
-	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaPhotonMapImage, (float)time); 
+#if DISPLAYMODE == 0
+	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaimage, (float)time);
+#else if DISPLAYMODE == 1
+	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaPhotonMapImage, (float)time);
+#endif
 
 	//retrive image from GPU
 	int imageSize = (int)resolution.x * (int) resolution.y;
@@ -1330,8 +1410,7 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
   clearImage<<<fullBlocksPerGrid,threadsPerBlock>>>(renderCam->resolution, cudaimage);
 
   //Fill ray pool with rays from camera for first iteration
-  fillRayPoolFromCamera<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, traceDepth, cudaimage, cudageoms,
-																numberOfGeoms, cudarays);
+  fillRayPoolFromCamera<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudarays);
   int numberOfRays = (int)renderCam->resolution.x * (int)renderCam->resolution.y;
 
   //std::cout<<"StreamCompaction: ";
