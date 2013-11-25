@@ -130,8 +130,8 @@ void runCuda(){
     cudaGLMapBufferObject((void**)&dptr, pbo);
   
     // execute the kernel
-    cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera);
-    //cudaPhotonMapCore(renderCam, targetFrame, iterations, dptr);
+    //cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera);
+    cudaPhotonMapCore(renderCam, targetFrame, iterations, dptr);
 
     // unmap buffer object
     cudaGLUnmapBufferObject(pbo);
@@ -165,7 +165,6 @@ void runCuda(){
       finishedRender = true;
       if(singleFrameMode==true){
         cudaDeviceReset();
-				system("pause");
         exit(0);
       }
     }

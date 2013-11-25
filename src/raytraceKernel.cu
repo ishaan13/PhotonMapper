@@ -36,13 +36,13 @@
 
 #if PHOTONMAP
 int numPhotons = 5000;
-int numBounces = 3;			//hard limit of 3 bounces for now
+int numBounces = 5;			//hard limit of 3 bounces for now
 
 photon* cudaPhotonPool;		//global variable of photons
 glm::vec3* cudaPhotonMapImage;
 
-#define DISPLAYMODE 0 //0 for scene, 1 for photons, 2 for both
-#define RADIUS 0.5
+#define DISPLAYMODE 1 //0 for scene, 1 for photons, 2 for both
+#define RADIUS 1
 
 #endif
 
@@ -145,14 +145,12 @@ __global__ void sendImageToPBO(uchar4* PBOpos, glm::vec2 resolution, glm::vec3* 
   
   if(x<=resolution.x && y<=resolution.y){
 
+		frames = 1.0f;
       glm::vec3 color;
-      //color.x = image[index].x*255.0 / frames;
-      //color.y = image[index].y*255.0 / frames;
-      //color.z = image[index].z*255.0 / frames;
+      color.x = image[index].x*255.0 / frames;
+      color.y = image[index].y*255.0 / frames;
+      color.z = image[index].z*255.0 / frames;
 
-	  color.x = image[index].x*255.0;
-      color.y = image[index].y*255.0;
-      color.z = image[index].z*255.0;
 
       if(color.x>255){
         color.x = 255;
@@ -812,7 +810,7 @@ int streamCompactRayPool(ray* inputRays, ray* outputRays, int size)
 // Create a helper function to call these functions
 
 //function for emitting photons from a sphere light
-__global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, staticGeom* geoms, int* lights, int numberOfLights, material* materials)
+__global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, staticGeom* geoms, int* lights, int numberOfLights, material* materials, float time)
 {
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 	if(index < numPhotons)
@@ -821,7 +819,7 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 		
 		// Do a random-check to choose a certain light: take into consideration area of lights
 		// Do a better random generation
-		glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),index%37,index%377,index%23);
+		glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),time,index,numberOfLights);
 		int lightIndex = randoms.x / (1.0f / numberOfLights);
 
 		staticGeom lightChosen = geoms[lights[lightIndex]];			//get the light using the index from the lights array
@@ -838,25 +836,11 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 
 			// Shooting direction is normal at the point or random direction?
 			// I think the lecture said choose random direction.
-			p.dout = normal;
-			p.din = -normal; // fake, used for brdf in gatherPhotons
-			//p.direction = calculateRandomDirectionInHemisphere(normal,randoms.y,randoms.z);
-		}
-		//else {
-		//	p.position = getRandomPointOnCube(lightChosen,index);
-		//}
-		
-		// Get center of sphere by transforming origin into world space.
-		glm::vec3 sphereCenter = multiplyMV(lightChosen.transform, glm::vec4(0.0,0.0,0.0,1.0));
-		
-		// Get normal at current point.
-		glm::vec3 normal = glm::normalize(p.position- sphereCenter);
 
-		// Shooting direction is normal at the point or random direction?
-		// I think the lecture said choose random direction.
-		p.dout = normal;
-		p.din = -normal; // fake, used for brdf in gatherPhotons
-		//p.direction = calculateRandomDirectionInHemisphere(normal,randoms.y,randoms.z);
+			p.din = -normal; // fake, used for brdf in gatherPhotons
+			p.dout = calculateRandomDirectionInHemisphere(normal,randoms.y,randoms.z);
+
+		}
 		
 		// Set color of photon
 		material lightMaterial = materials[lightChosen.materialid];
@@ -872,6 +856,7 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 		//set the rest of the photons in the array to not stored
 		for (int i = 1; i < numBounces; ++i) {
 			photon placeHolder;
+			placeHolder.color = glm::vec3(0.0f);
 			placeHolder.stored = false;
 			photonPool[numPhotons * i + index] = placeHolder;
 		}
@@ -892,7 +877,7 @@ __global__ void displayPhotons(photon* photonPool, int numPhotons, int numBounce
 			photon p = photonPool[numPhotons * i + index];
 
 			//only display color if photon is not dead at that position
-			if (!p.stored) {
+			if (p.stored) {
 				glm::vec3 photonToEye = cam.position - p.position;
 				
 				// Do this assuming view, projection and viewport matrices are provided
@@ -900,6 +885,7 @@ __global__ void displayPhotons(photon* photonPool, int numPhotons, int numBounce
 				
 				glm::vec4 screenPosition = multiplyMV_4(viewProjectionViewport, glm::vec4(p.position, 1.0f));
 
+				// Shift to viewport matrix
 				//transform to clip
 				screenPosition.x /= screenPosition.w;
 				screenPosition.y /= screenPosition.w;
@@ -922,46 +908,6 @@ __global__ void displayPhotons(photon* photonPool, int numPhotons, int numBounce
 			}
 
 		}
-
-		/*
-		Do this purely by calculation
-
-		// Create a ray for this
-		ray r;
-		r.direction = glm::normalize(photonToEye);
-		r.origin = p.position;
-
-		// Equation of plane is related to midpoint and view direction as normal
-		glm::vec3 view = cam.view;
-		glm::vec3 midPoint = cam.position + view;
-
-		// Intersect ray from photon to eye with this image plane
-		glm::vec3 screenPlanePoint;
-		planeIntersectionTest(midPoint,view,r,screenPlanePoint);
-
-		// Check whether the screen plane point is in the field of view
-		glm::vec3 axis_a = glm::cross(cam.view, cam.up);
-		glm::vec3 axis_b = glm::cross(axis_a, cam.view);
-		glm::vec3 viewPlaneX = axis_a * tan(PI_F * cam.fov.x/180.0f) * glm::length(cam.view)/glm::length(axis_a);
-		glm::vec3 viewPlaneY = axis_b * tan(PI_F * cam.fov.y/180.0f) * glm::length(cam.view)/glm::length(axis_b);
-
-		// Reverse engineer this equation to solve for x and y
-		
-		 // glm::vec3 screenPoint = midPoint +
-			//				(2.0f * (1.0f * x / (resolution.x-1)) - 1.0f) * viewPlaneX + 
-			//				(1.0f - 2.0f * (1.0f * y / (resolution.y-1))) * viewPlaneY;
-			//
-			//s = m + (2 (x/rx) - 1) * vx + (1 - 2(y/ry)) * vy
-			//s - m = (2 (x/rx) - 1) * vx + (1 - 2(y/ry)) * vy
-
-			//Potentially; construct a coordinate space with midpoint as origin, axisa and axisb being x and y, z being view.
-			//project (s - m) onto axisa and axisb ?
-		
-
-		glm::vec2 worldSpaceSpan = glm::vec2 ( glm::dot(viewPlaneX,axis_a), glm::dot(viewPlaneY,axis_b) );
-		glm::vec2 worldSpacePixelRes = 1.0f / (2.0f * worldSpaceSpan);
-		*/
-
 	}
 }
 
@@ -977,21 +923,23 @@ __global__ void testImage(glm::vec3* colors, glm::vec2 resolution) {
 
 }
 
-__global__ void bouncePhotons(photon* photonPool, int numPhotons, int numBounces, staticGeom* geoms, int numberOfGeoms, material* materials, float time)
+__global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBounces, staticGeom* geoms, int numberOfGeoms, material* materials, float time)
 {
 	//bounce photons around
 	int index = blockIdx.x * blockDim.x + threadIdx.x; 
 
 	if (index < numPhotons){
-	
+
+		int prevIndex = index;
+		if (currentBounces!=0)
+			prevIndex = index + (currentBounces-1) * numPhotons;
+
+		int nextIndex = index + currentBounces * numPhotons;
+
 		//load a photon from memory
-		photon p = photonPool[index];
+		photon p = photonPool[prevIndex];
 
-		//bounce it around until max bounce is reached
-
-		while (p.bounces < numBounces && !p.stored) {
-			
-			//create ray using photon
+		//create ray using photon
 			ray r;
 			r.origin = p.position + 0.01f*p.dout;		//offset point a little to avoid self intersection
 			r.direction = p.dout;
@@ -1034,26 +982,28 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int numBounces
 			if (intersectedGeom > -1) {
 
 				material m = materials[intersectedMaterial];
-				p.color *= m.color;
-				//p.color = glm::vec3(1);
+
 				//assume diffuse surfaces only for now, so bounce in random direction
-				glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),index%37,index%377,index%23);
+				p.color *= m.color;
+
+				glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),time,index,currentBounces+1);
 				p.din = p.dout;
+				p.stored = true;
 				p.dout = calculateRandomDirectionInHemisphere(minNormal,randoms.y,randoms.z);
 				p.position = minIntersectionPoint;
 				
 			}
 			else {
 				//kill the photon if it doesn't intersect with anything
-				p.stored = true;
-				
+				//When using stream compaction, need to figure if photon is stored or dead or (alive and kicking)
+				p.stored = false;
 			}
 
 			p.bounces ++;
 			//write new bounced photon into memory
-			photonPool[p.bounces*numPhotons+index] = p;
+			
+			photonPool[nextIndex] = p;
 		}
-	}
 
 }
 
@@ -1109,7 +1059,7 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 				photon p = photons[i];
 				if (glm::distance(minIntersectionPoint, p.position) <= RADIUS) {
 					//Is lambert brdf cos(theta_i)?
-					accumColor += abs(glm::dot(minNormal, p.din)) * p.color; //abs is a hack
+					accumColor += max(0.0f, glm::dot(minNormal, p.din)) * p.color;
 				}
 			}
 			colors[index] += glm::clamp(accumColor / (float)(PI_F*RADIUS*RADIUS), glm::vec3(0), glm::vec3(1));
@@ -1125,8 +1075,7 @@ void tracePhotons(int photonThreadsPerBlock, int photonBlocksPerGrid, photon* cu
 	for(int i=0; i < numBounces; i++)
 	{
 		// Bounce Photons Around
-		bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces,
-			cudageoms, numGeoms, cudamaterials, time);
+		bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, i,	cudageoms, numGeoms, cudamaterials, time);
 
 #if COMPACTION
 		// Do some compaction
@@ -1255,7 +1204,7 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int time, uchar4* PBOpos)
 	int photonBlocksPerGrid = ceil(numPhotons * 1.0f/photonThreadsPerBlock);
 	
 	emitPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, cudageoms, 
-																		   cudaLights, numLights, cudamaterials);
+																		   cudaLights, numLights, cudamaterials, time);
 
 	// Trace all photons with all bounces
 	tracePhotons(photonThreadsPerBlock, photonBlocksPerGrid, cudaPhotonPool, numPhotons, cudageoms, numGeoms, cudamaterials, time);
@@ -1267,12 +1216,11 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int time, uchar4* PBOpos)
   cudaMalloc((void**)&cudarays, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
 	fillRayPoolFromCamera<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)time, cam, cudarays);
 
-	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)time, cam, cudaimage, cudageoms, numGeoms,
+	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)time, cam, cudaPhotonMapImage, cudageoms, numGeoms,
 		cudarays, cudaPhotonPool, numPhotons * numBounces);
 
 	cudaFree(cudarays);
-#endif
-
+#else
 	// Calculate Viewport * Projection * View matrix from camera info
 	glm::vec3 center = cam.position + cam.view;
 
@@ -1285,13 +1233,10 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int time, uchar4* PBOpos)
 
 	// Display all photons in the photonImage buffer
 	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, resolution, 
-																			  cam, cudaPhotonMapImage, viewProjectionViewPort);
-
-#if DISPLAYMODE == 0
-	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaimage, (float)time);
-#else if DISPLAYMODE == 1
-	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaPhotonMapImage, (float)time);
+		cam, cudaPhotonMapImage, viewProjectionViewPort);
 #endif
+
+	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaPhotonMapImage, (float)time);
 
 	//retrive image from GPU
 	int imageSize = (int)resolution.x * (int) resolution.y;
