@@ -42,7 +42,7 @@ photon* cudaPhotonPool;		//global variable of photons
 glm::vec3* cudaPhotonMapImage;
 
 #define DISPLAYMODE 0 //0 for scene, 1 for photons, 2 for both
-#define RADIUS 1
+#define RADIUS 0.5
 
 #endif
 
@@ -830,7 +830,21 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 		if(lightChosen.type == SPHERE)
 		{
 			p.position = getRandomPointOnSphere(lightChosen,index);
+			// Get center of sphere by transforming origin into world space.
+			glm::vec3 sphereCenter = multiplyMV(lightChosen.transform, glm::vec4(0.0,0.0,0.0,1.0));
+		
+			// Get normal at current point.
+			glm::vec3 normal = glm::normalize(p.position- sphereCenter);
+
+			// Shooting direction is normal at the point or random direction?
+			// I think the lecture said choose random direction.
+			p.dout = normal;
+			p.din = -normal; // fake, used for brdf in gatherPhotons
+			//p.direction = calculateRandomDirectionInHemisphere(normal,randoms.y,randoms.z);
 		}
+		//else {
+		//	p.position = getRandomPointOnCube(lightChosen,index);
+		//}
 		
 		// Get center of sphere by transforming origin into world space.
 		glm::vec3 sphereCenter = multiplyMV(lightChosen.transform, glm::vec4(0.0,0.0,0.0,1.0));
@@ -1095,7 +1109,7 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 				photon p = photons[i];
 				if (glm::distance(minIntersectionPoint, p.position) <= RADIUS) {
 					//Is lambert brdf cos(theta_i)?
-					accumColor += glm::dot(minNormal, glm::normalize(-p.din)) * p.color;
+					accumColor += abs(glm::dot(minNormal, p.din)) * p.color; //abs is a hack
 				}
 			}
 			colors[index] += glm::clamp(accumColor / (float)(PI_F*RADIUS*RADIUS), glm::vec3(0), glm::vec3(1));
