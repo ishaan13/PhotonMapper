@@ -1,506 +1,546 @@
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_config.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\sal.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ConcurrencySal.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\vadefs.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\limits.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stddef.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\channel_descriptor.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\cuda_runtime_api.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\cuda_device_runtime_api.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\cuda_runtime_api.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\common_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\string.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\time.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\wtime.inl
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\time.inl
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\math_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\math.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdlib.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cmath
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\yvals.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xkeycheck.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\use_ansi.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\math.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xtgmath.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xtr1common
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cstdlib
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\cuda_surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\channel_descriptor.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\cuda_texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\channel_descriptor.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_11_atomic_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_12_atomic_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_13_double_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_20_atomic_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_32_atomic_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_35_atomic_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_32_atomic_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_20_intrinsics.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_30_intrinsics.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_32_intrinsics.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_35_intrinsics.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\sm_32_intrinsics.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\cuda_surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_fetch_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\cuda_texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_indirect_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_indirect_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_functions.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_launch_parameters.h
-c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\swprintf.inl
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\sceneStructs.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/glm.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\climits
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cfloat
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\float.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtwrn.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\limits
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ymath.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cwchar
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\wchar.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xstddef
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cstddef
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cstdio
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/setup.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/_detail.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\setup.hpp
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cassert
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\assert.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/type.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_half.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_half.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_detail.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_float.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_half.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\setup.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_int.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\setup.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_detail.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_gentype.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_size.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec1.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_gentype.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_float.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_int.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_size.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_swizzle_func.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec1.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec2.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_float.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_int.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_size.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec2.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec3.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_float.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_int.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_size.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec3.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec4.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_float.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_int.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_size.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec4.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x2.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_gentype.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x2.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x3.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x3.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x4.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x4.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x2.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x2.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x3.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x3.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x4.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x4.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x2.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x2.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x3.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x3.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x4.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x4.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_trigonometric.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_trigonometric.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_exponential.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_exponential.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_common.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_fixes.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_common.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_packing.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_packing.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_geometric.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_geometric.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_matrix.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_matrix.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_vector_relational.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_detail.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_vector_relational.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_integer.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_integer.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_noise.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_noise.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/_swizzle.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\cudaMat4.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/glm.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\string
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\iterator
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\istream
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ostream
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ios
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xlocnum
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\streambuf
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xiosbase
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xlocale
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cstring
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdexcept
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\exception
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\eh.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\malloc.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xstring
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xmemory0
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\new
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xutility
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\utility
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\iosfwd
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdbg.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\type_traits
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xrefwrap
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xatomic0.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\intrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\setjmp.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\immintrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\wmmintrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\nmmintrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\smmintrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\tmmintrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\pmmintrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\emmintrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xmmintrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\mmintrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ammintrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\mm3dnow.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\mmintrin.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\typeinfo
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xlocinfo
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xlocinfo.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ctype.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\locale.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xdebug
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xfacet
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\system_error
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cerrno
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\errno.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\share.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/glm.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/gtc/matrix_transform.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\gtc\../glm.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\gtc\matrix_transform.inl
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\utilities.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/glm.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\algorithm
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xmemory
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\sstream
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\vector
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\cudaMat4.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\raytraceKernel.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/config.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/simple_defines.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/compiler.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/host_system.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/device_system.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/host_device.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\host_defines.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/debug.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/compiler_fence.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/forceinline.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/hd_warning_disable.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/cstdint.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/discard_block_engine.h
-C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\iostream
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/random_core_access.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/discard_block_engine.inl
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/linear_congruential_engine.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/linear_congruential_engine_discard.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/mod.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/linear_congruential_engine.inl
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/linear_feedback_shift_engine.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/linear_feedback_shift_engine_wordmask.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/linear_feedback_shift_engine.inl
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/subtract_with_carry_engine.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/subtract_with_carry_engine.inl
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/xor_combine_engine.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/type_traits.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/type_traits/has_trivial_assign.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/xor_combine_engine_max.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/mpl/math.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/xor_combine_engine.inl
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/uniform_int_distribution.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/pair.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/pair.inl
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/swap.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/integer_traits.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/uniform_int_distribution.inl
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/uniform_real_distribution.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/uniform_real_distribution.inl
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/normal_distribution.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/normal_distribution_base.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/normal_distribution.inl
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\math_constants.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\sceneStructs.h
-C:/ProgramData/NVIDIA Corporation/CUDA Samples/v5.5/common/inc\helper_math.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\intersections.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\sceneStructs.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\cudaMat4.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/glm.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\utilities.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\interactions.h
-c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\intersections.h
-C:/ProgramData/NVIDIA Corporation/CUDA Samples/v5.5/common/inc\helper_math.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda_runtime.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_config.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\sal.h
+c:\program files (x86)\microsoft visual studio 10.0\vc\include\codeanalysis\sourceannotations.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\vadefs.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\limits.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stddef.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\channel_descriptor.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\cuda_runtime_api.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\cuda_runtime_api.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\common_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\string.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\time.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\wtime.inl
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\time.inl
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\math_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\math.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdlib.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cmath
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\yvals.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\use_ansi.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\math.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cstdlib
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\cuda_surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\channel_descriptor.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\cuda_texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\channel_descriptor.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\sm_11_atomic_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\sm_12_atomic_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\sm_13_double_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\sm_20_atomic_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\sm_20_intrinsics.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\sm_30_intrinsics.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\cuda_surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_fetch_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\builtin_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\driver_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\surface_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\cuda_texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\host_defines.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\texture_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\device_launch_parameters.h
+c:\program files\nvidia gpu computing toolkit\cuda\v4.2\include\vector_types.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\swprintf.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\sceneStructs.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\climits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cfloat
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\float.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtwrn.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\limits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\ymath.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cwchar
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\wchar.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xstddef
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cstddef
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cstdio
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/setup.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/_detail.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\setup.hpp
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cassert
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\assert.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/type.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_half.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_half.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_detail.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_half.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\setup.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\setup.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_detail.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec1.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle_func.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec1.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec2.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec2.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec3.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec3.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec4.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec4.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x2.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x2.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x3.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x3.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x4.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x4.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x2.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x2.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x3.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x3.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x4.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x4.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x2.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x2.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x3.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x3.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x4.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x4.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_trigonometric.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_trigonometric.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_exponential.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_exponential.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_common.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_fixes.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_common.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_packing.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_packing.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_geometric.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_geometric.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_matrix.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_matrix.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_vector_relational.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_detail.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_vector_relational.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_integer.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_integer.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_noise.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_noise.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/_swizzle.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\cudaMat4.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda_runtime.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda_runtime.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\string
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\istream
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\ostream
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\ios
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xlocnum
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\streambuf
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xiosbase
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xlocale
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cstring
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdexcept
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\exception
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\eh.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\malloc.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xstring
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xmemory
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\new
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\utility
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\iosfwd
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdbg.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\type_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xtr1common
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\typeinfo
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xlocinfo
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xlocinfo.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\ctype.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\locale.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xdebug
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\system_error
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cerrno
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\errno.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\share.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/gtc/matrix_transform.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\gtc\../glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\gtc\matrix_transform.inl
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\utilities.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\algorithm
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\memory
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\intrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\setjmp.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\immintrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\wmmintrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\nmmintrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\smmintrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\tmmintrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\pmmintrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\emmintrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xmmintrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\mmintrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\ammintrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\mm3dnow.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\mmintrin.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\iterator
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\sstream
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\vector
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfunctional
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\cudaMat4.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\raytraceKernel.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/config.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/config/config.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/config/simple_defines.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/config/compiler.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/config/device_backend.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/config/host_device.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\host_defines.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/config/debug.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/config/compiler_fence.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/cstdint.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/discard_block_engine.h
+c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\iostream
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/random_core_access.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/discard_block_engine.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/linear_congruential_engine.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/linear_congruential_engine_discard.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/mod.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/linear_congruential_engine.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/linear_feedback_shift_engine.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/linear_feedback_shift_engine_wordmask.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/linear_feedback_shift_engine.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/subtract_with_carry_engine.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/subtract_with_carry_engine.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/xor_combine_engine.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/type_traits.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/type_traits/has_trivial_assign.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/xor_combine_engine_max.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/mpl/math.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/xor_combine_engine.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/uniform_int_distribution.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/pair.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/pair.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/detail/integer_traits.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/uniform_int_distribution.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/uniform_real_distribution.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/uniform_real_distribution.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/normal_distribution.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\thrust/random/detail/normal_distribution.inl
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\sceneStructs.h
+C:/ProgramData/NVIDIA Corporation/NVIDIA GPU Computing SDK 4.2/C/common/inc\cutil_math.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v4.2\include\cuda_runtime.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\intersections.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\sceneStructs.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\cudaMat4.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\utilities.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\interactions.h
+c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\intersections.h
+C:/ProgramData/NVIDIA Corporation/NVIDIA GPU Computing SDK 4.2/C/common/inc\cutil_math.h

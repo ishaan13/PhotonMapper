@@ -36,12 +36,12 @@
 
 #if PHOTONMAP
 int numPhotons = 5000;
-int numBounces = 5;			//hard limit of 3 bounces for now
+int numBounces = 3;			//hard limit of 3 bounces for now
 
 photon* cudaPhotonPool;		//global variable of photons
 glm::vec3* cudaPhotonMapImage;
 
-#define DISPLAYMODE 1 //0 for scene, 1 for photons, 2 for both
+#define DISPLAYMODE 0 //0 for scene, 1 for photons, 2 for both
 #define RADIUS 1
 
 #endif
@@ -1178,8 +1178,14 @@ void cudaFreeMemory() {
 }
 
 
-void cudaPhotonMapCore(camera* renderCam, int frame, int time, uchar4* PBOpos)
+void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBOpos)
 {
+	if(iterations == 1)
+	{
+		// Allocate Accumulator Image
+		cudaAllocateAccumulatorImage(renderCam);
+	}
+
 	// Set up crucial magic
 	glm::vec2 resolution = renderCam->resolution;
 	int tileSize = 8;
@@ -1204,19 +1210,19 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int time, uchar4* PBOpos)
 	int photonBlocksPerGrid = ceil(numPhotons * 1.0f/photonThreadsPerBlock);
 	
 	emitPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, cudageoms, 
-																		   cudaLights, numLights, cudamaterials, time);
+																		   cudaLights, numLights, cudamaterials, iterations);
 
 	// Trace all photons with all bounces
-	tracePhotons(photonThreadsPerBlock, photonBlocksPerGrid, cudaPhotonPool, numPhotons, cudageoms, numGeoms, cudamaterials, time);
+	tracePhotons(photonThreadsPerBlock, photonBlocksPerGrid, cudaPhotonPool, numPhotons, cudageoms, numGeoms, cudamaterials, iterations);
 
 #if DISPLAYMODE != 1
 	// Compute radiance from photons
 	// Generate rays first
   ray* cudarays = NULL;
   cudaMalloc((void**)&cudarays, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
-	fillRayPoolFromCamera<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)time, cam, cudarays);
+	fillRayPoolFromCamera<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudarays);
 
-	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)time, cam, cudaPhotonMapImage, cudageoms, numGeoms,
+	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms,
 		cudarays, cudaPhotonPool, numPhotons * numBounces);
 
 	cudaFree(cudarays);
@@ -1236,7 +1242,7 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int time, uchar4* PBOpos)
 		cam, cudaPhotonMapImage, viewProjectionViewPort);
 #endif
 
-	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaPhotonMapImage, (float)time);
+	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaPhotonMapImage, (float)iterations);
 
 	//retrive image from GPU
 	int imageSize = (int)resolution.x * (int) resolution.y;
@@ -1249,79 +1255,6 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int time, uchar4* PBOpos)
 }
 #endif	
 
-/*
-// Wrapper for the __global__ call that sets up the kernel calls and does a ton of memory management
-void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iterations, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms, cameraData liveCamera){
-
-  if(iterations == 1)
-  {
-    // Allocate Accumulator Image
-    cudaAllocateAccumulatorImage(renderCam);
-  }
-
-  int traceDepth = 1; //determines how many bounces the raytracer traces
-
-  // set up crucial magic
-  int tileSize = 8;
-  dim3 threadsPerBlock(tileSize, tileSize);
-  dim3 fullBlocksPerGrid((int)ceil(float(renderCam->resolution.x)/float(tileSize)), (int)ceil(float(renderCam->resolution.y)/float(tileSize)));
-
-  //package camera
-  cameraData cam;
-  cam.resolution = renderCam->resolution;
-  cam.position = renderCam->positions[frame];
-  cam.view = renderCam->views[frame];
-  cam.up = renderCam->ups[frame];
-  cam.aperture = renderCam->apertures[frame];
-  cam.focusPlane = renderCam->focusPlanes[frame];
-  cam.fov = renderCam->fov;
-
-  //user interaction
-  cam.position +=  (liveCamera.position);
-  cam.view = glm::normalize(cam.view + liveCamera.view);
-  cam.aperture += liveCamera.aperture;
-  cam.focusPlane += liveCamera.focusPlane;
-
-  //Transfer materials
-  material* cudamaterials = NULL;
-  cudaMalloc((void**)&cudamaterials, numberOfMaterials*sizeof(material));
-  cudaMemcpy( cudamaterials, materials, numberOfMaterials*sizeof(material), cudaMemcpyHostToDevice);
-
-  //clear On screen buffer
-    combineIntoAccumulatorImage<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cudaimage, accumulatorImage);
-  sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, accumulatorImage, (float)iterations);
-  //clearImage<<<fullBlocksPerGrid,threadsPerBlock>>>(renderCam->resolution, cudaimage);
-
-
-  //-----------------------------------BASIC LINEAR PHOTON MAP-------------------------------------//
-  initPhotonMap();			//shouldn't actually have to do this every iteration
-
-  //emit photons
-  //emitPhotons<<<fullBlocksPerGrid, threadsPerBlock>>>(cudaPhotonPool, numPhotons, cudageoms, cudaLights, numLights, cudamaterials, numberOfMaterials);
-
-	
-  cleanPhotonMap();
-  //-----------------------------------END PHOTON MAP-------------------------------------//
-
-  sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, cudaimage);
-
-  //retrieve image from GPU for sending to bmp file
-	cudaMemcpy( renderCam->image, cudaimage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
-
-  //free up stuff, or else we'll leak memory like a madman
-  cudaFree( cudaimage );
-  cudaFree( cudageoms );
-  cudaFree( cudamaterials );
-  delete geomList;
-
-  // make certain the kernel has completed
-  cudaThreadSynchronize();
-
-  checkCUDAError("Kernel failed!");
-} */
-
-
-// Wrapper for the __global__ call that sets up the kernel calls and does a ton of memory management
 void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iterations, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms, cameraData liveCamera){
 
   // testing 
