@@ -35,13 +35,13 @@
 #endif
 
 #if PHOTONMAP
-int numPhotons = 5000;
-int numBounces = 3;			//hard limit of 3 bounces for now
+int numPhotons = 50000;
+int numBounces = 10;			//hard limit of 3 bounces for now
 
 photon* cudaPhotonPool;		//global variable of photons
 glm::vec3* cudaPhotonMapImage;
 
-#define DISPLAYMODE 0 //0 for scene, 1 for photons, 2 for both
+#define DISPLAYMODE 1 //0 for scene, 1 for photons, 2 for both
 #define RADIUS 1
 
 #endif
@@ -145,7 +145,7 @@ __global__ void sendImageToPBO(uchar4* PBOpos, glm::vec2 resolution, glm::vec3* 
   
   if(x<=resolution.x && y<=resolution.y){
 
-		frames = 1.0f;
+		//frames = 1.0f;
       glm::vec3 color;
       color.x = image[index].x*255.0 / frames;
       color.y = image[index].y*255.0 / frames;
@@ -895,7 +895,7 @@ __global__ void displayPhotons(photon* photonPool, int numPhotons, int numBounce
 				screenPosition.x = (screenPosition.x+1) * resolution.x/2.0f;
 				screenPosition.y = (-screenPosition.y+1) * resolution.y/2.0f;
 
-				if(screenPosition.x >=0 && screenPosition.x <= resolution.x && screenPosition.y >=0 && screenPosition.y <= resolution.y)
+				if(screenPosition.x >=0 && screenPosition.x < resolution.x && screenPosition.y >=0 && screenPosition.y < resolution.y)
 				{
 					// write to the color buffer!
 					// race conditions?
@@ -1151,12 +1151,15 @@ void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMate
 	cudaMemcpy( cudaLights, lightID, numLights*sizeof(int), cudaMemcpyHostToDevice);
 
 #if PHOTONMAP
+	std::cout<<"allocating mem for photon pool"<<std::endl;
 	cudaPhotonPool = NULL;
 	cudaMalloc((void**)&cudaPhotonPool, numBounces * numPhotons * sizeof(photon));
 
 	cudaPhotonMapImage = NULL;
 	cudaMalloc((void**)&cudaPhotonMapImage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3));
 #endif
+
+	cudaAllocateAccumulatorImage(renderCam);
 
 	delete[] geomList;
 	delete[] lightID;
@@ -1175,16 +1178,18 @@ void cudaFreeMemory() {
 	cudaFree(cudaPhotonMapImage);
 #endif
 
+	cudaFreeAccumulatorImage();
+
 }
 
 
 void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBOpos)
 {
-	if(iterations == 1)
-	{
-		// Allocate Accumulator Image
-		cudaAllocateAccumulatorImage(renderCam);
-	}
+	//if(iterations == 0)
+	//{
+	//	// Allocate Accumulator Image
+	//	cudaAllocateAccumulatorImage(renderCam);
+	//}
 
 	// Set up crucial magic
 	glm::vec2 resolution = renderCam->resolution;
@@ -1204,6 +1209,8 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 
 	// Clear photon image buffer
 	clearImage<<<pixelBlocksPerGrid,pixelThreadsPerBlock>>>(resolution, cudaPhotonMapImage);
+	cudaThreadSynchronize();
+	checkCUDAError("clearImage kernel failed!");
 
 	// Generate Photon List
 	int photonThreadsPerBlock = 512;
@@ -1211,9 +1218,13 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	
 	emitPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, cudageoms, 
 																		   cudaLights, numLights, cudamaterials, iterations);
+	cudaThreadSynchronize();
+	checkCUDAError("emit photons kernel failed!");
 
 	// Trace all photons with all bounces
 	tracePhotons(photonThreadsPerBlock, photonBlocksPerGrid, cudaPhotonPool, numPhotons, cudageoms, numGeoms, cudamaterials, iterations);
+	cudaThreadSynchronize();
+	checkCUDAError("tracePhotons kernel failed!");
 
 #if DISPLAYMODE != 1
 	// Compute radiance from photons
@@ -1221,11 +1232,18 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
   ray* cudarays = NULL;
   cudaMalloc((void**)&cudarays, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
 	fillRayPoolFromCamera<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudarays);
+	cudaThreadSynchronize();
+	checkCUDAError("fill ray pool kernel failed!");
 
 	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms,
 		cudarays, cudaPhotonPool, numPhotons * numBounces);
+	cudaThreadSynchronize();
+	checkCUDAError("gather photonskernel failed!");
 
 	cudaFree(cudarays);
+	cudaThreadSynchronize();
+	checkCUDAError("free ray pool failed!");
+
 #else
 	// Calculate Viewport * Projection * View matrix from camera info
 	glm::vec3 center = cam.position + cam.view;
@@ -1240,16 +1258,20 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	// Display all photons in the photonImage buffer
 	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, resolution, 
 		cam, cudaPhotonMapImage, viewProjectionViewPort);
+	cudaThreadSynchronize();
+	checkCUDAError("display photons kernel failed!");
 #endif
 
-	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaPhotonMapImage, (float)iterations);
+	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaPhotonMapImage, 1.0f); 
+	// Not really accumulating right now so not this: (float)iterations);
+	cudaThreadSynchronize();
+	checkCUDAError("Send to PBO kernel failed!");
 
 	//retrive image from GPU
 	int imageSize = (int)resolution.x * (int) resolution.y;
-	cudaMemcpy(renderCam->image, cudaimage, imageSize*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
+	cudaMemcpy(renderCam->image, cudaPhotonMapImage, imageSize*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
 
 	cudaThreadSynchronize();
-
 	checkCUDAError("Photon mapping kernel failed!");
 
 }
@@ -1260,11 +1282,11 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
   // testing 
   //streamCompact();
 
-  if(iterations == 1)
-  {
-    // Allocate Accumulator Image
-    cudaAllocateAccumulatorImage(renderCam);
-  }
+  //if(iterations == 0)
+  //{
+  //  // Allocate Accumulator Image
+  //  cudaAllocateAccumulatorImage(renderCam);
+  //}
 
   int traceDepth = 1; //determines how many bounces the raytracer traces
 
@@ -1333,7 +1355,7 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
   combineIntoAccumulatorImage<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cudaimage, accumulatorImage);
   sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, accumulatorImage, (float)iterations);
 #else
-  sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, cudaimage);
+  sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, cudaimage, 1.0f);
 #endif
 
   //retrieve image from GPU for sending to bmp file

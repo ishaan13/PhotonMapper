@@ -98,9 +98,6 @@ int main(int argc, char** argv){
 	  glutMainLoop();
   #endif
 
-  // Free AccumulatorImage
-  cudaFreeAccumulatorImage();
-
   return 0;
 }
 
@@ -130,8 +127,8 @@ void runCuda(){
     cudaGLMapBufferObject((void**)&dptr, pbo);
   
     // execute the kernel
-    //cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera);
-    cudaPhotonMapCore(renderCam, targetFrame, iterations, dptr);
+   //cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera);
+   cudaPhotonMapCore(renderCam, targetFrame, iterations, dptr);
 
     // unmap buffer object
     cudaGLUnmapBufferObject(pbo);
