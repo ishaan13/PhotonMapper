@@ -128,7 +128,7 @@ void runCuda(){
   
     // execute the kernel
    //cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera);
-   cudaPhotonMapCore(renderCam, targetFrame, iterations, dptr);
+   cudaPhotonMapCore(renderCam, targetFrame, iterations, dptr, liveCamera);
 
     // unmap buffer object
     cudaGLUnmapBufferObject(pbo);

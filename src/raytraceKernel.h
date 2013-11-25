@@ -32,7 +32,7 @@ void cudaRaytraceCore(uchar4* pos, camera* renderCam, int frame, int iterations,
 
 #if PHOTONMAP
 //photon mapping
-void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBOPos);
+void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBOPos, cameraData liveCamera);
 
 //for allocating and deallocating memory
 void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms);
