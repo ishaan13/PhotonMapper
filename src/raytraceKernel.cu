@@ -35,8 +35,8 @@
 #endif
 
 #if PHOTONMAP
-int numPhotons = 50000;
-int numBounces = 10;			//hard limit of 3 bounces for now
+int numPhotons = 5000;
+int numBounces = 3;		//hard limit of 3 bounces for now
 
 photon* cudaPhotonPool;		//global variable of photons
 glm::vec3* cudaPhotonMapImage;
@@ -1151,7 +1151,7 @@ void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMate
 	cudaMemcpy( cudaLights, lightID, numLights*sizeof(int), cudaMemcpyHostToDevice);
 
 #if PHOTONMAP
-	std::cout<<"allocating mem for photon pool"<<std::endl;
+	//std::cout<<"allocating mem for photon pool"<<std::endl;
 	cudaPhotonPool = NULL;
 	cudaMalloc((void**)&cudaPhotonPool, numBounces * numPhotons * sizeof(photon));
 
