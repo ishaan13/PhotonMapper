@@ -991,6 +991,71 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 				p.stored = true;
 				p.dout = calculateRandomDirectionInHemisphere(minNormal,randoms.y,randoms.z);
 				p.position = minIntersectionPoint;
+
+				AbsorptionAndScatteringProperties absScatProps;
+				glm::vec3 colorSend, unabsorbedColor;
+				ray returnRay;
+				returnRay.direction = p.din;
+				returnRay.direction = p.position;
+				int rayPropogation = calculateBSDF(returnRay,minIntersectionPoint,minNormal,p.color,absScatProps,colorSend,unabsorbedColor,m);
+
+				// Reflection; calculate transmission coeffiecient
+				if(rayPropogation == 1)
+				{
+					p.dout = returnRay.direction;
+					p.color = p.color * m.hasReflective;
+					// Should we be doing this? since at gather step we never really lookup photons from this
+					// p.stored= false;
+				}
+				//else
+				//	p.color = glm::vec3(0.0f);
+				/*
+				// Refraction; calculate transmission coeffiecient
+				else if (rayPropogation == 2)
+				{
+					returnRay.transmission = r.transmission * diffuseColor * m.hasRefractive;
+
+
+#if FRESNEL
+					// Fresnel Calculation
+
+					// Fabs because the angle is always between 0 and 90, direction not-withstanding
+					float nd = fabs(glm::dot(r.direction, minNormal));
+					float nt = fabs(glm::dot(returnRay.direction, minNormal));
+					float n_a = nd < 0 ? 1.0f : m.indexOfRefraction;
+					float n_b = nd < 0 ? m.indexOfRefraction : 1.0f;
+					float amountReflected;
+
+#if SCHLICK
+					// Schlick's Approximation
+
+					float RO = (n_a - n_b) * (n_a - n_b) / ( (n_a + n_b) * (n_a + n_b));
+					float c;
+					if(n_a < n_b)
+						c = 1 - nd;
+					else
+						c = 1 - nt;
+
+					amountReflected = RO + (1-RO) * c * c * c * c * c;
+
+#else
+					// Fresnels equations
+					float reflectedParallel = (n_b * nd - n_a * nt) * (n_b * nd - n_a * nt) / ((n_b * nd + n_a * nt) * (n_b * nd + n_a * nt));
+					float reflectedPerpendicular = (n_a * nd - n_b * nt) * (n_a * nd - n_b * nt) / ((n_a * nd + n_b * nt) * (n_a * nd + n_b * nt));
+					amountReflected = 0.5 * (reflectedParallel + reflectedPerpendicular);
+#endif
+					// Stochastically decide whether to reflect or refract
+					glm::vec3 randVector = generateRandomNumberFromThread(resolution,time * (rayDepth+1),x,y);
+
+					// If a uniform variable is less than the reflected amount, this ray shall be reflected
+					if(randVector.y  < amountReflected)
+					{
+						returnRay.direction = r.direction - 2.0f * minNormal  * glm::dot(minNormal,r.direction);
+						returnRay.origin = minIntersectionPoint + NUDGE * returnRay.direction;
+					}
+#endif
+
+				}*/
 				
 			}
 			else {
@@ -1183,13 +1248,8 @@ void cudaFreeMemory() {
 }
 
 
-void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBOpos)
+void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBOpos, cameraData liveCamera)
 {
-	//if(iterations == 0)
-	//{
-	//	// Allocate Accumulator Image
-	//	cudaAllocateAccumulatorImage(renderCam);
-	//}
 
 	// Set up crucial magic
 	glm::vec2 resolution = renderCam->resolution;
@@ -1206,6 +1266,12 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	cam.fov = renderCam->fov;
 	cam.focusPlane = renderCam->focusPlanes[frame];
 	cam.aperture = renderCam->apertures[frame];
+
+	//user interaction
+	cam.position +=  (liveCamera.position);
+	cam.view = glm::normalize(cam.view + liveCamera.view);
+	cam.aperture += liveCamera.aperture;
+	cam.focusPlane += liveCamera.focusPlane;
 
 	// Clear photon image buffer
 	clearImage<<<pixelBlocksPerGrid,pixelThreadsPerBlock>>>(resolution, cudaPhotonMapImage);
