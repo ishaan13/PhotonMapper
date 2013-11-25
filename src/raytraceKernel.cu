@@ -35,7 +35,7 @@
 #endif
 
 #if PHOTONMAP
-int numPhotons = 5000;
+int numPhotons = 1000;
 
 int numBounces = 5;			//hard limit of 3 bounces for now
 float totalEnergy = 80;			//total amount of energy in the scene, used for calculating flux per photon
@@ -820,9 +820,11 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 		// Do a random-check to choose a certain light: take into consideration area of lights
 		// Do a better random generation
 		glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),time,index,numberOfLights);
-		int lightIndex = randoms.x / (1.0f / numberOfLights);
+		// Adding an epsilon to make sure we don't index out of bounds if r.x = 1
+		int lightIndex = randoms.x / (FLOAT_EPSILON + 1.0f / numberOfLights);
 
 		staticGeom lightChosen = geoms[lights[lightIndex]];			//get the light using the index from the lights array
+
 
 		// Right now only support sphere
 		if(lightChosen.type == SPHERE)
@@ -990,21 +992,21 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 				p.dout = calculateRandomDirectionInHemisphere(minNormal,randoms.y,randoms.z);
 				p.position = minIntersectionPoint;
 
-				AbsorptionAndScatteringProperties absScatProps;
+	/*			AbsorptionAndScatteringProperties absScatProps;
 				glm::vec3 colorSend, unabsorbedColor;
 				ray returnRay;
 				returnRay.direction = p.din;
 				returnRay.direction = p.position;
-				int rayPropogation = calculateBSDF(returnRay,minIntersectionPoint,minNormal,p.color,absScatProps,colorSend,unabsorbedColor,m);
+				int rayPropogation = calculateBSDF(returnRay,minIntersectionPoint,minNormal,p.color,absScatProps,colorSend,unabsorbedColor,m);*/
 
-				// Reflection; calculate transmission coeffiecient
-				if(rayPropogation == 1)
-				{
-					p.dout = returnRay.direction;
-					p.color = p.color * m.hasReflective;
-					// Should we be doing this? since at gather step we never really lookup photons from this
-					// p.stored= false;
-				}
+				//// Reflection; calculate transmission coeffiecient
+				//if(rayPropogation == 1)
+				//{
+				//	p.dout = returnRay.direction;
+				//	p.color = p.color * m.hasReflective;
+				//	// Should we be doing this? since at gather step we never really lookup photons from this
+				//	// p.stored= false;
+				//}
 				//else
 				//	p.color = glm::vec3(0.0f);
 				/*
@@ -1072,6 +1074,13 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 
 }
 
+#define oneOverSqrtTwoPi 0.3989422804f
+__device__ float gaussianWeight( float dx, float radius)
+{
+	float sigma = radius*2.0;
+	return (oneOverSqrtTwoPi / sigma) * exp( - (dx*dx) / (2.0 * sigma * sigma) );
+}
+
 // Caculate radiances from photons
 __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, glm::vec3* colors, staticGeom* geoms,
 															int numberOfGeoms, ray* rayPool, photon* photons, int numPhotons, int numBounces, float flux) {
@@ -1090,8 +1099,6 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 		glm::vec3 minNormal = glm::vec3(0.0f);
 		for(int iter=0; iter < numberOfGeoms; iter++)
 		{
-			if (iter != 8) //hack, make light invisible before we decide what to do with it
-			{
 				float depth=-1;
 				glm::vec3 intersection;
 				glm::vec3 normal;
@@ -1115,7 +1122,7 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 					intersectedGeom = iter;
 					intersectedMaterial = currentGeometry.materialid;
 				}
-			}
+
 		}
 
 		//Calculate radiance if any geometry is intersected
@@ -1125,12 +1132,13 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 			//Use brute force search to find the photons that are within a certain radius
 			for (int i=0; i<numPhotons * numBounces; ++i) {
 				photon p = photons[i];
-				if (glm::distance(minIntersectionPoint, p.position) <= RADIUS && p.geomid == intersectedGeom) {
+				float photonDistance  = glm::distance(minIntersectionPoint, p.position);
+				if ( photonDistance <= RADIUS && p.geomid == intersectedGeom && p.bounces > 1) {
 					//Is lambert brdf cos(theta_i)?
-					accumColor += max(0.0f, glm::dot(minNormal, -p.din)) * p.color;
+					accumColor += gaussianWeight(photonDistance, RADIUS) *  max(0.0f, glm::dot(minNormal, -p.din)) * p.color;
 				}
 			}
-			colors[index] += glm::clamp(accumColor * flux / (float)(PI_F*RADIUS*RADIUS), glm::vec3(0), glm::vec3(1));
+			colors[index] += accumColor * flux;
 		}
 	}
 }
@@ -1335,6 +1343,7 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	iterations = 1; //not accumulating color in photon map mode
 #endif
 
+	iterations = 1;
 	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaPhotonMapImage, (float)iterations); 
 	cudaThreadSynchronize();
 	checkCUDAError("Send to PBO kernel failed!");
