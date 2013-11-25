@@ -246,9 +246,9 @@ C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\swprintf.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\sceneStructs.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\sceneStructs.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/glm.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\climits
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cfloat
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\float.h
@@ -263,112 +263,112 @@ C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xstddef
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cstddef
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cstdio
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/setup.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/_detail.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\setup.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/setup.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/_detail.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\setup.hpp
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cassert
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\assert.h
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/type.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_half.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_half.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_detail.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_float.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_half.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\setup.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_int.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\setup.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_detail.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_gentype.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_size.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec1.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_gentype.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_float.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_int.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_size.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_swizzle_func.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec1.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec2.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_float.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_int.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_size.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec2.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec3.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_float.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_int.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_size.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec3.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec4.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_float.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_int.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_size.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec4.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x2.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_gentype.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x2.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x3.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x3.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x4.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x4.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x2.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x2.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x3.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x3.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x4.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x4.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x2.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x2.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x3.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x3.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x4.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x4.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_trigonometric.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_trigonometric.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_exponential.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_exponential.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_common.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_fixes.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_common.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_packing.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_packing.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_geometric.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_geometric.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_matrix.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_matrix.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_vector_relational.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_detail.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_vector_relational.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_integer.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_integer.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_noise.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_noise.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/_swizzle.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\cudaMat4.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/type.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_half.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_half.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_detail.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_float.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_half.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\setup.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_int.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\setup.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_detail.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_size.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec1.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_float.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_int.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_size.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_swizzle_func.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec1.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec2.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_float.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_int.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_size.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec2.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec3.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_float.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_int.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_size.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec3.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec4.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_float.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_int.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_size.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_vec4.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x2.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x2.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x3.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x3.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x4.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat2x4.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x2.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x2.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x3.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x3.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x4.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat3x4.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x2.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x2.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x3.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x3.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x4.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\type_mat4x4.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_trigonometric.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_trigonometric.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_exponential.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_exponential.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_common.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_fixes.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_common.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_packing.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_packing.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_geometric.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_geometric.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_matrix.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_matrix.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_vector_relational.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_detail.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_vector_relational.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_integer.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_integer.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/func_noise.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core\func_noise.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\./core/_swizzle.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\cudaMat4.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/glm.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\string
@@ -430,21 +430,21 @@ C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cerrno
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\errno.h
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\share.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm/gtc/matrix_transform.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\gtc\../glm.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\gtc\matrix_transform.inl
-c:\users\hms\desktop\ziagpu\photonmapper\src\utilities.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/glm.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/gtc/matrix_transform.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\gtc\../glm.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\gtc\matrix_transform.inl
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\utilities.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/glm.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\algorithm
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xmemory
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\sstream
 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\vector
-c:\users\hms\desktop\ziagpu\photonmapper\src\cudaMat4.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\raytraceKernel.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\cudaMat4.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\raytraceKernel.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/config.h
@@ -492,15 +492,15 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/de
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/normal_distribution.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\math_constants.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\sceneStructs.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\sceneStructs.h
 C:/ProgramData/NVIDIA Corporation/CUDA Samples/v5.5/common/inc\helper_math.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\intersections.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\sceneStructs.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\cudaMat4.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
-c:\users\hms\desktop\ziagpu\photonmapper\src\utilities.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\interactions.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\intersections.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\intersections.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\sceneStructs.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\cudaMat4.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm/glm.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\glm\core/_fixes.hpp
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\utilities.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\interactions.h
+c:\users\lucy\documents\school\2013fall\cis565\photonmapper\src\intersections.h
 C:/ProgramData/NVIDIA Corporation/CUDA Samples/v5.5/common/inc\helper_math.h
