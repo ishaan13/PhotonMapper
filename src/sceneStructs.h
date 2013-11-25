@@ -36,6 +36,7 @@ struct photon {
 	glm::vec3 dout; // Outgoing direction
 	glm::vec3 color;		// I think this essentially stores flux as well. : change to spectral eventually?
 	unsigned short bounces;
+	short geomid; // Which surface the photon is on, -1 means no intersection
 #if COMPACTION
 	int originalIndex;		// If using stream compaction
 #endif
