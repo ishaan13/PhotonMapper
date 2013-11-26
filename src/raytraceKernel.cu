@@ -45,7 +45,7 @@ enum {
 
 
 #if PHOTONMAP
-int numPhotons = 10000;
+int numPhotons = 100;
 
 int numBounces = 5;			//hard limit of 3 bounces for now
 float totalEnergy = 80;			//total amount of energy in the scene, used for calculating flux per photon
@@ -54,7 +54,7 @@ float totalEnergy = 80;			//total amount of energy in the scene, used for calcul
 photon* cudaPhotonPool;		//global variable of photons
 glm::vec3* cudaPhotonMapImage;
 
-#define RADIUS 1.5
+#define RADIUS 1
 
 #endif
 
@@ -855,6 +855,7 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 		if(lightChosen.type == SPHERE)
 		{
 			getRandomPointAndNormalOnSphere(lightChosen,index, position, normal);
+
 		}
 		else if (lightChosen.type == CUBE)
 		{
@@ -884,7 +885,7 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 			photon placeHolder;
 			placeHolder.color = glm::vec3(0.0f);
 			placeHolder.stored = false;
-			placeHolder.bounces = -1;
+			//placeHolder.bounces = -1;
 			photonPool[numPhotons * i + index] = placeHolder;
 		}
 	}
@@ -1164,7 +1165,7 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 				photon p = photons[i];
 				float photonDistance  = glm::distance(minIntersectionPoint, p.position);
 				// Indirect Illumination only?
-				if ( photonDistance <= RADIUS && p.geomid == intersectedGeom && p.bounces > 0) {
+				if ( photonDistance <= RADIUS && p.geomid == intersectedGeom && p.bounces > 1) {
 					//Is lambert brdf cos(theta_i)?
 					accumColor += gaussianWeight(photonDistance, RADIUS) *  max(0.0f, glm::dot(minNormal, -p.din)) * p.color;
 				}

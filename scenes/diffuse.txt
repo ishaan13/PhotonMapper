@@ -97,7 +97,7 @@ EMITTANCE   5
 CAMERA
 RES         800 800
 FOVY        35
-ITERATIONS  10
+ITERATIONS  1000
 FILE        photon_diffuse.png
 frame 0
 EYE         0 5 12

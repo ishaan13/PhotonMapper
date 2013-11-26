@@ -373,10 +373,14 @@ __host__ __device__ void getRandomPointAndNormalOnCube(staticGeom cube, float ra
         point = glm::vec3((float)u02(rng), -.5, (float)u02(rng));
     }
     
-		normal = getNormalOfPointOnUnitCube(point);
+	normal = getNormalOfPointOnUnitCube(point);
+
+	glm::vec3 extendedPoint = point + normal;
 
     point = multiplyMV(cube.transform, glm::vec4(point,1.0f));
-		normal = multiplyMV(cube.transform, glm::vec4(normal,0.0f));
+	extendedPoint = multiplyMV(cube.transform, glm::vec4(extendedPoint,1.0f));
+
+	normal = glm::normalize(extendedPoint - point);
 }
 
 //TODO: IMPLEMENT THIS FUNCTION
@@ -420,10 +424,11 @@ __host__ __device__ void getRandomPointAndNormalOnSphere(staticGeom sphere, floa
 	float radius = 0.5f;
 
 	point = glm::vec3( radius * cos(theta) * sin(phi), radius * sin(theta) * sin(phi), radius * cos(phi));
-	normal = point;
-
+	
 	point = multiplyMV(sphere.transform, glm::vec4(point,1.0f));
-	normal = multiplyMV(sphere.transform, glm::vec4(point,0.0f));
+	glm::vec3 centerViewSpace = multiplyMV(sphere.transform, glm::vec4(0.0f,0.0f,0.0f,1.0f));
+
+	normal = glm::normalize(point - centerViewSpace);
 }
 
 #endif
