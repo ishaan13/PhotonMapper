@@ -19,7 +19,8 @@ __host__ __device__ glm::vec3 getSignOfRay(ray r);
 __host__ __device__ glm::vec3 getInverseDirectionOfRay(ray r);
 __host__ __device__ float boxIntersectionTest(staticGeom sphere, ray r, glm::vec3& intersectionPoint, glm::vec3& normal);
 __host__ __device__ float sphereIntersectionTest(staticGeom sphere, ray r, glm::vec3& intersectionPoint, glm::vec3& normal);
-__host__ __device__ glm::vec3 getRandomPointOnCube(staticGeom cube, float randomSeed);
+__host__ __device__ void getRandomPointAndNormalOnCube(staticGeom cube, float randomSeed, glm::vec3& point, glm::vec3& normal);
+__host__ __device__ void getRandomPointAndNormalOnSphere(staticGeom cube, float randomSeed, glm::vec3& point, glm::vec3& normal);
 
 //Handy dandy little hashing function that provides seeds for random number generation
 __host__ __device__ unsigned int hash(unsigned int a){
@@ -77,6 +78,38 @@ __host__ __device__ glm::vec3 getInverseDirectionOfRay(ray r){
 __host__ __device__ glm::vec3 getSignOfRay(ray r){
   glm::vec3 inv_direction = getInverseDirectionOfRay(r);
   return glm::vec3((int)(inv_direction.x < 0), (int)(inv_direction.y < 0), (int)(inv_direction.z < 0));
+}
+
+__host__ __device__ glm::vec3 getNormalOfPointOnUnitCube(glm::vec3 point) {
+	float halfWidth = 0.5f;
+	glm::vec3 normal;
+
+	if(fabs(point.x - -halfWidth) < FLOAT_EPSILON)
+	{
+		normal = glm::vec3(-1,0,0);
+	}
+	else if( fabs(point.x - halfWidth) < FLOAT_EPSILON)
+	{
+		normal = glm::vec3(1,0,0);
+	}
+	else if(fabs(point.y - -halfWidth) < FLOAT_EPSILON)
+	{
+		normal = glm::vec3(0,-1,0);
+	}
+	else if( fabs(point.y - halfWidth) < FLOAT_EPSILON)
+	{
+		normal = glm::vec3(0,1,0);
+	}
+	else if(fabs(point.z - -halfWidth) < FLOAT_EPSILON)
+	{
+		normal = glm::vec3(0,0,-1);
+	}
+	else if( fabs(point.z - halfWidth) < FLOAT_EPSILON)
+	{
+		normal = glm::vec3(0,0,1);
+	}
+	
+	return normal;
 }
 
 //TODO: IMPLEMENT THIS FUNCTION
@@ -150,33 +183,7 @@ __host__ __device__ float boxIntersectionTest(staticGeom box, ray r, glm::vec3& 
 	glm::vec3 realIntersectionPoint = multiplyMV(box.transform, glm::vec4(localIntersectionPoint, 1.0));
     
 	intersectionPoint = realIntersectionPoint;
-	glm::vec3 localNormal;
-
-	// Calculating Normal
-	if(fabs(localIntersectionPoint.x - -halfWidth) < FLOAT_EPSILON)
-	{
-		localNormal = glm::vec3(-1,0,0);
-	}
-	else if( fabs(localIntersectionPoint.x - halfWidth) < FLOAT_EPSILON)
-	{
-		localNormal = glm::vec3(1,0,0);
-	}
-	else if(fabs(localIntersectionPoint.y - -halfWidth) < FLOAT_EPSILON)
-	{
-		localNormal = glm::vec3(0,-1,0);
-	}
-	else if( fabs(localIntersectionPoint.y - halfWidth) < FLOAT_EPSILON)
-	{
-		localNormal = glm::vec3(0,1,0);
-	}
-	else if(fabs(localIntersectionPoint.z - -halfWidth) < FLOAT_EPSILON)
-	{
-		localNormal = glm::vec3(0,0,-1);
-	}
-	else if( fabs(localIntersectionPoint.z - halfWidth) < FLOAT_EPSILON)
-	{
-		localNormal = glm::vec3(0,0,1);
-	}
+	glm::vec3 localNormal = getNormalOfPointOnUnitCube(localIntersectionPoint);
 
 
 	// Psuedo point is one local unit distance behind the local intersection point in the direction of the normal
@@ -330,7 +337,7 @@ __host__ __device__ glm::vec3 getRadiuses(staticGeom geom){
 
 //LOOK: Example for generating a random point on an object using thrust.
 //Generates a random point on a given cube
-__host__ __device__ glm::vec3 getRandomPointOnCube(staticGeom cube, float randomSeed){
+__host__ __device__ void getRandomPointAndNormalOnCube(staticGeom cube, float randomSeed, glm::vec3& point, glm::vec3& normal){
 
     thrust::default_random_engine rng(hash(randomSeed));
     thrust::uniform_real_distribution<float> u01(0,1);
@@ -345,8 +352,6 @@ __host__ __device__ glm::vec3 getRandomPointOnCube(staticGeom cube, float random
     
     //pick random face, weighted by surface area
     float russianRoulette = (float)u01(rng);
-    
-    glm::vec3 point = glm::vec3(.5,.5,.5);
     
     if(russianRoulette<(side1/totalarea)){
         //x-y face
@@ -368,18 +373,18 @@ __host__ __device__ glm::vec3 getRandomPointOnCube(staticGeom cube, float random
         point = glm::vec3((float)u02(rng), -.5, (float)u02(rng));
     }
     
-    glm::vec3 randPoint = multiplyMV(cube.transform, glm::vec4(point,1.0f));
+		normal = getNormalOfPointOnUnitCube(point);
 
-    return randPoint;
-       
+    point = multiplyMV(cube.transform, glm::vec4(point,1.0f));
+		normal = multiplyMV(cube.transform, glm::vec4(normal,0.0f));
 }
 
 //TODO: IMPLEMENT THIS FUNCTION
 //Generates a random point on a given sphere
 // Marsaglia (1972)
 // http://mathworld.wolfram.com/SpherePointPicking.html
-__host__ __device__ glm::vec3 getRandomPointOnSphere(staticGeom sphere, float randomSeed){
-
+__host__ __device__ void getRandomPointAndNormalOnSphere(staticGeom sphere, float randomSeed, glm::vec3& point, glm::vec3& normal){
+	
 	/*
 	thrust::default_random_engine rng(hash(randomSeed));
 	thrust::uniform_real_distribution<float> uniformDistribution(-1,1);
@@ -414,11 +419,11 @@ __host__ __device__ glm::vec3 getRandomPointOnSphere(staticGeom sphere, float ra
 
 	float radius = 0.5f;
 
-	glm::vec3 localPosition = glm::vec3( radius * cos(theta) * sin(phi), radius * sin(theta) * sin(phi), radius * cos(phi));
+	point = glm::vec3( radius * cos(theta) * sin(phi), radius * sin(theta) * sin(phi), radius * cos(phi));
+	normal = point;
 
-	glm::vec3 realPosition = multiplyMV(sphere.transform, glm::vec4(localPosition,1.0f));
-
-	return realPosition;
+	point = multiplyMV(sphere.transform, glm::vec4(point,1.0f));
+	normal = multiplyMV(sphere.transform, glm::vec4(point,0.0f));
 }
 
 #endif

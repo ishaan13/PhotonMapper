@@ -35,7 +35,7 @@
 #endif
 
 #if PHOTONMAP
-int numPhotons = 1000;
+int numPhotons = 100000;
 
 int numBounces = 5;			//hard limit of 3 bounces for now
 float totalEnergy = 80;			//total amount of energy in the scene, used for calculating flux per photon
@@ -44,8 +44,8 @@ float totalEnergy = 80;			//total amount of energy in the scene, used for calcul
 photon* cudaPhotonPool;		//global variable of photons
 glm::vec3* cudaPhotonMapImage;
 
-#define DISPLAYMODE 0 //0 for scene, 1 for photons
-#define RADIUS 2.5
+#define DISPLAYMODE 1 //0 for scene, 1 for photons
+#define RADIUS 1
 
 #endif
 
@@ -57,6 +57,7 @@ glm::vec3* cudaimage;
 staticGeom* cudageoms;
 material* cudamaterials;
 int* cudaLights;
+float* cudaAccumLightProbabilities;
 int numLights;
 int numGeoms;
 
@@ -297,16 +298,16 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 			// If this geometry is going to act like a light source
 			if(lightMaterial.emittance > 0.0001f)
 			{
-				glm::vec3 lightSourceSample;
+				glm::vec3 lightSourceSample, normal;
 
 				// Get a random point on the light source
 				if(geoms[iter].type == SPHERE)
 				{
-					lightSourceSample = getRandomPointOnSphere(geoms[iter],time*index);
+					getRandomPointAndNormalOnSphere(geoms[iter],time*index, lightSourceSample, normal);
 				}
 				else if(geoms[iter].type == CUBE)
 				{
-					lightSourceSample = getRandomPointOnCube(geoms[iter],time*index);
+					getRandomPointAndNormalOnCube(geoms[iter],time*index, lightSourceSample, normal);
 				}
 
 				// Diffuse Lighting Calculation
@@ -810,7 +811,8 @@ int streamCompactRayPool(ray* inputRays, ray* outputRays, int size)
 // Create a helper function to call these functions
 
 //function for emitting photons from a sphere light
-__global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, staticGeom* geoms, int* lights, int numberOfLights, material* materials, float time)
+__global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, staticGeom* geoms, int* lights, int numberOfLights,
+														float* cudaAccumLightProbabilities, material* materials, float time)
 {
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 	if(index < numPhotons)
@@ -820,27 +822,41 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 		// Do a random-check to choose a certain light: take into consideration area of lights
 		// Do a better random generation
 		glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),time,index,numberOfLights);
-		// Adding an epsilon to make sure we don't index out of bounds if r.x = 1
-		int lightIndex = randoms.x / (FLOAT_EPSILON + 1.0f / numberOfLights);
+		
+		// Pick light based on cudaAccumLightProbabilities
+		int lightIndex;
+		bool largerThanPrev = true;			//whether randoms.x is larger than the previous probability in cudaAccumLightProbabilities
+		for (int i=0; i<numberOfLights; ++i) {
+			if (randoms.x <= cudaAccumLightProbabilities[i]) {
+				if (largerThanPrev) {
+					lightIndex = i;
+					break;
+				}
+				else {
+					largerThanPrev = true;
+				}
+			}
+		}
 
 		staticGeom lightChosen = geoms[lights[lightIndex]];			//get the light using the index from the lights array
-
-
-		// Right now only support sphere
+		
+		// for now only supports sphere and cube lights
+		glm::vec3 position, normal;
 		if(lightChosen.type == SPHERE)
 		{
-			p.position = getRandomPointOnSphere(lightChosen,index);
-			// Get center of sphere by transforming origin into world space.
-			glm::vec3 sphereCenter = multiplyMV(lightChosen.transform, glm::vec4(0.0,0.0,0.0,1.0));
-		
-			// Get normal at current point.
-			glm::vec3 normal = glm::normalize(p.position- sphereCenter);
-
-			// Shooting direction is normal at the point or random direction?
-			// I think the lecture said choose random direction.
-			p.dout = calculateRandomDirectionInHemisphere(normal,randoms.y,randoms.z);
-			p.din = glm::vec3(0.0f);
+			getRandomPointAndNormalOnSphere(lightChosen,index, position, normal);
 		}
+		else if (lightChosen.type == CUBE)
+		{
+			getRandomPointAndNormalOnCube(lightChosen,index, position, normal);
+		}
+		p.position = position;
+
+		// Shooting direction is normal at the point or random direction?
+		// I think the lecture said choose random direction.
+		p.dout = calculateRandomDirectionInHemisphere(normal,randoms.y,randoms.z);
+		p.din = glm::vec3(0.0f);
+		
 		
 		// Set color of photon
 		material lightMaterial = materials[lightChosen.materialid];
@@ -1233,6 +1249,45 @@ void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMate
 
 	cudaPhotonMapImage = NULL;
 	cudaMalloc((void**)&cudaPhotonMapImage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3));
+
+	// compute the accumulated probablity of photons being emitted from each light
+	float totalEmittanceTimesArea = 0;
+	float* accumAccumLightProbabilities = new float[numLights];
+	for (int i=0; i<numLights; ++i) {
+		staticGeom light = geomList[lightID[i]];
+		material lightmtl = materials[light.materialid];
+
+		float area;
+		if (light.type == SPHERE) {
+			// compute the surface area of an ellipsoid
+			float a = 0.5 * light.scale.x;
+			float b = 0.5 * light.scale.y;
+			float c = 0.5 * light.scale.z;
+			float p = 1.6075;
+			float ap = pow(a, p);
+			float bp = pow(b, p);
+			float cp = pow(c, p);
+			area = 4 * PI_F * pow((ap*bp + ap*cp + bp*cp)/3, 1/p); //the approximate formula for surface area of ellipsoids
+		}
+		else if (light.type == CUBE) {
+			// compute the surface area of a box
+			float sx = light.scale.x;
+			float sy = light.scale.y;
+			float sz = light.scale.z;
+			area = 2 * sx * sy + 2 * sx * sz + 2 * sy * sz;
+		}
+		totalEmittanceTimesArea += area * lightmtl.emittance;
+		accumAccumLightProbabilities[i] = totalEmittanceTimesArea;
+	}
+
+	// divide accumulated "emittance * area" of each light by totalEmittanceTimesArea to get the probablity of being emitted from each light
+	for (int i=0; i<numLights; ++i) {
+		accumAccumLightProbabilities[i] /= totalEmittanceTimesArea;
+	}
+
+	cudaAccumLightProbabilities = NULL;
+	cudaMalloc((void**)&cudaAccumLightProbabilities, numLights*sizeof(float));
+	cudaMemcpy( cudaAccumLightProbabilities, accumAccumLightProbabilities, numLights*sizeof(float), cudaMemcpyHostToDevice);
 #endif
 
 	cudaAllocateAccumulatorImage(renderCam);
@@ -1294,7 +1349,7 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	int photonBlocksPerGrid = ceil(numPhotons * 1.0f/photonThreadsPerBlock);
 
 	emitPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, cudageoms, 
-																		   cudaLights, numLights, cudamaterials, iterations);
+		cudaLights, numLights, cudaAccumLightProbabilities, cudamaterials, iterations);
 	cudaThreadSynchronize();
 	checkCUDAError("emit photons kernel failed!");
 
@@ -1313,7 +1368,7 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	checkCUDAError("fill ray pool kernel failed!");
 
 	// Assume each light emits the same number of photons, calculate the flux per photon
-	float flux = totalEnergy/((float)numPhotons/(float)numLights);
+	float flux = totalEnergy/(float)numPhotons;
 	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms,
 		cudarays, cudaPhotonPool, numPhotons, numBounces, flux);
 	cudaThreadSynchronize();

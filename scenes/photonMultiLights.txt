@@ -104,7 +104,7 @@ REFRIOR     0
 SCATTER     0        
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
-EMITTANCE   15
+EMITTANCE   0
 
 MATERIAL 9				// magentalight
 RGB         1 0 1
@@ -116,7 +116,7 @@ REFRIOR     1.55
 SCATTER     0        
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
-EMITTANCE   3
+EMITTANCE   90
 
 MATERIAL 10				// bluelight
 RGB         0 0 1
@@ -242,7 +242,7 @@ OBJECT 6
 sphere
 material 13
 frame 0
-TRANS	    0 2 4
+TRANS	    0 2 0
 ROTAT       0 0 0
 SCALE       1.5 1.5 1.5
 
@@ -250,7 +250,7 @@ OBJECT 7
 sphere
 material 12
 frame 0
-TRANS	    3 3 1
+TRANS	    3 3 0
 ROTAT       0 0 0
 SCALE       1.5 1.5 1.5
 
@@ -258,7 +258,7 @@ OBJECT 8
 sphere
 material 14
 frame 0
-TRANS	    -3 3 1
+TRANS	    -3 3 0
 ROTAT       0 0 0
 SCALE       1.5 1.5 1.5
 
@@ -266,7 +266,7 @@ OBJECT 9
 sphere
 material 11
 frame 0
-TRANS	    3 6 -1
+TRANS	    3 6 0
 ROTAT       0 0 0
 SCALE       1.5 1.5 1.5
 
@@ -274,7 +274,7 @@ OBJECT 10
 sphere
 material 10
 frame 0
-TRANS	    -3 6 -1
+TRANS	    -3 6 0
 ROTAT       0 0 0
 SCALE       1.5 1.5 1.5
 
@@ -282,13 +282,13 @@ OBJECT 11
 sphere
 material 9
 frame 0
-TRANS	    0 8 -4
+TRANS	    0 8 0
 ROTAT       0 0 0
 SCALE       1.5 1.5 1.5
 
 OBJECT 12
 cube
-material 0
+material 8
 frame 0
 TRANS	    0 5 0
 ROTAT	    45 45 0
