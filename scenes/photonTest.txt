@@ -104,7 +104,7 @@ REFRIOR     0
 SCATTER     0        
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
-EMITTANCE   10
+EMITTANCE   3
 
 MATERIAL 9				//light
 RGB         1 1 1       
@@ -116,7 +116,7 @@ REFRIOR     0
 SCATTER     0        
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
-EMITTANCE   15
+EMITTANCE   1
 
 CAMERA
 RES         800 800
@@ -198,6 +198,15 @@ OBJECT 8
 sphere
 material 8
 frame 0
-TRANS       0 8 0
+TRANS       -3 8 0
 ROTAT       0 0 0
 SCALE       1 1 1
+
+OBJECT 9
+sphere
+material 9
+frame 0
+TRANS       3 8 0
+ROTAT       0 0 0
+SCALE       1 1 1
+

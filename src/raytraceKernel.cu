@@ -45,7 +45,7 @@ enum {
 
 
 #if PHOTONMAP
-int numPhotons = 100000;
+int numPhotons = 10000;
 
 int numBounces = 5;			//hard limit of 3 bounces for now
 float totalEnergy = 80;			//total amount of energy in the scene, used for calculating flux per photon
@@ -54,10 +54,7 @@ float totalEnergy = 80;			//total amount of energy in the scene, used for calcul
 photon* cudaPhotonPool;		//global variable of photons
 glm::vec3* cudaPhotonMapImage;
 
-
-#define DISPLAYMODE 1 //0 for scene, 1 for photons
-
-#define RADIUS 1
+#define RADIUS 1.5
 
 #endif
 
@@ -887,6 +884,7 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 			photon placeHolder;
 			placeHolder.color = glm::vec3(0.0f);
 			placeHolder.stored = false;
+			placeHolder.bounces = -1;
 			photonPool[numPhotons * i + index] = placeHolder;
 		}
 	}
@@ -1109,7 +1107,7 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 #define oneOverSqrtTwoPi 0.3989422804f
 __device__ float gaussianWeight( float dx, float radius)
 {
-	float sigma = radius*2.0;
+	float sigma = radius/3.0;
 	return (oneOverSqrtTwoPi / sigma) * exp( - (dx*dx) / (2.0 * sigma * sigma) );
 }
 
@@ -1165,8 +1163,8 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 			for (int i=0; i<numPhotons * numBounces; ++i) {
 				photon p = photons[i];
 				float photonDistance  = glm::distance(minIntersectionPoint, p.position);
-				// Indirect Illumination only
-				if ( photonDistance <= RADIUS && p.geomid == intersectedGeom && p.bounces > 1) {
+				// Indirect Illumination only?
+				if ( photonDistance <= RADIUS && p.geomid == intersectedGeom && p.bounces > 0) {
 					//Is lambert brdf cos(theta_i)?
 					accumColor += gaussianWeight(photonDistance, RADIUS) *  max(0.0f, glm::dot(minNormal, -p.din)) * p.color;
 				}

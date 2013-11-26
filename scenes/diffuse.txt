@@ -97,7 +97,7 @@ EMITTANCE   5
 CAMERA
 RES         800 800
 FOVY        35
-ITERATIONS  10000
+ITERATIONS  10
 FILE        photon_diffuse.png
 frame 0
 EYE         0 5 12
@@ -148,7 +148,7 @@ SCALE       .01 10 10
 
 OBJECT 5
 sphere
-material 0
+material 5
 frame 0
 TRANS       0 2 0
 ROTAT       0 180 0

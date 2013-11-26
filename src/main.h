@@ -109,7 +109,7 @@ enum {
 	DISP_TOTAL
 };
 
-int mode = DISP_RAYTRACE;
+int mode = DISP_GATHER;
 
 
 #ifdef __APPLE__
