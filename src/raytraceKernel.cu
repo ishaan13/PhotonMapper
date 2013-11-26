@@ -45,7 +45,7 @@ enum {
 
 
 #if PHOTONMAP
-int numPhotons = 100;
+int numPhotons = 100000;
 
 int numBounces = 5;			//hard limit of 3 bounces for now
 float totalEnergy = 80;			//total amount of energy in the scene, used for calculating flux per photon
@@ -1014,7 +1014,7 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 				//assume diffuse surfaces only for now, so bounce in random direction
 				p.color *= m.color;
 
-				glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),time,index,currentBounces+1);
+				glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),time,index,currentBounces+3);
 				p.din = p.dout;
 				//p.stored = true;
 				p.dout = calculateRandomDirectionInHemisphere(minNormal,randoms.y,randoms.z);
@@ -1068,7 +1068,7 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 					amountReflected = 0.5 * (reflectedParallel + reflectedPerpendicular);
 #endif
 					// Stochastically decide whether to reflect or refract
-					glm::vec3 randVector = generateRandomNumberFromThread(glm::vec2(637,791),time,index,currentBounces+1);
+					glm::vec3 randVector = generateRandomNumberFromThread(glm::vec2(637,791),time,index,currentBounces+7);
 
 					// If a uniform variable is less than the reflected amount, this ray shall be reflected
 					if(randVector.y  < amountReflected)
