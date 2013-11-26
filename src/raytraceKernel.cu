@@ -34,6 +34,16 @@
     #include <cutil_math.h>
 #endif
 
+enum {
+	DISP_RAYTRACE,
+	DISP_PHOTONS,
+	DISP_GATHER,
+	DISP_COMBINED,
+	DISP_PATHTRACE,
+	DISP_TOTAL
+};
+
+
 #if PHOTONMAP
 int numPhotons = 1000;
 
@@ -45,12 +55,13 @@ photon* cudaPhotonPool;		//global variable of photons
 glm::vec3* cudaPhotonMapImage;
 
 #define DISPLAYMODE 0 //0 for scene, 1 for photons
-#define RADIUS 2.5
+#define RADIUS 1
 
 #endif
 
 glm::vec3* accumulatorImage = NULL;
 extern bool singleFrameMode;
+extern int mode;
 
 //scene data
 glm::vec3* cudaimage;
@@ -864,7 +875,7 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 
 }
 
-__global__ void displayPhotons(photon* photonPool, int numPhotons, int numBounces, glm::vec2 resolution, cameraData cam, glm::vec3* colors, cudaMat4 viewProjectionViewport)
+__global__ void displayPhotons(photon* photonPool, int numPhotons, int numBounces, glm::vec2 resolution, cameraData cam, glm::vec3* colors, cudaMat4 viewProjectionViewport, float flux)
 {
 
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
@@ -902,7 +913,7 @@ __global__ void displayPhotons(photon* photonPool, int numPhotons, int numBounce
 					int x = screenPosition.x;
 					int y = screenPosition.y;
 					int pixelIndex = x + (y * resolution.x);
-					//colors[pixelIndex] = glm::abs(p.direction);		//glm::abs causes a kernel failure on my computer...
+					//colors[pixelIndex] = glm::abs(p.dout);		//glm::abs causes a kernel failure on my computer...
 					colors[pixelIndex] = p.color;
 				}
 			}
@@ -988,33 +999,28 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 
 				glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),time,index,currentBounces+1);
 				p.din = p.dout;
-				p.stored = true;
+				//p.stored = true;
 				p.dout = calculateRandomDirectionInHemisphere(minNormal,randoms.y,randoms.z);
 				p.position = minIntersectionPoint;
 
-	/*			AbsorptionAndScatteringProperties absScatProps;
+				AbsorptionAndScatteringProperties absScatProps;
 				glm::vec3 colorSend, unabsorbedColor;
-				ray returnRay;
-				returnRay.direction = p.din;
-				returnRay.direction = p.position;
-				int rayPropogation = calculateBSDF(returnRay,minIntersectionPoint,minNormal,p.color,absScatProps,colorSend,unabsorbedColor,m);*/
+				ray returnRay = r;
+				
+				int rayPropogation = calculateBSDF(returnRay,minIntersectionPoint,minNormal,p.color,absScatProps,colorSend,unabsorbedColor,m);
 
-				//// Reflection; calculate transmission coeffiecient
-				//if(rayPropogation == 1)
-				//{
-				//	p.dout = returnRay.direction;
-				//	p.color = p.color * m.hasReflective;
-				//	// Should we be doing this? since at gather step we never really lookup photons from this
-				//	// p.stored= false;
-				//}
-				//else
-				//	p.color = glm::vec3(0.0f);
-				/*
+				// Reflection; calculate transmission coeffiecient
+				if(rayPropogation == 1)
+				{
+					p.dout = returnRay.direction;
+					p.color = p.color * m.hasReflective;
+					p.stored = true;
+				}
 				// Refraction; calculate transmission coeffiecient
 				else if (rayPropogation == 2)
 				{
-					returnRay.transmission = r.transmission * diffuseColor * m.hasRefractive;
-
+					p.color = p.color * m.hasRefractive;
+					p.stored = true;
 
 #if FRESNEL
 					// Fresnel Calculation
@@ -1045,17 +1051,25 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 					amountReflected = 0.5 * (reflectedParallel + reflectedPerpendicular);
 #endif
 					// Stochastically decide whether to reflect or refract
-					glm::vec3 randVector = generateRandomNumberFromThread(resolution,time * (rayDepth+1),x,y);
+					glm::vec3 randVector = generateRandomNumberFromThread(glm::vec2(637,791),time,index,currentBounces+1);
 
 					// If a uniform variable is less than the reflected amount, this ray shall be reflected
 					if(randVector.y  < amountReflected)
 					{
-						returnRay.direction = r.direction - 2.0f * minNormal  * glm::dot(minNormal,r.direction);
-						returnRay.origin = minIntersectionPoint + NUDGE * returnRay.direction;
+						p.dout = r.direction - 2.0f * minNormal  * glm::dot(minNormal,r.direction);
+					}
+					else
+					{
+						p.dout = returnRay.direction;
 					}
 #endif
 
-				}*/
+				}
+				// Default to diffuse
+				else
+				{
+					p.stored = true;
+				}
 				
 				p.geomid = intersectedGeom;
 			}
@@ -1133,6 +1147,7 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 			for (int i=0; i<numPhotons * numBounces; ++i) {
 				photon p = photons[i];
 				float photonDistance  = glm::distance(minIntersectionPoint, p.position);
+				// Indirect Illumination only
 				if ( photonDistance <= RADIUS && p.geomid == intersectedGeom && p.bounces > 1) {
 					//Is lambert brdf cos(theta_i)?
 					accumColor += gaussianWeight(photonDistance, RADIUS) *  max(0.0f, glm::dot(minNormal, -p.din)) * p.color;
@@ -1303,17 +1318,20 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	cudaThreadSynchronize();
 	checkCUDAError("tracePhotons kernel failed!");
 
-#if DISPLAYMODE == 0
+	// Assume each light emits the same number of photons, calculate the flux per photon
+	float flux = totalEnergy/((float)numPhotons/(float)numLights);
+
+
+if (mode == DISP_GATHER)
+{
 	// Compute radiance from photons
 	// Generate rays first
-  ray* cudarays = NULL;
-  cudaMalloc((void**)&cudarays, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
+	ray* cudarays = NULL;
+	cudaMalloc((void**)&cudarays, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
 	fillRayPoolFromCamera<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudarays);
 	cudaThreadSynchronize();
 	checkCUDAError("fill ray pool kernel failed!");
 
-	// Assume each light emits the same number of photons, calculate the flux per photon
-	float flux = totalEnergy/((float)numPhotons/(float)numLights);
 	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms,
 		cudarays, cudaPhotonPool, numPhotons, numBounces, flux);
 	cudaThreadSynchronize();
@@ -1322,8 +1340,9 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	cudaFree(cudarays);
 	cudaThreadSynchronize();
 	checkCUDAError("free ray pool failed!");
-
-#else
+}
+else if (mode == DISP_PHOTONS)
+{
 	// Calculate Viewport * Projection * View matrix from camera info
 	glm::vec3 center = cam.position + cam.view;
 
@@ -1336,21 +1355,28 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 
 	// Display all photons in the photonImage buffer
 	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, resolution, 
-		cam, cudaPhotonMapImage, viewProjectionViewPort);
+		cam, cudaPhotonMapImage, viewProjectionViewPort, flux);
 	cudaThreadSynchronize();
 	checkCUDAError("display photons kernel failed!");
+}
 
-	iterations = 1; //not accumulating color in photon map mode
+
+#if ACCUMULATION
+	combineIntoAccumulatorImage<<<pixelBlocksPerGrid,pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cudaPhotonMapImage, accumulatorImage);
+	sendImageToPBO<<<pixelBlocksPerGrid,pixelThreadsPerBlock>>>(PBOpos, renderCam->resolution, accumulatorImage, (float)iterations);
+#else
+	sendImageToPBO<<<pixelBlocksPerGrid,pixelThreadsPerBlock>>>(PBOpos, renderCam->resolution, cudaPhotonMapImage, 1.0f);
 #endif
-
-	iterations = 1;
-	sendImageToPBO<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(PBOpos, resolution, cudaPhotonMapImage, (float)iterations); 
 	cudaThreadSynchronize();
 	checkCUDAError("Send to PBO kernel failed!");
 
 	//retrive image from GPU
 	int imageSize = (int)resolution.x * (int) resolution.y;
+#if ACCUMULATION
+	cudaMemcpy(renderCam->image, accumulatorImage, imageSize*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
+#else
 	cudaMemcpy(renderCam->image, cudaPhotonMapImage, imageSize*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
+#endif
 
 	cudaThreadSynchronize();
 	checkCUDAError("Photon mapping kernel failed!");

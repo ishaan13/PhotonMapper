@@ -127,8 +127,10 @@ void runCuda(){
     cudaGLMapBufferObject((void**)&dptr, pbo);
   
     // execute the kernel
-   //cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera);
-   cudaPhotonMapCore(renderCam, targetFrame, iterations, dptr, liveCamera);
+	if(mode==DISP_RAYTRACE)
+		cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera);
+	else if (mode == DISP_PHOTONS || mode == DISP_GATHER)
+		cudaPhotonMapCore(renderCam, targetFrame, iterations, dptr, liveCamera);
 
     // unmap buffer object
     cudaGLUnmapBufferObject(pbo);
@@ -213,7 +215,20 @@ void runCuda(){
 
 		runCuda();
 
-		string title = "MMFAPhoMap | " + utilityCore::convertIntToString(iterations) + " Iterations";
+		
+		char modeName[50];
+		switch(mode)
+		{
+			case DISP_RAYTRACE: sprintf(modeName, "Ray Tracing: Direct Lighting");
+								break;
+			case DISP_PHOTONS:	sprintf(modeName, "Photon Mapping: Visualize Photons");
+								break;
+			case DISP_GATHER:	sprintf(modeName, "Photon Mapping: Indirect Lighting Photon Gather");
+								break;
+		}
+		
+
+		string title = "MMFAPhoMap | " + string(modeName) + " | " + utilityCore::convertIntToString(iterations) + " Iterations";
 		glutSetWindowTitle(title.c_str());
 
 		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, pbo);
@@ -292,6 +307,21 @@ void runCuda(){
 			   iterations = 1;
 			   cudaClearAccumulatorImage(renderCam);
 			   liveCamera.view.y -= STRAFE_AMOUNT;
+			   break;
+		   case('1'):
+			   iterations = 1;
+			   cudaClearAccumulatorImage(renderCam);
+			   mode = DISP_RAYTRACE;
+			   break;
+		   case('2'):
+			   iterations = 1;
+			   cudaClearAccumulatorImage(renderCam);
+			   mode = DISP_PHOTONS;
+			   break;
+		   case('3'):
+			   iterations = 1;
+			   cudaClearAccumulatorImage(renderCam);
+			   mode = DISP_GATHER;
 			   break;
 		}
 	}

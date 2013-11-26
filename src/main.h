@@ -100,6 +100,18 @@ void runCuda();
 //----------SETUP STUFF----------
 //-------------------------------
 
+enum {
+	DISP_RAYTRACE,
+	DISP_PHOTONS,
+	DISP_GATHER,
+	DISP_COMBINED,
+	DISP_PATHTRACE,
+	DISP_TOTAL
+};
+
+int mode = DISP_RAYTRACE;
+
+
 #ifdef __APPLE__
 	void init();
 #else

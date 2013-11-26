@@ -104,7 +104,7 @@ REFRIOR     0
 SCATTER     0        
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
-EMITTANCE   5
+EMITTANCE   10
 
 MATERIAL 9				//light
 RGB         1 1 1       
@@ -172,7 +172,7 @@ SCALE       .01 10 10
 
 OBJECT 5
 sphere
-material 5
+material 7
 frame 0
 TRANS       2 3 0
 ROTAT       0 0 0
