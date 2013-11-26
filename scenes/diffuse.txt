@@ -171,9 +171,9 @@ ROTAT       0 180 0
 SCALE       3 3 3
 
 OBJECT 8
-sphere
+cube
 material 7
 frame 0
-TRANS       0 8 0
+TRANS       0 10 0
 ROTAT       0 0 0
-SCALE       1 1 1
+SCALE       3 0.3 3
