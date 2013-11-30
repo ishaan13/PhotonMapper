@@ -886,11 +886,6 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, gridAttributes g
 			material lightMaterial = materials[lightChosen.materialid];
 			p.color = lightMaterial.emittance * lightMaterial.color;
 
-			//// Set whether photon has been stored/absorbed (dead)
-			//p.stored = false;
-			//p.geomid = lights[lightIndex];
-			//p.bounces = 0;		//increment the number of bounces by 1
-
 			photonPool[index] = p;
 		}
 	}
@@ -1008,7 +1003,6 @@ __global__ void bouncePhotons(photon* photonPool, storedPhoton* photonMap, int n
 
 				glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),time,index,currentBounces+3);
 				p.din = p.dout;
-				//p.stored = true;
 				p.dout = calculateRandomDirectionInHemisphere(minNormal,randoms.y,randoms.z);
 				p.position = minIntersectionPoint;
 
@@ -1023,13 +1017,11 @@ __global__ void bouncePhotons(photon* photonPool, storedPhoton* photonMap, int n
 				{
 					p.dout = returnRay.direction;
 					p.color = p.color * m.hasReflective;
-					//p.stored = true;
 				}
 				// Refraction; calculate transmission coeffiecient
 				else if (rayPropogation == 2)
 				{
 					p.color = p.color * m.hasRefractive;
-					//p.stored = true;
 
 #if FRESNEL
 					// Fresnel Calculation
@@ -1074,28 +1066,13 @@ __global__ void bouncePhotons(photon* photonPool, storedPhoton* photonMap, int n
 #endif
 
 				}
-				//// Default to diffuse
-				//else
-				//{
-				//	p.stored = true;
-				//}
-				
-				//p.geomid = intersectedGeom;
 
 				// Check if photon is inside the grid. If so, store it in the photon map
 				int x, y, z; //photon's grid cell index
 				getCellIndex(p.position, grid, x, y, z);
 				if (x>=0 && x<grid.xdim && y>=0 && y<grid.ydim && z>=0 && z<grid.zdim) {
 					// Photon is in the grid
-					//storedPhoton pstored;
-					//pstored.geomid = intersectedGeom;
-					//pstored.bounces = currentBounces;
-					//pstored.position = p.position;
-					//pstored.color = p.color;
-					//pstored.din = p.din;
-
 					int photonMapIndex = x + y * grid.xdim + z * grid.xdim * grid.ydim;
-					//photonMap[photonMapIndex] = pstored;
 
 					photonMap[photonMapIndex].geomid = intersectedGeom;
 					photonMap[photonMapIndex].bounces = currentBounces;
@@ -1112,11 +1089,8 @@ __global__ void bouncePhotons(photon* photonPool, storedPhoton* photonMap, int n
 			else {
 				//kill the photon if it doesn't intersect with anything
 				//When using stream compaction, need to figure if photon is stored or dead or (alive and kicking)
-				//p.stored = false;
-				//p.geomid = -1;
 				p.active = false;
 			}
-			//p.bounces ++;
 
 			// Replace current photon with the bounced photon
 			photonPool[index] = p;
@@ -1179,10 +1153,6 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 		if(intersectedGeom > -1)
 		{
 			glm::vec3 accumColor(0);
-
-			//// Use brute force search to find the photons that are within a certain radius
-			//for (int i=0; i<numPhotons * numBounces; ++i) {
-			//	photon p = photons[i];
 
 			// Find photons in neighboring grid cells and check if they are within a certain distance from the intersection
 			int gx, gy, gz; //photon's grid cell index
