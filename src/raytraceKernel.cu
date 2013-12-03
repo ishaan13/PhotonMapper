@@ -27,6 +27,7 @@
 #define PATHTRACER 0	
 #define PAINTERLY 0
 #define PHOTONMAP 1
+#define PHOTONCOMPACT 0
 
 #if CUDA_VERSION >= 5000
     #include <helper_math.h>
@@ -50,8 +51,8 @@ int numPhotons = 100000;
 int numBounces = 5;			//hard limit of 3 bounces for now
 float totalEnergy = 80;			//total amount of energy in the scene, used for calculating flux per photon
 
-
 photon* cudaPhotonPool;		//global variable of photons
+photon* cudaPhotonPoolCompact;		//stores output photons after stream compaction
 glm::vec3* cudaPhotonMapImage;
 
 #define RADIUS 1
@@ -616,6 +617,24 @@ __global__ void predicateMark(ray* inputRays, int* outputPredicate, int size)
 	}
 }
 
+//perdicate marking for photons
+__global__ void predicateMarkPhotons(photon* inputPhotons, int* outputPredicate, int size) {
+
+	int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (index < size) {
+		
+		if (inputPhotons[index].stored) {
+			outputPredicate[index] = 1;
+		}
+		else {
+			outputPredicate[index] = 0;
+		}
+
+	}
+
+}
+
 // Scan Per Block
 __global__ void naiveScanPerBlock(int *inData, int* outData, int *blockSum, int size)
 {
@@ -744,6 +763,21 @@ __global__ void scatter(ray* inputRays, ray* outputRays, int* predicate, int* sc
 	}
 }
 
+//scatter photons to appropriate locations
+__global__ void scatterPhotons(photon* inputPhotons, photon* outputPhotons, int* predicate, int* scatterIndices, int size) {
+
+	int index = (blockIdx.x * blockDim.x) + threadIdx.x;
+	
+	if (index < size) {
+		int scatterIndex = scatterIndices[index];
+		
+		// Data with scatter index < 0 is data not to be used
+		if (predicate[index] > 0) {		
+			outputPhotons[scatterIndex - 1] = inputPhotons[index];
+		}
+	}
+}
+
 // Stream Compaction
 int streamCompactRayPool(ray* inputRays, ray* outputRays, int size)
 {
@@ -812,8 +846,37 @@ int streamCompactRayPool(ray* inputRays, ray* outputRays, int size)
 }
 
 
-#endif
+//stream compaction for photons, maybe use template later to make code cleaner
+int streamCompactPhotons (photon* inputPhotons, photon* outputPhotons, int size) {
 
+	int* predicateArray;
+	cudaMalloc((void**)&predicateArray,size*sizeof(int));
+
+	int* scatterLocations;
+	cudaMalloc((void**)&scatterLocations,size*sizeof(int));
+
+	int numThreads = 512;
+	int numBlocks = ceil(size*1.0f/numThreads);
+
+	// Mark Predicates
+	predicateMarkPhotons<<<dim3(numBlocks,1,1),dim3(numThreads,1,1)>>>(inputPhotons, predicateArray, size);
+	checkCUDAError("Predicate Mark Failed!");	
+
+	// Scan Predicate to get location and also total number of final rays
+	int compactedSize = parallelScan(predicateArray,scatterLocations,size);
+
+	// Scatter rays to new locations in output array
+	scatterPhotons<<<dim3(numBlocks,1,1),dim3(numThreads,1,1)>>>(inputPhotons,outputPhotons,predicateArray,scatterLocations,size);
+	checkCUDAError("Scatter Failed!");	
+
+	cudaFree(scatterLocations);
+	cudaFree(predicateArray);
+	
+	return compactedSize;
+
+}
+
+#endif
 
 
 #if PHOTONMAP
@@ -892,6 +955,24 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 
 }
 
+//for world to screen space transformations
+__device__ glm::vec2 worldToScreen(cudaMat4& transMat, glm::vec4& position, glm::vec2& resolution) {
+	
+	glm::vec4 screenPosition = multiplyMV_4(transMat,position);
+
+	// Shift to viewport matrix
+	//transform to clip
+	screenPosition.x /= screenPosition.w;
+	screenPosition.y /= screenPosition.w;
+	screenPosition.z /= screenPosition.w;
+
+	//transform to screen coord
+	screenPosition.x = (screenPosition.x+1) * resolution.x/2.0f;
+	screenPosition.y = (-screenPosition.y+1) * resolution.y/2.0f;
+
+	return glm::vec2 (screenPosition.x, screenPosition.y);
+}
+
 __global__ void displayPhotons(photon* photonPool, int numPhotons, int numBounces, glm::vec2 resolution, cameraData cam, glm::vec3* colors, cudaMat4 viewProjectionViewport, float flux)
 {
 
@@ -899,42 +980,26 @@ __global__ void displayPhotons(photon* photonPool, int numPhotons, int numBounce
 	
 	if(index < numPhotons)
 	{
-		
 		for (int i = 0; i < numBounces; ++i) {
 		
 			photon p = photonPool[numPhotons * i + index];
+			glm::vec3 photonToEye = cam.position - p.position;
 
 			//only display color if photon is not dead at that position
 			if (p.stored) {
 				glm::vec3 photonToEye = cam.position - p.position;
 				
-				// Do this assuming view, projection and viewport matrices are provided
-				//glm::vec3 screenPosition = multiplyMV(viewProjectionViewport,glm::vec4(p.position,1.0f));
-				
-				glm::vec4 screenPosition = multiplyMV_4(viewProjectionViewport, glm::vec4(p.position, 1.0f));
-
-				// Shift to viewport matrix
-				//transform to clip
-				screenPosition.x /= screenPosition.w;
-				screenPosition.y /= screenPosition.w;
-				screenPosition.z /= screenPosition.w;
-
-				//transform to screen coord
-				screenPosition.x = (screenPosition.x+1) * resolution.x/2.0f;
-				screenPosition.y = (-screenPosition.y+1) * resolution.y/2.0f;
+				//transform position from world to screen space
+				glm::vec2 screenPosition = worldToScreen(viewProjectionViewport, glm::vec4(p.position, 1.0f), resolution);
 
 				if(screenPosition.x >=0 && screenPosition.x < resolution.x && screenPosition.y >=0 && screenPosition.y < resolution.y)
 				{
 					// write to the color buffer!
 					// race conditions?
-					int x = screenPosition.x;
-					int y = screenPosition.y;
-					int pixelIndex = x + (y * resolution.x);
-					//colors[pixelIndex] = glm::abs(p.dout);		//glm::abs causes a kernel failure on my computer...
+					int pixelIndex = (int) (screenPosition.x + (screenPosition.y * resolution.x));
 					colors[pixelIndex] = p.color;
 				}
 			}
-
 		}
 	}
 }
@@ -1263,6 +1328,9 @@ void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMate
 	cudaPhotonPool = NULL;
 	cudaMalloc((void**)&cudaPhotonPool, numBounces * numPhotons * sizeof(photon));
 
+	cudaPhotonPoolCompact = NULL;
+	cudaMalloc((void**)&cudaPhotonPoolCompact, numBounces * numPhotons * sizeof(photon));
+
 	cudaPhotonMapImage = NULL;
 	cudaMalloc((void**)&cudaPhotonMapImage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3));
 
@@ -1322,6 +1390,7 @@ void cudaFreeMemory() {
 
 #if PHOTONMAP
 	cudaFree(cudaPhotonPool);
+	cudaFree(cudaPhotonPoolCompact);
 	cudaFree(cudaPhotonMapImage);
 #endif
 
@@ -1377,6 +1446,18 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	// Assume each light emits the same number of photons, calculate the flux per photon
 	float flux = totalEnergy/((float)numPhotons/(float)numLights);
 
+#if PHOTONCOMPACT 
+
+	//stream compact photons after all bounces are finished
+	int numPhotonsCompact = streamCompactPhotons(cudaPhotonPool, cudaPhotonPoolCompact, numPhotons * numBounces);
+	
+	//break compacted photons into chunks like the uncompacted ones
+	numPhotonsCompact = ceil(numPhotonsCompact / numBounces);
+
+	//update number of blocks needed for kernels
+	photonBlocksPerGrid = ceil(numPhotonsCompact * 1.0f / photonThreadsPerBlock);
+
+#endif
 
 if (mode == DISP_GATHER)
 {
@@ -1391,8 +1472,14 @@ if (mode == DISP_GATHER)
 	// Assume each light emits the same number of photons, calculate the flux per photon
 	float flux = totalEnergy/(float)numPhotons;
 
+#if PHOTONCOMPACT 
 	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms,
+		cudarays, cudaPhotonPoolCompact, numPhotonsCompact, numBounces, flux);
+#else
+	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms, 
 		cudarays, cudaPhotonPool, numPhotons, numBounces, flux);
+#endif
+
 	cudaThreadSynchronize();
 	checkCUDAError("gather photonskernel failed!");
 
@@ -1413,10 +1500,18 @@ else if (mode == DISP_PHOTONS)
 	//utilityCore::printCudaMat4(viewProjectionViewPort);
 
 	// Display all photons in the photonImage buffer
+
+#if PHOTONCOMPACT 
+	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPoolCompact, numPhotonsCompact, numBounces, resolution, 
+		cam, cudaPhotonMapImage, viewProjectionViewPort, flux);
+#else
 	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, resolution, 
 		cam, cudaPhotonMapImage, viewProjectionViewPort, flux);
+#endif
+
 	cudaThreadSynchronize();
 	checkCUDAError("display photons kernel failed!");
+
 }
 
 

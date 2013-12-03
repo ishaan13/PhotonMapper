@@ -38,6 +38,8 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms);
 void cudaFreeMemory();
 
+int streamCompactPhotons (photon* inputPhotons, photon* outputPhotons, int size);
+
 __host__ __device__ glm::vec3 generateRandomNumberFromThread(glm::vec2 resolution, float time, int x, int y);
 #endif
 
