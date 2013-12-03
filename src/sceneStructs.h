@@ -41,6 +41,20 @@ struct photon {
 	int originalIndex;		// If using stream compaction
 #endif
 };
+
+struct gridAttributes {
+	float xmin, ymin, zmin;
+	float xmax, ymax, zmax;
+	float cellsize;
+	int xdim, ydim, zdim;
+
+	gridAttributes(float x1, float y1, float z1, float x2, float y2, float z2, float cs) {
+		xmin = x1; ymin = y1; zmin = z1;
+		xmax = x2; ymax = y2; zmax = z2;
+		cellsize = cs;
+	};
+};
+
 #endif
 
 struct geom {
