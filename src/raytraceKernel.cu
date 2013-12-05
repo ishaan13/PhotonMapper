@@ -28,6 +28,7 @@
 #define PAINTERLY 0
 #define PHOTONMAP 1
 #define PHOTONCOMPACT 1
+#define K 10
 
 #if CUDA_VERSION >= 5000
     #include <helper_math.h>
@@ -57,7 +58,7 @@ glm::vec3* cudaPhotonMapImage;
 
 int* cudaPhotonGridIndex;			//maps photonID to gridID
 
-#define RADIUS 1
+#define RADIUS 1.0f
 
 gridAttributes grid(-10.5, -10.5, -10.5, 10.5, 10.5, 10.5, RADIUS);
 
@@ -1203,9 +1204,24 @@ __device__ float gaussianWeight( float dx, float radius)
 	return (oneOverSqrtTwoPi / sigma) * exp( - (dx*dx) / (2.0 * sigma * sigma) );
 }
 
+// Find the index of the photon with the largest distance to the intersection
+__device__ int findMaxDistancePhotonIndex(photon* photons, int photonCount, glm::vec3 intersection, int& maxIndex, float& maxDist) {
+	maxIndex = -1;
+	maxDist = -1;
+	for (int i=0; i<photonCount; ++i) {
+		photon p = photons[i];
+		float dist = glm::distance(p.position, intersection);
+		if (dist > maxDist) {
+			maxDist = dist;
+			maxIndex =  i;
+		}
+	}
+}
+
 // Caculate radiances from photons
 __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, glm::vec3* colors, staticGeom* geoms,
-															int numberOfGeoms, ray* rayPool, photon* photons, int numPhotons, int numBounces, float flux) {
+															int numberOfGeoms, ray* rayPool, photon* photons, int* gridFirstPhotonIndices, int* gridIndices,
+															gridAttributes grid, float flux) {
 
 	int x = (blockIdx.x * blockDim.x) + threadIdx.x;
 	int y = (blockIdx.y * blockDim.y) + threadIdx.y;
@@ -1251,14 +1267,53 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 		if(intersectedGeom > -1)
 		{
 			glm::vec3 accumColor(0);
-			//Use brute force search to find the photons that are within a certain radius
-			for (int i=0; i<numPhotons * numBounces; ++i) {
-				photon p = photons[i];
-				float photonDistance  = glm::distance(minIntersectionPoint, p.position);
-				// Indirect Illumination only?
-				if ( photonDistance <= RADIUS && p.geomid == intersectedGeom && p.bounces > 1) {
-					//Is lambert brdf cos(theta_i)?
-					accumColor += gaussianWeight(photonDistance, RADIUS) *  max(0.0f, glm::dot(minNormal, -p.din)) * p.color;
+
+      int px, py, pz; //photon's grid cell index
+      getCellIndex(minIntersectionPoint, grid, px, py, pz);
+			if (px>=0 && px<grid.xdim && py>=0 && py<grid.ydim && pz>=0 && pz<grid.zdim) { //if intersection is within the grid
+				// Find photons in neighboring cells
+				photon neighborPhotons[K];
+				int neighborPhotonCount = 0;
+				for (int i=max(0, px-1); i<min(grid.xdim, px+2); ++i) {
+          for (int j=max(0, py-1); j<min(grid.ydim, py+2); ++j) {
+						for (int k=max(0, pz-1); k<min(grid.zdim, pz+2); ++k) {
+							int gridIndex = gridPhotonHash(i, j, k, grid);
+							int firstPhotonIndex = gridFirstPhotonIndices[gridIndex]; //find the index of the first photon in the cell
+							if (firstPhotonIndex != -1) {
+								int pi = firstPhotonIndex;
+								while (gridIndices[pi] == gridIndex) {
+									photon p = photons[pi];
+									// Check if the photon is on the same geometry as the intersection
+									if (p.geomid == intersectedGeom) {
+										// We only store K photons. If there are less than K photons in stored in the array, add the current photon to the array
+										if (neighborPhotonCount < K) {
+											neighborPhotons[neighborPhotonCount] = p;
+											neighborPhotonCount++;
+										}
+										// If the array is full, find the photon with the largest distance to the intersection. If current photon's distance
+										// to the intersection is smaller, replace the photon with the largest distance with the current photon
+										else {
+											int maxIndex;
+											float maxDist;
+											findMaxDistancePhotonIndex(neighborPhotons, K, minIntersectionPoint, maxIndex, maxDist);
+											float dist = glm::distance(p.position, minIntersectionPoint);
+											if (dist < maxDist) {
+												neighborPhotons[maxIndex] = p;
+											}
+										}
+										pi++;
+									}
+								}
+							}
+						}
+					}
+				}
+
+				// Accumulate radiance of the K nearest photons
+				for (int i=0; i<neighborPhotonCount; ++i) {
+					photon p = neighborPhotons[i];
+					float photonDistance  = glm::distance(minIntersectionPoint, p.position);
+					accumColor += gaussianWeight(photonDistance, RADIUS) * max(0.0f, glm::dot(minNormal, -p.din)) * p.color;
 				}
 			}
 			colors[index] += accumColor * flux;
@@ -1289,7 +1344,7 @@ void initPhotonMap()
 	//Create Memory for RayPool
 	cudaPhotonPool = NULL;
 	cudaMalloc((void**)&cudaPhotonPool, numBounces * numPhotons * sizeof(photon));
-	
+
 }
 
 void cleanPhotonMap()
@@ -1519,13 +1574,13 @@ if (mode == DISP_GATHER)
 	// Assume each light emits the same number of photons, calculate the flux per photon
 	float flux = totalEnergy/(float)numPhotons;
 
-#if PHOTONCOMPACT 
-	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms,
-		cudarays, cudaPhotonPoolCompact, numPhotonsCompact, numBounces, flux);
-#else
-	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms, 
-		cudarays, cudaPhotonPool, numPhotons, numBounces, flux);
-#endif
+//#if PHOTONCOMPACT 
+//	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms,
+//		cudarays, cudaPhotonPoolCompact, numPhotonsCompact, numBounces, flux);
+//#else
+//	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms, 
+//		cudarays, cudaPhotonPool, numPhotons, numBounces, flux);
+//#endif
 
 	cudaThreadSynchronize();
 	checkCUDAError("gather photonskernel failed!");
