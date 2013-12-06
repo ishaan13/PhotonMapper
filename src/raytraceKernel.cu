@@ -5,6 +5,10 @@
 //       Peter Kutz and Yining Karl Li's GPU Pathtracer: http://gpupathtracer.blogspot.com/
 //       Yining Karl Li's TAKUA Render, a massively parallel pathtracing renderer: http://www.yiningkarlli.com
 
+#include <thrust/device_vector.h>
+#include <thrust/device_ptr.h>
+#include <thrust/sort.h>
+
 #include <stdio.h>
 #include <cuda.h>
 #include <cmath>
@@ -47,20 +51,26 @@ enum {
 
 
 #if PHOTONMAP
-int numPhotons = 100000;
+int numPhotons = 10000;
+int numPhotonsCompact = numPhotons;
 
 int numBounces = 5;			//hard limit of 3 bounces for now
-float totalEnergy = 80;			//total amount of energy in the scene, used for calculating flux per photon
+float totalEnergy = 300;			//total amount of energy in the scene, used for calculating flux per photon
 
 photon* cudaPhotonPool;		//global variable of photons
+
+#if PHOTONCOMPACT
 photon* cudaPhotonPoolCompact;		//stores output photons after stream compaction
+#endif
+
 glm::vec3* cudaPhotonMapImage;
 
 int* cudaPhotonGridIndex;			//maps photonID to gridID
+int* cudaGridFirstPhotonIndex;
 
 #define RADIUS 1.0f
 
-gridAttributes grid(-10.5, -10.5, -10.5, 10.5, 10.5, 10.5, RADIUS);
+gridAttributes grid(-5.5, -0.5, -5.5, 5.5, 10.5, 5.5, RADIUS);
 
 #endif
 
@@ -76,6 +86,12 @@ int* cudaLights;
 float* cudaAccumLightProbabilities;
 int numLights;
 int numGeoms;
+
+// per frame variables
+ray* cudarays = NULL;
+#if COMPACTION
+ray* cudarays2 = NULL;
+#endif
 
 void checkCUDAError(const char *msg) {
   cudaError_t err = cudaGetLastError();
@@ -899,30 +915,29 @@ __device__ int gridPhotonHash (int &i, int& j, int &k, gridAttributes& grid) {
 }
 
 //maps photon's position to a grid cell index
-__global__ void mapPhotonToGrid(photon* photonPool, int numPhotons, int numBounces, int* gridIndex, gridAttributes grid) {
+__global__ void mapPhotonToGrid(photon* photonPool, int numPhotons, int* gridIndex, gridAttributes grid) {
 
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (index < numPhotons) {
+		photon p = photonPool[index];
 
-		for (int i = 0; i < numBounces; ++i) {
-			int photonIndex = i * numPhotons + index;
-			photon p = photonPool[photonIndex];
+		if(p.stored == false) return;
 
-			//find which gridcell this photon is in
-			int x, y, z;
-			getCellIndex(p.position, grid, x, y, z);
+		//find which gridcell this photon is in
+		int x, y, z;
+		getCellIndex(p.position, grid, x, y, z);
 
-			//use hash funcion x + y*dx + z*dx*dy to assign a grid index to photon
-			gridIndex [photonIndex] = gridPhotonHash(x, y, z, grid);
-		}
+		if (x<0 || x>=grid.xdim || y<0 || y>=grid.ydim || z<0 || z>=grid.zdim) return;
+
+		//use hash funcion x + y*dx + z*dx*dy to assign a grid index to photon
+		gridIndex [index] = gridPhotonHash(x, y, z, grid);
 	}
-
 }
 
 //function for emitting photons from a sphere light
 __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, staticGeom* geoms, int* lights, int numberOfLights,
-														float* cudaAccumLightProbabilities, material* materials, float time)
+	float* cudaAccumLightProbabilities, material* materials, float time)
 {
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 	if(index < numPhotons)
@@ -1010,34 +1025,32 @@ __device__ glm::vec2 worldToScreen(cudaMat4& transMat, glm::vec4& position, glm:
 	return glm::vec2 (screenPosition.x, screenPosition.y);
 }
 
-__global__ void displayPhotons(photon* photonPool, int numPhotons, int numBounces, glm::vec2 resolution, cameraData cam, glm::vec3* colors, cudaMat4 viewProjectionViewport, float flux)
+__global__ void displayPhotons(photon* photonPool, int numTotalPhotons, glm::vec2 resolution, cameraData cam, glm::vec3* colors, cudaMat4 viewProjectionViewport, float flux)
 {
 
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
-	
-	if(index < numPhotons)
+
+	if(index < numTotalPhotons)
 	{
-		for (int i = 0; i < numBounces; ++i) {
-		
-			photon p = photonPool[numPhotons * i + index];
+
+		photon p = photonPool[index];
+		glm::vec3 photonToEye = cam.position - p.position;
+
+		//only display color if photon is not dead at that position
+		if (p.stored) {
 			glm::vec3 photonToEye = cam.position - p.position;
 
-			//only display color if photon is not dead at that position
-			if (p.stored) {
-				glm::vec3 photonToEye = cam.position - p.position;
-				
-				//transform position from world to screen space
-				glm::vec2 screenPosition = worldToScreen(viewProjectionViewport, glm::vec4(p.position, 1.0f), resolution);
+			//transform position from world to screen space
+			glm::vec2 screenPosition = worldToScreen(viewProjectionViewport, glm::vec4(p.position, 1.0f), resolution);
 
-				if(screenPosition.x >=0 && screenPosition.x < resolution.x && screenPosition.y >=0 && screenPosition.y < resolution.y)
-				{
-					// write to the color buffer!
-					// race conditions?
-					int x = screenPosition.x;
-                    int y = screenPosition.y;
-                    int pixelIndex = x + (y * resolution.x);
-					colors[pixelIndex] = p.color;
-				}
+			if(screenPosition.x >=0 && screenPosition.x < resolution.x && screenPosition.y >=0 && screenPosition.y < resolution.y)
+			{
+				// write to the color buffer!
+				// race conditions?
+				int x = screenPosition.x;
+				int y = screenPosition.y;
+				int pixelIndex = x + (y * resolution.x);
+				colors[pixelIndex] = p.color;
 			}
 		}
 	}
@@ -1197,6 +1210,106 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 
 }
 
+__global__ void initGridFirstPhotonIndex(int* sortedPhotonGridIndex, gridAttributes grid) {
+	int x = (blockIdx.x * blockDim.x) + threadIdx.x;
+  int y = (blockIdx.y * blockDim.y) + threadIdx.y;
+  int z = (blockIdx.z * blockDim.z) + threadIdx.z;
+
+  if (x < grid.xdim && y < grid.ydim && z < grid.zdim) {
+		int index = gridPhotonHash(x, y, z, grid);
+		sortedPhotonGridIndex[index] = -1;
+	}
+}
+
+__global__ void computeGridFirstPhoton(int* sortedPhotonGridIndex, int numPhotons, int* gridFirstPhotonIndex)
+{
+	int index = blockIdx.x * blockDim.x + threadIdx.x; 
+	if (index < numPhotons)
+	{
+
+		// First one always has to be stored
+		if (index == 0)
+		{
+			gridFirstPhotonIndex[sortedPhotonGridIndex[index]] = index;
+		}
+		else
+		{
+			int currGrid = sortedPhotonGridIndex[index];
+			int prevGrid = sortedPhotonGridIndex[index-1];
+
+			if(currGrid != prevGrid)
+			{
+				gridFirstPhotonIndex[currGrid] = index;
+			}
+		}
+	}
+}
+
+void buildSpatialHash()
+{
+	// calculate hash value for each photon.
+
+	//allocate memory for grid data, do it per iteration since size might change if we use stream compaction for photons
+	cudaPhotonGridIndex = NULL;
+
+	//break compacted photons into chunks like the uncompacted ones
+	int photonThreadsPerBlock = 512;
+
+	// stream compact photons
+
+#if PHOTONCOMPACT 
+	//stream compact photons after all bounces are finished
+	numPhotonsCompact = streamCompactPhotons(cudaPhotonPool, cudaPhotonPoolCompact, numPhotons * numBounces);
+
+	cudaMalloc((void**)&cudaPhotonGridIndex, numPhotonsCompact * sizeof(int));
+
+	//update number of blocks needed for kernels
+	int photonBlocksPerGrid = ceil(numPhotonsCompact * 1.0f / photonThreadsPerBlock);
+
+	//map photon id to grid id
+	mapPhotonToGrid<<<dim3(photonBlocksPerGrid), dim3(photonThreadsPerBlock)>>>(cudaPhotonPoolCompact, numPhotonsCompact, cudaPhotonGridIndex, grid);
+
+#else
+
+	//update number of blocks needed for kernels
+	int photonBlocksPerGrid = ceil(numPhotons * numBounces * 1.0f / photonThreadsPerBlock);
+
+	cudaMalloc((void**)&cudaPhotonGridIndex, numPhotons * numBounces * sizeof(int));
+	mapPhotonToGrid<<<dim3(photonBlocksPerGrid), dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons * numBounces, cudaPhotonGridIndex, grid);
+
+#endif 
+
+	// sort photons based on hash ID
+	thrust::device_ptr<int> thrustGridIndex = thrust::device_pointer_cast(cudaPhotonGridIndex);
+#if PHOTONCOMPACT
+	thrust::device_ptr<photon> thrustPhotons = thrust::device_pointer_cast(cudaPhotonPoolCompact);
+	thrust::sort_by_key(thrustGridIndex, thrustGridIndex+numPhotonsCompact, thrustPhotons);
+#else
+	thrust::device_ptr<photon> thrustPhotons = thrust::device_pointer_cast(cudaPhotonPool);
+	thrust::sort_by_key(thrustGridIndex, thrustGridIndex+numPhotons, thrustPhotons);
+#endif
+
+	std::cout<<"Num:"<<numPhotons*numBounces<<" Compacted:"<<numPhotonsCompact<<std::endl;
+
+	// Fill cudaGridFirstPhotonIndex with -1
+	int tileSize = 4; //since the grid is 3D
+  dim3 photonGridThreadsPerBlock(tileSize, tileSize, tileSize);
+  dim3 photonGridBlocksPerGrid((int)ceil(float(grid.xdim)/float(tileSize)), (int)ceil(float(grid.ydim)/float(tileSize)), (int)ceil(float(grid.zdim)/float(tileSize)));
+	initGridFirstPhotonIndex<<<photonGridBlocksPerGrid, photonGridThreadsPerBlock>>>(cudaGridFirstPhotonIndex, grid);
+	
+	// calculate starting photon index for each hashID
+#if PHOTONCOMPACT
+	computeGridFirstPhoton<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonGridIndex, numPhotonsCompact, cudaGridFirstPhotonIndex);
+#else
+	computeGridFirstPhoton<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonGridIndex, numPhotons*numBounces, cudaGridFirstPhotonIndex);
+#endif
+
+	
+
+	// compress hash-id structure?
+}
+
+
 #define oneOverSqrtTwoPi 0.3989422804f
 __device__ float gaussianWeight( float dx, float radius)
 {
@@ -1220,8 +1333,8 @@ __device__ int findMaxDistancePhotonIndex(photon* photons, int photonCount, glm:
 
 // Caculate radiances from photons
 __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, glm::vec3* colors, staticGeom* geoms,
-															int numberOfGeoms, ray* rayPool, photon* photons, int* gridFirstPhotonIndices, int* gridIndices,
-															gridAttributes grid, float flux) {
+															int numberOfGeoms, ray* rayPool, photon* photons, int numTotalPhotons, int* gridFirstPhotonIndices,
+															int* gridIndices, gridAttributes grid, float flux) {
 
 	int x = (blockIdx.x * blockDim.x) + threadIdx.x;
 	int y = (blockIdx.y * blockDim.y) + threadIdx.y;
@@ -1281,11 +1394,11 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 							int firstPhotonIndex = gridFirstPhotonIndices[gridIndex]; //find the index of the first photon in the cell
 							if (firstPhotonIndex != -1) {
 								int pi = firstPhotonIndex;
-								while (gridIndices[pi] == gridIndex) {
+								while (pi < numTotalPhotons && gridIndices[pi] == gridIndex) {
 									photon p = photons[pi];
 									// Check if the photon is on the same geometry as the intersection
 									if (p.geomid == intersectedGeom) {
-										// We only store K photons. If there are less than K photons in stored in the array, add the current photon to the array
+										// We only store K photons. If there are less than K photons stored in the array, add the current photon to the array
 										if (neighborPhotonCount < K) {
 											neighborPhotons[neighborPhotonCount] = p;
 											neighborPhotonCount++;
@@ -1301,8 +1414,8 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 												neighborPhotons[maxIndex] = p;
 											}
 										}
-										pi++;
 									}
+									pi++;
 								}
 							}
 						}
@@ -1312,7 +1425,7 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 				// Accumulate radiance of the K nearest photons
 				for (int i=0; i<neighborPhotonCount; ++i) {
 					photon p = neighborPhotons[i];
-					float photonDistance  = glm::distance(minIntersectionPoint, p.position);
+					float photonDistance = glm::distance(minIntersectionPoint, p.position);
 					accumColor += gaussianWeight(photonDistance, RADIUS) * max(0.0f, glm::dot(minNormal, -p.din)) * p.color;
 				}
 			}
@@ -1404,13 +1517,22 @@ void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMate
 	cudaMalloc((void**)&cudaLights, numLights*sizeof(int));
 	cudaMemcpy( cudaLights, lightID, numLights*sizeof(int), cudaMemcpyHostToDevice);
 
+	//Create Memory for RayPool
+	cudaMalloc((void**)&cudarays, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
+
+#if COMPACTION
+	cudaMalloc((void**)&cudarays2, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
+#endif
+
 #if PHOTONMAP
 	//std::cout<<"allocating mem for photon pool"<<std::endl;
 	cudaPhotonPool = NULL;
 	cudaMalloc((void**)&cudaPhotonPool, numBounces * numPhotons * sizeof(photon));
 
+#if PHOTONCOMPACT
 	cudaPhotonPoolCompact = NULL;
 	cudaMalloc((void**)&cudaPhotonPoolCompact, numBounces * numPhotons * sizeof(photon));
+#endif
 
 	cudaPhotonMapImage = NULL;
 	cudaMalloc((void**)&cudaPhotonMapImage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3));
@@ -1464,6 +1586,9 @@ void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMate
 
 	cudaAllocateAccumulatorImage(renderCam);
 
+	cudaGridFirstPhotonIndex=NULL;
+	cudaMalloc((void**)&cudaGridFirstPhotonIndex, grid.xdim * grid.ydim * grid.zdim * sizeof(int));
+
 	delete[] geomList;
 	delete[] lightID;
 }
@@ -1476,19 +1601,46 @@ void cudaFreeMemory() {
 	cudaFree( cudamaterials);
 	cudaFree( cudaLights);
 
+	cudaFree(cudarays);
+#if COMPACTION
+	cudaFree(cudarays2);
+#endif
+
+
 #if PHOTONMAP
 	cudaFree(cudaPhotonPool);
+#if PHOTONCOMPACT
 	cudaFree(cudaPhotonPoolCompact);
+#endif
 	cudaFree(cudaPhotonMapImage);
+	cudaFree(cudaGridFirstPhotonIndex);
 #endif
 
 	cudaFreeAccumulatorImage();
 
 }
 
+void cudaAllocateIterationMemory(camera* renderCam)
+{
+	// cudaPhotonGridIndex is allocated only when needed
+}
+
+void cudaFreeIterationMemory()
+{
+	//free up stuff, or else we'll leak memory like a madman
+
+	//free grid data
+	if(cudaPhotonGridIndex)
+	{
+		cudaFree(cudaPhotonGridIndex);
+		cudaPhotonGridIndex = NULL;
+	}
+}
 
 void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBOpos, cameraData liveCamera)
 {
+	cudaAllocateIterationMemory(renderCam);
+
 	// Set up crucial magic
 	glm::vec2 resolution = renderCam->resolution;
 	int tileSize = 8;
@@ -1510,7 +1662,7 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	cam.view = glm::normalize(cam.view + liveCamera.view);
 	cam.aperture += liveCamera.aperture;
 	cam.focusPlane += liveCamera.focusPlane;
-
+	
 	// Clear photon image buffer
 	clearImage<<<pixelBlocksPerGrid,pixelThreadsPerBlock>>>(resolution, cudaPhotonMapImage);
 	cudaThreadSynchronize();
@@ -1531,32 +1683,9 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	checkCUDAError("tracePhotons kernel failed!");
 
 	// Assume each light emits the same number of photons, calculate the flux per photon
-	float flux = totalEnergy/((float)numPhotons/(float)numLights);
+	float flux = totalEnergy/(float)numPhotons;
 
-	//allocate memory for grid data, do it per iteration since size might change if we use stream compaction for photons
-	cudaPhotonGridIndex = NULL;
-
-#if PHOTONCOMPACT 
-	//stream compact photons after all bounces are finished
-	int numPhotonsCompact = streamCompactPhotons(cudaPhotonPool, cudaPhotonPoolCompact, numPhotons * numBounces);
-	
-	//break compacted photons into chunks like the uncompacted ones
-	numPhotonsCompact = ceil(numPhotonsCompact / numBounces);
-
-	//update number of blocks needed for kernels
-	photonBlocksPerGrid = ceil(numPhotonsCompact * 1.0f / photonThreadsPerBlock);
-
-	cudaMalloc((void**)&cudaPhotonGridIndex, numBounces * numPhotonsCompact * sizeof(int));
-	
-	//map photon id to grid id
-	mapPhotonToGrid<<<dim3(photonBlocksPerGrid), dim3(photonThreadsPerBlock)>>>(cudaPhotonPoolCompact, numPhotonsCompact, numBounces, cudaPhotonGridIndex, grid);
-
-#else
-	cudaMalloc((void**)&cudaPhotonGridIndex, numBounces * numPhotons * sizeof(int));
-	mapPhotonToGrid<<<dim3(photonBlocksPerGrid), dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, cudaPhotonGridIndex, grid);
-
-#endif
-
+	buildSpatialHash();
 	cudaThreadSynchronize();
 	checkCUDAError("calculating grid idx kernel failed!");
 
@@ -1564,30 +1693,22 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 if (mode == DISP_GATHER)
 {
 	// Compute radiance from photons
-	// Generate rays first
-	ray* cudarays = NULL;
-	cudaMalloc((void**)&cudarays, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
+
 	fillRayPoolFromCamera<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudarays);
 	cudaThreadSynchronize();
 	checkCUDAError("fill ray pool kernel failed!");
 
-	// Assume each light emits the same number of photons, calculate the flux per photon
-	float flux = totalEnergy/(float)numPhotons;
-
-//#if PHOTONCOMPACT 
-//	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms,
-//		cudarays, cudaPhotonPoolCompact, numPhotonsCompact, numBounces, flux);
-//#else
-//	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms, 
-//		cudarays, cudaPhotonPool, numPhotons, numBounces, flux);
-//#endif
+#if PHOTONCOMPACT 
+	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms,
+		cudarays, cudaPhotonPoolCompact, numPhotonsCompact, cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux);
+#else
+	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms, 
+		cudarays, cudaPhotonPool, numPhotons * numBounces, cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux);
+#endif
 
 	cudaThreadSynchronize();
 	checkCUDAError("gather photonskernel failed!");
 
-	cudaFree(cudarays);
-	cudaThreadSynchronize();
-	checkCUDAError("free ray pool failed!");
 }
 else if (mode == DISP_PHOTONS)
 {
@@ -1600,10 +1721,13 @@ else if (mode == DISP_PHOTONS)
 	
 	// Display all photons in the photonImage buffer
 #if PHOTONCOMPACT 
-	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPoolCompact, numPhotonsCompact, numBounces, resolution, 
+	photonBlocksPerGrid = ceil(numPhotonsCompact * 1.0f/photonThreadsPerBlock);
+
+	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPoolCompact, numPhotonsCompact, resolution, 
 		cam, cudaPhotonMapImage, viewProjectionViewPort, flux);
 #else
-	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, resolution, 
+	photonBlocksPerGrid = ceil(numPhotons*numBounces * 1.0f/photonThreadsPerBlock);
+	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons * numBounces, resolution, 
 		cam, cudaPhotonMapImage, viewProjectionViewPort, flux);
 #endif
 
@@ -1628,11 +1752,10 @@ else if (mode == DISP_PHOTONS)
 	cudaMemcpy(renderCam->image, cudaPhotonMapImage, imageSize*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
 #endif
 
-	//free grid data
-	cudaFree(cudaPhotonGridIndex);
-
 	cudaThreadSynchronize();
 	checkCUDAError("Photon mapping kernel failed!");
+
+	cudaFreeIterationMemory();
 
 }
 #endif	
@@ -1647,6 +1770,8 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
   //  // Allocate Accumulator Image
   //  cudaAllocateAccumulatorImage(renderCam);
   //}
+
+  cudaAllocateIterationMemory(renderCam);
 
   int traceDepth = 1; //determines how many bounces the raytracer traces
 
@@ -1670,15 +1795,6 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
   cam.view = glm::normalize(cam.view + liveCamera.view);
   cam.aperture += liveCamera.aperture;
   cam.focusPlane += liveCamera.focusPlane;
-
-  //Create Memory for RayPool
-  ray* cudarays = NULL;
-  cudaMalloc((void**)&cudarays, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
-
-#if COMPACTION
-  ray* cudarays2 = NULL;
-  cudaMalloc((void**)&cudarays2, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
-#endif
 
   //clear On screen buffer
   clearImage<<<fullBlocksPerGrid,threadsPerBlock>>>(renderCam->resolution, cudaimage);
@@ -1726,15 +1842,12 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
 	cudaMemcpy( renderCam->image, cudaimage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
 #endif
 
-  //free up stuff, or else we'll leak memory like a madman
-  cudaFree( cudarays );
-#if COMPACTION
-  cudaFree( cudarays2);
-#endif
   // make certain the kernel has completed
   cudaThreadSynchronize();
 
   checkCUDAError("Kernel failed!");
+
+  cudaFreeIterationMemory();
 }
 
 
