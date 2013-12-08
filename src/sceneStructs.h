@@ -29,7 +29,7 @@ struct ray {
 };
 
 struct photon {
-	bool stored;			// Check if the current photon has been stored, i.e. do not bounce this photon further
+	bool stored;			// Check if the current photon has been stored, for gather
 	glm::vec3 position;		// Position of photon
 	glm::vec3 din;	// Incoming direction of photon (potentially use theta phi?)
 	glm::vec3 dout; // Outgoing direction

@@ -104,7 +104,7 @@ REFRIOR     0
 SCATTER     0        
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
-EMITTANCE   5
+EMITTANCE   1
 
 MATERIAL 9				//light
 RGB         1 1 1       

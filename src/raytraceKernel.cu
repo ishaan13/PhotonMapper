@@ -49,11 +49,12 @@ enum {
 };
 
 
-int numPhotons = 10000;
+int numPhotons = 100;
 int numPhotonsCompact = numPhotons;
 
-int numBounces = 5;			//hard limit of 3 bounces for now
-float totalEnergy = 1000;			//total amount of energy in the scene, used for calculating flux per photon
+int numBounces = 10;			//hard limit of n bounces for now
+float emitEnergyScale = 100; //Empirically Verify this value
+float totalEnergy;	//total amount of energy in the scene, used for calculating flux per photon
 float flux;
 
 photon* cudaPhotonPool;		//global variable of photons
@@ -1155,6 +1156,8 @@ void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMate
 	std::vector<int> lightVec;
 	numGeoms = numberOfGeoms;
 
+	float totalEmittance = 0.0f;
+
 	//get geom from frame 0
 	for(int i=0; i<numberOfGeoms; i++){
 			staticGeom newStaticGeom;
@@ -1169,8 +1172,14 @@ void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMate
 
 			//store which objects are lights
 			if(materials[geoms[i].materialid].emittance > 0)
-					lightVec.push_back(i);
+			{
+				lightVec.push_back(i);
+				// Add surface area of light here too?
+				totalEmittance += materials[geoms[i].materialid].emittance;
+			}
 	}
+
+	totalEnergy = totalEmittance * emitEnergyScale;
 
 	cudageoms = NULL;
 	cudaMalloc((void**)&cudageoms, numberOfGeoms*sizeof(staticGeom));
