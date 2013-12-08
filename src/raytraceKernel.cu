@@ -30,7 +30,6 @@
 #define SCHLICK 0
 #define PATHTRACER 0	
 #define PAINTERLY 0
-#define PHOTONMAP 1
 #define PHOTONCOMPACT 1
 #define K 10
 
@@ -50,12 +49,12 @@ enum {
 };
 
 
-#if PHOTONMAP
 int numPhotons = 10000;
 int numPhotonsCompact = numPhotons;
 
 int numBounces = 5;			//hard limit of 3 bounces for now
-float totalEnergy = 300;			//total amount of energy in the scene, used for calculating flux per photon
+float totalEnergy = 1000;			//total amount of energy in the scene, used for calculating flux per photon
+float flux;
 
 photon* cudaPhotonPool;		//global variable of photons
 
@@ -72,7 +71,6 @@ int* cudaGridFirstPhotonIndex;
 
 gridAttributes grid(-5.5, -0.5, -5.5, 5.5, 10.5, 5.5, RADIUS);
 
-#endif
 
 glm::vec3* accumulatorImage = NULL;
 extern bool singleFrameMode;
@@ -242,279 +240,6 @@ __device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, glm
 
 	
 	return visible;
-}
-
-//TODO: IMPLEMENT THIS FUNCTION
-//Core raytracer kernel
-__global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, int rayDepth, glm::vec3* colors,
-                            staticGeom* geoms, int numberOfGeoms, material* materials, int numberOfMaterials, ray* rayPool
-#if COMPACTION
-							, int numberOfRays
-#endif
-							){
-	int index;
-	int x,y;
-#if COMPACTION
-	index = blockIdx.x * blockDim.x + threadIdx.x;
-	y = index / resolution.x;
-	x = index - y * resolution.x;
-	if (index < numberOfRays) {
-#else
-	x = (blockIdx.x * blockDim.x) + threadIdx.x;
-	y = (blockIdx.y * blockDim.y) + threadIdx.y;
-	index = x + (y * resolution.x);
-	if((x<=resolution.x && y<=resolution.y) && glm::length(rayPool[index].transmission) > FLOAT_EPSILON){
-#endif
-
-	ray r = rayPool[index];	
-
-
-	//Check all geometry for intersection
-	int intersectedGeom = -1;
-	int intersectedMaterial = -1;
-	float minDepth = 1000000.0f;
-	glm::vec3 minIntersectionPoint;
-	glm::vec3 minNormal = glm::vec3(0.0f);
-	for(int iter=0; iter < numberOfGeoms; iter++)
-	{
-		float depth=-1;
-		glm::vec3 intersection;
-		glm::vec3 normal;
-		staticGeom currentGeometry = geoms[iter];
-		if(currentGeometry.type == CUBE)
-		{
-			depth = boxIntersectionTest(currentGeometry,r,intersection,normal);
-		}
-		
-		else if(geoms[iter].type == SPHERE)
-		{
-			depth = sphereIntersectionTest(currentGeometry,r,intersection,normal);
-		}
-		
-
-		if(depth > 0 && depth < minDepth)
-		{
-			minDepth = depth;
-			minIntersectionPoint = intersection;
-			minNormal = normal;
-			intersectedGeom = iter;
-			intersectedMaterial = currentGeometry.materialid;
-		}
-	}
-
-	// Depth render - test
-	//float maxDepth = 15.0f;
-	
-	glm::vec3 diffuseLight = glm::vec3(0.0f);
-	glm::vec3 phongLight = glm::vec3(0.0f);
-
-	glm::vec3 diffuseColor;
-	glm::vec3 specularColor;
-	glm::vec3 emittance;
-
-	//Calculate Lighting if any geometry is intersected
-	if(intersectedGeom > -1)
-	{
-		//finalColor = materials[geoms[intersectedGeom].materialid].color;
-		material m = materials[intersectedMaterial];
-		diffuseColor = m.color;
-		specularColor = m.specularColor;
-		// Emmited color is the same as material color
-		emittance = m.color * m.emittance;
-
-#if PATHTRACER != 1
-		// Stochastic Diffused Lighting with "area" lights
-		for(int iter = 0; iter < numberOfGeoms; iter++)
-		{
-			material lightMaterial = materials[geoms[iter].materialid];
-			// If this geometry is going to act like a light source
-			if(lightMaterial.emittance > 0.0001f)
-			{
-				glm::vec3 lightSourceSample, normal;
-
-				// Get a random point on the light source
-				if(geoms[iter].type == SPHERE)
-				{
-					getRandomPointAndNormalOnSphere(geoms[iter],time*index, lightSourceSample, normal);
-				}
-				else if(geoms[iter].type == CUBE)
-				{
-					getRandomPointAndNormalOnCube(geoms[iter],time*index, lightSourceSample, normal);
-				}
-
-				// Diffuse Lighting Calculation
-				glm::vec3 L = glm::normalize(lightSourceSample - minIntersectionPoint);
-				
-				//Shadow Ray check
-				ray shadowRay;
-				shadowRay.origin = minIntersectionPoint + NUDGE * L;
-				shadowRay.direction = L;
-
-				bool visible = visibilityCheck(shadowRay,geoms,numberOfGeoms,lightSourceSample, intersectedGeom, iter);
-
-				if(visible)
-				{
-					diffuseLight += lightMaterial.color * lightMaterial.emittance * glm::max(glm::dot(L,minNormal),0.0f);
-
-					
-					// Calculate Phong Specular Part only if exponent is greater than 0
-					if(m.specularExponent > FLOAT_EPSILON)
-					{
-						glm::vec3 reflectedLight = 2.0f * minNormal * glm::dot(minNormal, L) - L;
-						phongLight += lightMaterial.color * lightMaterial.emittance * pow(glm::max(glm::dot(reflectedLight,minNormal),0.0f),m.specularExponent);
-					}
-
-				}
-			}
-		}
-#endif;
-
-		AbsorptionAndScatteringProperties absScatProps;
-		glm::vec3 colorSend, unabsorbedColor;
-		ray returnRay = r;
-		int rayPropogation = calculateBSDF(returnRay,minIntersectionPoint,minNormal,diffuseColor*m.emittance,absScatProps,colorSend,unabsorbedColor,m);
-		
-		// Diffuse Reflection or light source
-		if (rayPropogation == 0)
-		{
-#if PATHTRACER
-#if COMPACTION
-			colors[r.pixelIndex] += r.transmission * emittance;
-#else
-			colors[index] += r.transmission * emittance;
-#endif
-#if PAINTERLY
-			glm::vec3 randomVector = generateRandomNumberFromThread(resolution,time * (rayDepth+1),1,1);
-#else
-			glm::vec3 randomVector = generateRandomNumberFromThread(resolution,time * (rayDepth+1),x,y);
-#endif
-			r.direction = calculateRandomDirectionInHemisphere(minNormal, randomVector.x, randomVector.y);
-			r.origin = minIntersectionPoint + 0.0005f * r.direction;
-			r.transmission *= diffuseColor;
-			
-#else
-#if COMPACTION
-			colors[r.pixelIndex] += r.transmission * ( emittance + diffuseLight * diffuseColor +  phongLight * specularColor);
-#else
-			colors[index] += r.transmission * ( emittance + diffuseLight * diffuseColor +  phongLight * specularColor);
-#endif
-			r.transmission = glm::vec3(0);
-#endif
-			rayPool[index] = r;
-
-		}
-		// Reflection; calculate transmission coeffiecient
-		else if(rayPropogation == 1)
-		{
-#if PATHTRACER
-#if COMPACTION
-			colors[r.pixelIndex] += r.transmission * emittance;
-#else
-			colors[index] += r.transmission * emittance;
-#endif
-#else
-#if COMPACTION
-			colors[r.pixelIndex] += r.transmission * (1.0f - m.hasReflective) * ( emittance + diffuseLight * diffuseColor +  phongLight * specularColor);
-#else
-			colors[index] += r.transmission * (1.0f - m.hasReflective) * ( emittance + diffuseLight * diffuseColor +  phongLight * specularColor);
-#endif
-#endif
-			returnRay.transmission = r.transmission * diffuseColor *  m.hasReflective;
-			rayPool[index] = returnRay;
-		}
-		// Refraction; calculate transmission coeffiecient
-		else if (rayPropogation == 2)
-		{
-
-#if PATHTRACER
-#if COMPACTION
-			colors[r.pixelIndex] += r.transmission * emittance;
-#else
-			colors[index] += r.transmission * emittance;
-#endif
-#else
-#if COMPACTION
-			colors[r.pixelIndex] += r.transmission * (1.0f - m.hasRefractive) * ( emittance + diffuseLight * diffuseColor +  phongLight * specularColor);
-#else
-			colors[index] += r.transmission * (1.0f - m.hasRefractive) * ( emittance + diffuseLight * diffuseColor +  phongLight * specularColor);
-#endif
-#endif
-			returnRay.transmission = r.transmission * diffuseColor * m.hasRefractive;
-
-
-#if FRESNEL
-			// Fresnel Calculation
-
-			// Fabs because the angle is always between 0 and 90, direction not-withstanding
-			float nd = fabs(glm::dot(r.direction, minNormal));
-			float nt = fabs(glm::dot(returnRay.direction, minNormal));
-			float n_a = nd < 0 ? 1.0f : m.indexOfRefraction;
-			float n_b = nd < 0 ? m.indexOfRefraction : 1.0f;
-			float amountReflected;
-
-#if SCHLICK
-			// Schlick's Approximation
-
-			float RO = (n_a - n_b) * (n_a - n_b) / ( (n_a + n_b) * (n_a + n_b));
-			float c;
-			if(n_a < n_b)
-				c = 1 - nd;
-			else
-				c = 1 - nt;
-
-			amountReflected = RO + (1-RO) * c * c * c * c * c;
-
-#else
-			// Fresnels equations
-			float reflectedParallel = (n_b * nd - n_a * nt) * (n_b * nd - n_a * nt) / ((n_b * nd + n_a * nt) * (n_b * nd + n_a * nt));
-			float reflectedPerpendicular = (n_a * nd - n_b * nt) * (n_a * nd - n_b * nt) / ((n_a * nd + n_b * nt) * (n_a * nd + n_b * nt));
-			amountReflected = 0.5 * (reflectedParallel + reflectedPerpendicular);
-#endif
-			// Stochastically decide whether to reflect or refract
-			glm::vec3 randVector = generateRandomNumberFromThread(resolution,time * (rayDepth+1),x,y);
-			
-			// If a uniform variable is less than the reflected amount, this ray shall be reflected
-			if(randVector.y  < amountReflected)
-			{
-				returnRay.direction = r.direction - 2.0f * minNormal  * glm::dot(minNormal,r.direction);
-				returnRay.origin = minIntersectionPoint + NUDGE * returnRay.direction;
-			}
-#endif
-			rayPool[index] = returnRay;
-		}
-	}
-	// No intersection, mark rays as dead
-	// Ambeint term 
-	else
-	{
-		glm::vec3 ambient = glm::vec3(0,0,0);
-#if COMPACTION
-		colors[r.pixelIndex] += ambient;
-#else
-		colors[index] += ambient; 
-#endif
-		r.transmission = glm::vec3(0.0f);
-		rayPool[index] = r;
-	}
-	
-	/*
-		//Checking for correct ray direction
-		colors[index].x = fabs(r.direction.x);
-		colors[index].y = fabs(r.direction.y);
-		colors[index].z = fabs(r.direction.z);
-	
-		//Check for correct material pickup
-		colors[index] = color;
-
-		//Checking for correct depth testing
-		colors[index] = color * (maxDepth - minDepth)/maxDepth;
-
-		//Checking for correct normals
-		colors[index] = glm::vec3(minNormal);
-		colors[index] = glm::vec3( fabs(minNormal.x), fabs(minNormal.y), fabs(minNormal.z));
-	*/
-	
-   }
 }
 
 __global__ void fillRayPoolFromCamera(glm::vec2 resolution, float time, cameraData cam, ray* rayPool){
@@ -851,7 +576,7 @@ int streamCompactRayPool(ray* inputRays, ray* outputRays, int size)
 
 	// Mark Predicates
 	predicateMark<<<dim3(numBlocks,1,1),dim3(numThreads,1,1)>>>(inputRays, predicateArray, size);
-	checkCUDAError("Predicate Mark Failed!");	
+	checkCUDAError("Ray Predicate Mark Failed!");	
 
 	// Scan Predicate to get location and also total number of final rays
 	int compactedSize = parallelScan(predicateArray,scatterLocations,size);
@@ -881,7 +606,7 @@ int streamCompactPhotons (photon* inputPhotons, photon* outputPhotons, int size)
 
 	// Mark Predicates
 	predicateMarkPhotons<<<dim3(numBlocks,1,1),dim3(numThreads,1,1)>>>(inputPhotons, predicateArray, size);
-	checkCUDAError("Predicate Mark Failed!");	
+	checkCUDAError("Photon Predicate Mark Failed!");	
 
 	// Scan Predicate to get location and also total number of final rays
 	int compactedSize = parallelScan(predicateArray,scatterLocations,size);
@@ -899,8 +624,6 @@ int streamCompactPhotons (photon* inputPhotons, photon* outputPhotons, int size)
 
 #endif
 
-
-#if PHOTONMAP
 
 //gets gridcell index based on photon's position
 __device__ void getCellIndex(glm::vec3 position, gridAttributes& grid, int& i, int& j, int& k) {
@@ -991,7 +714,6 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 		// Set whether photon has been stored/absorbed (dead)
 		p.stored = false;
 		p.geomid = lights[lightIndex];
-		p.bounces = 0;		//increment the number of bounces by 1
 
 		photonPool[index] = p;
 
@@ -999,8 +721,8 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 		for (int i = 1; i < numBounces; ++i) {
 			photon placeHolder;
 			placeHolder.color = glm::vec3(0.0f);
+			placeHolder.geomid = -1;
 			placeHolder.stored = false;
-			//placeHolder.bounces = -1;
 			photonPool[numPhotons * i + index] = placeHolder;
 		}
 	}
@@ -1062,17 +784,21 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 	int index = blockIdx.x * blockDim.x + threadIdx.x; 
 
 	if (index < numPhotons){
-
+		//overwrite photons in the first two bounces (don't store direct illumination in the photon map)
 		int prevIndex = index;
-		if (currentBounces!=0)
-			prevIndex = index + (currentBounces-1) * numPhotons;
+		if (currentBounces > 1)
+			prevIndex = index + (currentBounces-2) * numPhotons;
 
-		int nextIndex = index + currentBounces * numPhotons;
+		int nextIndex = index;
+		if (currentBounces > 1)
+			nextIndex = index + (currentBounces-1) * numPhotons;
 
 		//load a photon from memory
 		photon p = photonPool[prevIndex];
 
-		//create ray using photon
+		//only bounce photon if photon is not in the void
+		if (p.geomid != -1) {
+			//create ray using photon
 			ray r;
 			r.origin = p.position + 0.01f*p.dout;		//offset point a little to avoid self intersection
 			r.direction = p.dout;
@@ -1080,134 +806,102 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 			//intersection testing
 			int intersectedGeom = -1;
 			int intersectedMaterial = -1;
-			float minDepth = 1000000.0f;
 			glm::vec3 minIntersectionPoint;
 			glm::vec3 minNormal = glm::vec3(0.0f);
-			
-			for (int iter=0; iter < numberOfGeoms; iter++)
-			{
-					float depth=-1;
-					glm::vec3 intersection;
-					glm::vec3 normal;
-					staticGeom currentGeometry = geoms[iter];
-					if (currentGeometry.type == CUBE)
-					{
-							depth = boxIntersectionTest(currentGeometry,r,intersection,normal);
-					}
-					
-					else if (geoms[iter].type == SPHERE)
-					{
-							depth = sphereIntersectionTest(currentGeometry,r,intersection,normal);
-					}
-					
 
-					if (depth > 0 && depth < minDepth)
-					{
-							minDepth = depth;
-							minIntersectionPoint = intersection;
-							minNormal = normal;
-							intersectedGeom = iter;
-							intersectedMaterial = currentGeometry.materialid;
-					}
-			}
+			getClosestIntersection(r, geoms, numberOfGeoms, minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial);
 
+			p.geomid = intersectedGeom;
 			//if intersection occurs, accumulate color and keep bouncing
 			if (intersectedGeom > -1) {
+				p.position = minIntersectionPoint;
+
+				if (currentBounces <= 1) {
+					p.stored = false;
+				} else {
+					p.stored = true;
+				}
 
 				material m = materials[intersectedMaterial];
-
-				//assume diffuse surfaces only for now, so bounce in random direction
 				p.color *= m.color;
 
+				//assume diffuse surfaces only for now, so bounce in random direction
 				glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),time,index,currentBounces+3);
 				p.din = p.dout;
-				//p.stored = true;
 				p.dout = calculateRandomDirectionInHemisphere(minNormal,randoms.y,randoms.z);
-				p.position = minIntersectionPoint;
 
 				AbsorptionAndScatteringProperties absScatProps;
 				glm::vec3 colorSend, unabsorbedColor;
 				ray returnRay = r;
-				
+
 				int rayPropogation = calculateBSDF(returnRay,minIntersectionPoint,minNormal,p.color,absScatProps,colorSend,unabsorbedColor,m);
 
 				// Reflection; calculate transmission coeffiecient
 				if(rayPropogation == 1)
 				{
-					p.dout = returnRay.direction;
-					p.color = p.color * m.hasReflective;
-					p.stored = true;
+					if (randoms.x < m.hasReflective) { // using randoms.x since we haven't used it before
+						p.dout = returnRay.direction;
+						p.stored = false;
+					}
 				}
 				// Refraction; calculate transmission coeffiecient
 				else if (rayPropogation == 2)
 				{
-					p.color = p.color * m.hasRefractive;
-					p.stored = true;
+					if (randoms.x < m.hasRefractive) {
+						p.stored = false;
 
 #if FRESNEL
-					// Fresnel Calculation
+						// Fresnel Calculation
 
-					// Fabs because the angle is always between 0 and 90, direction not-withstanding
-					float nd = fabs(glm::dot(r.direction, minNormal));
-					float nt = fabs(glm::dot(returnRay.direction, minNormal));
-					float n_a = nd < 0 ? 1.0f : m.indexOfRefraction;
-					float n_b = nd < 0 ? m.indexOfRefraction : 1.0f;
-					float amountReflected;
+						// Fabs because the angle is always between 0 and 90, direction not-withstanding
+						float nd = fabs(glm::dot(r.direction, minNormal));
+						float nt = fabs(glm::dot(returnRay.direction, minNormal));
+						float n_a = nd < 0 ? 1.0f : m.indexOfRefraction;
+						float n_b = nd < 0 ? m.indexOfRefraction : 1.0f;
+						float amountReflected;
 
 #if SCHLICK
-					// Schlick's Approximation
+						// Schlick's Approximation
 
-					float RO = (n_a - n_b) * (n_a - n_b) / ( (n_a + n_b) * (n_a + n_b));
-					float c;
-					if(n_a < n_b)
-						c = 1 - nd;
-					else
-						c = 1 - nt;
+						float RO = (n_a - n_b) * (n_a - n_b) / ( (n_a + n_b) * (n_a + n_b));
+						float c;
+						if(n_a < n_b)
+							c = 1 - nd;
+						else
+							c = 1 - nt;
 
-					amountReflected = RO + (1-RO) * c * c * c * c * c;
+						amountReflected = RO + (1-RO) * c * c * c * c * c;
 
 #else
-					// Fresnels equations
-					float reflectedParallel = (n_b * nd - n_a * nt) * (n_b * nd - n_a * nt) / ((n_b * nd + n_a * nt) * (n_b * nd + n_a * nt));
-					float reflectedPerpendicular = (n_a * nd - n_b * nt) * (n_a * nd - n_b * nt) / ((n_a * nd + n_b * nt) * (n_a * nd + n_b * nt));
-					amountReflected = 0.5 * (reflectedParallel + reflectedPerpendicular);
+						// Fresnels equations
+						float reflectedParallel = (n_b * nd - n_a * nt) * (n_b * nd - n_a * nt) / ((n_b * nd + n_a * nt) * (n_b * nd + n_a * nt));
+						float reflectedPerpendicular = (n_a * nd - n_b * nt) * (n_a * nd - n_b * nt) / ((n_a * nd + n_b * nt) * (n_a * nd + n_b * nt));
+						amountReflected = 0.5 * (reflectedParallel + reflectedPerpendicular);
 #endif
-					// Stochastically decide whether to reflect or refract
-					glm::vec3 randVector = generateRandomNumberFromThread(glm::vec2(637,791),time,index,currentBounces+7);
+						// Stochastically decide whether to reflect or refract
+						glm::vec3 randVector = generateRandomNumberFromThread(glm::vec2(637,791),time,index,currentBounces+7);
 
-					// If a uniform variable is less than the reflected amount, this ray shall be reflected
-					if(randVector.y  < amountReflected)
-					{
-						p.dout = r.direction - 2.0f * minNormal  * glm::dot(minNormal,r.direction);
-					}
-					else
-					{
-						p.dout = returnRay.direction;
-					}
+						// If a uniform variable is less than the reflected amount, this ray shall be reflected
+						if(randVector.y  < amountReflected)
+						{
+							p.dout = r.direction - 2.0f * minNormal  * glm::dot(minNormal,r.direction);
+						}
+						else
+						{
+							p.dout = returnRay.direction;
+						}
 #endif
-
+					}
 				}
-				// Default to diffuse
-				else
-				{
-					p.stored = true;
-				}
-				
-				p.geomid = intersectedGeom;
 			}
 			else {
-				//kill the photon if it doesn't intersect with anything
-				//When using stream compaction, need to figure if photon is stored or dead or (alive and kicking)
 				p.stored = false;
-				p.geomid = -1;
 			}
 
-			p.bounces ++;
 			//write new bounced photon into memory
-			
 			photonPool[nextIndex] = p;
 		}
-
+	}
 }
 
 __global__ void initGridFirstPhotonIndex(int* sortedPhotonGridIndex, gridAttributes grid) {
@@ -1332,15 +1026,72 @@ __device__ int findMaxDistancePhotonIndex(photon* photons, int photonCount, glm:
 }
 
 // Caculate radiances from photons
-__global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, glm::vec3* colors, staticGeom* geoms,
-															int numberOfGeoms, ray* rayPool, photon* photons, int numTotalPhotons, int* gridFirstPhotonIndices,
-															int* gridIndices, gridAttributes grid, float flux) {
+__device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, glm::vec3 normal, photon* photons, int numTotalPhotons,
+															int* gridFirstPhotonIndices, int* gridIndices, gridAttributes grid, float flux) {
+	glm::vec3 accumColor(0);
+
+  int px, py, pz; //photon's grid cell index
+  getCellIndex(intersection, grid, px, py, pz);
+	if (px>=0 && px<grid.xdim && py>=0 && py<grid.ydim && pz>=0 && pz<grid.zdim) { //if intersection is within the grid
+		// Find photons in neighboring cells
+		photon neighborPhotons[K];
+		int neighborPhotonCount = 0;
+		for (int i=max(0, px-1); i<min(grid.xdim, px+2); ++i) {
+      for (int j=max(0, py-1); j<min(grid.ydim, py+2); ++j) {
+				for (int k=max(0, pz-1); k<min(grid.zdim, pz+2); ++k) {
+					int gridIndex = gridPhotonHash(i, j, k, grid);
+					int firstPhotonIndex = gridFirstPhotonIndices[gridIndex]; //find the index of the first photon in the cell
+					if (firstPhotonIndex != -1) {
+						int pi = firstPhotonIndex;
+						while (pi < numTotalPhotons && gridIndices[pi] == gridIndex) {
+							photon p = photons[pi];
+							// Check if the photon is on the same geometry as the intersection
+							if (p.geomid == intersectedGeom) {
+								// We only store K photons. If there are less than K photons stored in the array, add the current photon to the array
+								if (neighborPhotonCount < K) {
+									neighborPhotons[neighborPhotonCount] = p;
+									neighborPhotonCount++;
+								}
+								// If the array is full, find the photon with the largest distance to the intersection. If current photon's distance
+								// to the intersection is smaller, replace the photon with the largest distance with the current photon
+								else {
+									int maxIndex;
+									float maxDist;
+									findMaxDistancePhotonIndex(neighborPhotons, K, intersection, maxIndex, maxDist);
+									float dist = glm::distance(p.position, intersection);
+									if (dist < maxDist) {
+										neighborPhotons[maxIndex] = p;
+									}
+								}
+							}
+							pi++;
+						}
+					}
+				}
+			}
+		}
+
+		// Accumulate radiance of the K nearest photons
+		for (int i=0; i<neighborPhotonCount; ++i) {
+			photon p = neighborPhotons[i];
+			float photonDistance = glm::distance(intersection, p.position);
+			accumColor += gaussianWeight(photonDistance, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+		}
+	}
+	return accumColor * flux;
+}
+
+// Caculate indirect illumination from photons
+__global__ void renderIndirectLighting(glm::vec2 resolution, float time, cameraData cam, glm::vec3* colors, staticGeom* geoms,
+																			int numberOfGeoms, ray* rayPool, photon* photons, int numTotalPhotons, int* gridFirstPhotonIndices,
+																			int* gridIndices, gridAttributes grid, float flux)
+{
 
 	int x = (blockIdx.x * blockDim.x) + threadIdx.x;
 	int y = (blockIdx.y * blockDim.y) + threadIdx.y;
 	int index = x + (y * resolution.x);
 	if((x<=resolution.x && y<=resolution.y) && glm::length(rayPool[index].transmission) > FLOAT_EPSILON){
-		ray r = rayPool[index];	
+		ray r = rayPool[index];        
 
 		//Check all geometry for intersection
 		int intersectedGeom = -1;
@@ -1350,96 +1101,46 @@ __global__ void gatherPhotons(glm::vec2 resolution, float time, cameraData cam, 
 		glm::vec3 minNormal = glm::vec3(0.0f);
 		for(int iter=0; iter < numberOfGeoms; iter++)
 		{
-				float depth=-1;
-				glm::vec3 intersection;
-				glm::vec3 normal;
-				staticGeom currentGeometry = geoms[iter];
-				if(currentGeometry.type == CUBE)
-				{
-					depth = boxIntersectionTest(currentGeometry,r,intersection,normal);
-				}
-		
-				else if(geoms[iter].type == SPHERE)
-				{
-					depth = sphereIntersectionTest(currentGeometry,r,intersection,normal);
-				}
-		
+			float depth=-1;
+			glm::vec3 intersection;
+			glm::vec3 normal;
+			staticGeom currentGeometry = geoms[iter];
+			if(currentGeometry.type == CUBE)
+			{
+				depth = boxIntersectionTest(currentGeometry,r,intersection,normal);
+			}
 
-				if(depth > 0 && depth < minDepth)
-				{
-					minDepth = depth;
-					minIntersectionPoint = intersection;
-					minNormal = normal;
-					intersectedGeom = iter;
-					intersectedMaterial = currentGeometry.materialid;
-				}
+			else if(geoms[iter].type == SPHERE)
+			{
+				depth = sphereIntersectionTest(currentGeometry,r,intersection,normal);
+			}
+
+
+			if(depth > 0 && depth < minDepth)
+			{
+				minDepth = depth;
+				minIntersectionPoint = intersection;
+				minNormal = normal;
+				intersectedGeom = iter;
+				intersectedMaterial = currentGeometry.materialid;
+			}
 
 		}
 
 		//Calculate radiance if any geometry is intersected
 		if(intersectedGeom > -1)
 		{
-			glm::vec3 accumColor(0);
-
-      int px, py, pz; //photon's grid cell index
-      getCellIndex(minIntersectionPoint, grid, px, py, pz);
-			if (px>=0 && px<grid.xdim && py>=0 && py<grid.ydim && pz>=0 && pz<grid.zdim) { //if intersection is within the grid
-				// Find photons in neighboring cells
-				photon neighborPhotons[K];
-				int neighborPhotonCount = 0;
-				for (int i=max(0, px-1); i<min(grid.xdim, px+2); ++i) {
-          for (int j=max(0, py-1); j<min(grid.ydim, py+2); ++j) {
-						for (int k=max(0, pz-1); k<min(grid.zdim, pz+2); ++k) {
-							int gridIndex = gridPhotonHash(i, j, k, grid);
-							int firstPhotonIndex = gridFirstPhotonIndices[gridIndex]; //find the index of the first photon in the cell
-							if (firstPhotonIndex != -1) {
-								int pi = firstPhotonIndex;
-								while (pi < numTotalPhotons && gridIndices[pi] == gridIndex) {
-									photon p = photons[pi];
-									// Check if the photon is on the same geometry as the intersection
-									if (p.geomid == intersectedGeom) {
-										// We only store K photons. If there are less than K photons stored in the array, add the current photon to the array
-										if (neighborPhotonCount < K) {
-											neighborPhotons[neighborPhotonCount] = p;
-											neighborPhotonCount++;
-										}
-										// If the array is full, find the photon with the largest distance to the intersection. If current photon's distance
-										// to the intersection is smaller, replace the photon with the largest distance with the current photon
-										else {
-											int maxIndex;
-											float maxDist;
-											findMaxDistancePhotonIndex(neighborPhotons, K, minIntersectionPoint, maxIndex, maxDist);
-											float dist = glm::distance(p.position, minIntersectionPoint);
-											if (dist < maxDist) {
-												neighborPhotons[maxIndex] = p;
-											}
-										}
-									}
-									pi++;
-								}
-							}
-						}
-					}
-				}
-
-				// Accumulate radiance of the K nearest photons
-				for (int i=0; i<neighborPhotonCount; ++i) {
-					photon p = neighborPhotons[i];
-					float photonDistance = glm::distance(minIntersectionPoint, p.position);
-					accumColor += gaussianWeight(photonDistance, RADIUS) * max(0.0f, glm::dot(minNormal, -p.din)) * p.color;
-				}
-			}
-			colors[index] += accumColor * flux;
+			colors[index] += gatherPhotons(intersectedGeom, minIntersectionPoint, minNormal, photons, numTotalPhotons, gridFirstPhotonIndices,
+				gridIndices, grid, flux);
 		}
 	}
 }
-
 
 void tracePhotons(int photonThreadsPerBlock, int photonBlocksPerGrid, photon* cudaPhotonPool,
 									int numPhotons, staticGeom* cudaGeoms, int numberOfGeoms, material* cudaMaterials,
 									float time)
 {
-	for(int i=0; i < numBounces; i++)
+	for(int i=0; i <= numBounces; i++)
 	{
 		// Bounce Photons Around
 		bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, i,	cudageoms, numGeoms, cudamaterials, time);
@@ -1524,7 +1225,6 @@ void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMate
 	cudaMalloc((void**)&cudarays2, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
 #endif
 
-#if PHOTONMAP
 	//std::cout<<"allocating mem for photon pool"<<std::endl;
 	cudaPhotonPool = NULL;
 	cudaMalloc((void**)&cudaPhotonPool, numBounces * numPhotons * sizeof(photon));
@@ -1582,8 +1282,6 @@ void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMate
 	grid.ydim = ceil((grid.ymax - grid.ymin)/grid.cellsize);
 	grid.zdim = ceil((grid.zmax - grid.zmin)/grid.cellsize);
 
-#endif
-
 	cudaAllocateAccumulatorImage(renderCam);
 
 	cudaGridFirstPhotonIndex=NULL;
@@ -1606,15 +1304,12 @@ void cudaFreeMemory() {
 	cudaFree(cudarays2);
 #endif
 
-
-#if PHOTONMAP
 	cudaFree(cudaPhotonPool);
 #if PHOTONCOMPACT
 	cudaFree(cudaPhotonPoolCompact);
 #endif
 	cudaFree(cudaPhotonMapImage);
 	cudaFree(cudaGridFirstPhotonIndex);
-#endif
 
 	cudaFreeAccumulatorImage();
 
@@ -1683,93 +1378,271 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	checkCUDAError("tracePhotons kernel failed!");
 
 	// Assume each light emits the same number of photons, calculate the flux per photon
-	float flux = totalEnergy/(float)numPhotons;
+	flux = totalEnergy/(float)numPhotons;
 
 	buildSpatialHash();
 	cudaThreadSynchronize();
 	checkCUDAError("calculating grid idx kernel failed!");
+}
 
-
-if (mode == DISP_GATHER)
+//Core raytracer kernel
+__global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, int rayDepth, glm::vec3* colors,
+														staticGeom* geoms, int numberOfGeoms, material* materials, int numberOfMaterials,
+														photon* photons, int numTotalPhotons, int* gridFirstPhotonIndices, int* gridIndices,
+														int mode, gridAttributes grid, float flux, ray* rayPool
+#if COMPACTION
+														, int numberOfRays
+#endif
+														)
 {
-	// Compute radiance from photons
-
-	fillRayPoolFromCamera<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudarays);
-	cudaThreadSynchronize();
-	checkCUDAError("fill ray pool kernel failed!");
-
-#if PHOTONCOMPACT 
-	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms,
-		cudarays, cudaPhotonPoolCompact, numPhotonsCompact, cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux);
+	int index;
+	int x,y;
+#if COMPACTION
+	index = blockIdx.x * blockDim.x + threadIdx.x;
+	y = index / resolution.x;
+	x = index - y * resolution.x;
+	if (index < numberOfRays) {
 #else
-	gatherPhotons<<<pixelBlocksPerGrid, pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaPhotonMapImage, cudageoms, numGeoms, 
-		cudarays, cudaPhotonPool, numPhotons * numBounces, cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux);
+	x = (blockIdx.x * blockDim.x) + threadIdx.x;
+	y = (blockIdx.y * blockDim.y) + threadIdx.y;
+	index = x + (y * resolution.x);
+	if((x<=resolution.x && y<=resolution.y) && glm::length(rayPool[index].transmission) > FLOAT_EPSILON){
 #endif
 
-	cudaThreadSynchronize();
-	checkCUDAError("gather photonskernel failed!");
+		ray r = rayPool[index];	
 
+		//intersection testing
+		int intersectedGeom = -1;
+		int intersectedMaterial = -1;
+		glm::vec3 minIntersectionPoint;
+		glm::vec3 minNormal = glm::vec3(0.0f);
+
+		getClosestIntersection(r, geoms, numberOfGeoms, minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial);
+
+		// Depth render - test
+		//float maxDepth = 15.0f;
+
+		glm::vec3 diffuseLight = glm::vec3(0.0f);
+		glm::vec3 phongLight = glm::vec3(0.0f);
+
+		glm::vec3 diffuseColor;
+		glm::vec3 specularColor;
+		glm::vec3 emittance;
+
+		//Calculate Lighting if any geometry is intersected
+		if(intersectedGeom > -1)
+		{
+			//finalColor = materials[geoms[intersectedGeom].materialid].color;
+			material m = materials[intersectedMaterial];
+			diffuseColor = m.color;
+			specularColor = m.specularColor;
+			// Emmited color is the same as material color
+			emittance = m.color * m.emittance;
+
+			if (mode != DISP_PATHTRACE) {
+				// Stochastic Diffused Lighting with "area" lights
+				for(int iter = 0; iter < numberOfGeoms; iter++)
+				{
+					material lightMaterial = materials[geoms[iter].materialid];
+					// If this geometry is going to act like a light source
+					if(lightMaterial.emittance > 0.0001f)
+					{
+						glm::vec3 lightSourceSample, normal;
+
+						// Get a random point on the light source
+						if(geoms[iter].type == SPHERE)
+						{
+							getRandomPointAndNormalOnSphere(geoms[iter],time*index, lightSourceSample, normal);
+						}
+						else if(geoms[iter].type == CUBE)
+						{
+							getRandomPointAndNormalOnCube(geoms[iter],time*index, lightSourceSample, normal);
+						}
+
+						// Diffuse Lighting Calculation
+						glm::vec3 L = glm::normalize(lightSourceSample - minIntersectionPoint);
+
+						//Shadow Ray check
+						ray shadowRay;
+						shadowRay.origin = minIntersectionPoint + NUDGE * L;
+						shadowRay.direction = L;
+
+						bool visible = visibilityCheck(shadowRay,geoms,numberOfGeoms,lightSourceSample, intersectedGeom, iter);
+
+						if(visible)
+						{
+							diffuseLight += lightMaterial.color * lightMaterial.emittance * glm::max(glm::dot(L,minNormal),0.0f);
+
+
+							// Calculate Phong Specular Part only if exponent is greater than 0
+							if(m.specularExponent > FLOAT_EPSILON)
+							{
+								glm::vec3 reflectedLight = 2.0f * minNormal * glm::dot(minNormal, L) - L;
+								phongLight += lightMaterial.color * lightMaterial.emittance * pow(glm::max(glm::dot(reflectedLight,minNormal),0.0f),m.specularExponent);
+							}
+
+						}
+					}
+				}
+			}
+
+			AbsorptionAndScatteringProperties absScatProps;
+			glm::vec3 colorSend, unabsorbedColor;
+			ray returnRay = r;
+			int rayPropogation = calculateBSDF(returnRay,minIntersectionPoint,minNormal,diffuseColor*m.emittance,absScatProps,colorSend,unabsorbedColor,m);
+
+			// Compute direct illumination
+			glm::vec3 surfaceColor = emittance + diffuseLight * diffuseColor +  phongLight * specularColor;
+			// Compute indirect illumination if we are using photon map
+			if (mode == DISP_COMBINED) {
+				surfaceColor += gatherPhotons(intersectedGeom, minIntersectionPoint, minNormal, photons, numTotalPhotons, gridFirstPhotonIndices, gridIndices, grid, flux);
+			}
+
+			// Diffuse Reflection or light source
+			if (rayPropogation == 0)
+			{
+				if (mode == DISP_PATHTRACE) {
+#if COMPACTION
+					colors[r.pixelIndex] += r.transmission * emittance;
+#else
+					colors[index] += r.transmission * emittance;
+#endif
+#if PAINTERLY
+					glm::vec3 randomVector = generateRandomNumberFromThread(resolution,time * (rayDepth+1),1,1);
+#else
+					glm::vec3 randomVector = generateRandomNumberFromThread(resolution,time * (rayDepth+1),x,y);
+#endif
+					r.direction = calculateRandomDirectionInHemisphere(minNormal, randomVector.x, randomVector.y);
+					r.origin = minIntersectionPoint + 0.0005f * r.direction;
+					r.transmission *= diffuseColor;
+				}
+				else {
+#if COMPACTION
+					colors[r.pixelIndex] += r.transmission * surfaceColor;
+#else
+					colors[index] += r.transmission * surfaceColor;
+#endif
+					r.transmission = glm::vec3(0);
+				}
+				rayPool[index] = r;
+
+			}
+			// Reflection; calculate transmission coeffiecient
+			else if(rayPropogation == 1)
+			{
+				if (mode == DISP_PATHTRACE) {
+#if COMPACTION
+					colors[r.pixelIndex] += r.transmission * emittance;
+#else
+					colors[index] += r.transmission * emittance;
+#endif
+				}
+				else {
+#if COMPACTION
+					colors[r.pixelIndex] += r.transmission * (1.0f - m.hasReflective) * surfaceColor;
+#else
+					colors[index] += r.transmission * (1.0f - m.hasReflective) * surfaceColor;
+#endif
+				}
+				returnRay.transmission = r.transmission * diffuseColor *  m.hasReflective;
+				rayPool[index] = returnRay;
+			}
+			// Refraction; calculate transmission coeffiecient
+			else if (rayPropogation == 2)
+			{
+				if (mode == DISP_PATHTRACE) {
+#if COMPACTION
+					colors[r.pixelIndex] += r.transmission * emittance;
+#else
+					colors[index] += r.transmission * emittance;
+#endif
+				}
+				else {
+#if COMPACTION
+					colors[r.pixelIndex] += r.transmission * (1.0f - m.hasRefractive) * surfaceColor;
+#else
+					colors[index] += r.transmission * (1.0f - m.hasRefractive) * surfaceColor;
+#endif
+				}
+				returnRay.transmission = r.transmission * diffuseColor * m.hasRefractive;
+
+
+#if FRESNEL
+				// Fresnel Calculation
+
+				// Fabs because the angle is always between 0 and 90, direction not-withstanding
+				float nd = fabs(glm::dot(r.direction, minNormal));
+				float nt = fabs(glm::dot(returnRay.direction, minNormal));
+				float n_a = nd < 0 ? 1.0f : m.indexOfRefraction;
+				float n_b = nd < 0 ? m.indexOfRefraction : 1.0f;
+				float amountReflected;
+
+#if SCHLICK
+				// Schlick's Approximation
+
+				float RO = (n_a - n_b) * (n_a - n_b) / ( (n_a + n_b) * (n_a + n_b));
+				float c;
+				if(n_a < n_b)
+					c = 1 - nd;
+				else
+					c = 1 - nt;
+
+				amountReflected = RO + (1-RO) * c * c * c * c * c;
+
+#else
+				// Fresnels equations
+				float reflectedParallel = (n_b * nd - n_a * nt) * (n_b * nd - n_a * nt) / ((n_b * nd + n_a * nt) * (n_b * nd + n_a * nt));
+				float reflectedPerpendicular = (n_a * nd - n_b * nt) * (n_a * nd - n_b * nt) / ((n_a * nd + n_b * nt) * (n_a * nd + n_b * nt));
+				amountReflected = 0.5 * (reflectedParallel + reflectedPerpendicular);
+#endif
+				// Stochastically decide whether to reflect or refract
+				glm::vec3 randVector = generateRandomNumberFromThread(resolution,time * (rayDepth+1),x,y);
+
+				// If a uniform variable is less than the reflected amount, this ray shall be reflected
+				if(randVector.y  < amountReflected)
+				{
+					returnRay.direction = r.direction - 2.0f * minNormal  * glm::dot(minNormal,r.direction);
+					returnRay.origin = minIntersectionPoint + NUDGE * returnRay.direction;
+				}
+#endif
+				rayPool[index] = returnRay;
+			}
+		}
+		// No intersection, mark rays as dead
+		// Ambeint term 
+		else
+		{
+			glm::vec3 ambient = glm::vec3(0,0,0);
+#if COMPACTION
+			colors[r.pixelIndex] += ambient;
+#else
+			colors[index] += ambient; 
+#endif
+			r.transmission = glm::vec3(0.0f);
+			rayPool[index] = r;
+		}
+
+		/*
+		//Checking for correct ray direction
+		colors[index].x = fabs(r.direction.x);
+		colors[index].y = fabs(r.direction.y);
+		colors[index].z = fabs(r.direction.z);
+
+		//Check for correct material pickup
+		colors[index] = color;
+
+		//Checking for correct depth testing
+		colors[index] = color * (maxDepth - minDepth)/maxDepth;
+
+		//Checking for correct normals
+		colors[index] = glm::vec3(minNormal);
+		colors[index] = glm::vec3( fabs(minNormal.x), fabs(minNormal.y), fabs(minNormal.z));
+		*/
+
+	}
 }
-else if (mode == DISP_PHOTONS)
-{
-	// Calculate Viewport * Projection * View matrix from camera info
-	glm::vec3 center = cam.position + cam.view;
-
-	glm::mat4 viewMat = glm::lookAt(cam.position, center, cam.up);
-	glm::mat4 projectionMat = glm::perspective(cam.fov.y*2, cam.resolution.x/cam.resolution.y, 0.1f, 1000.0f);
-	cudaMat4 viewProjectionViewPort = utilityCore::glmMat4ToCudaMat4(projectionMat*viewMat);
-	
-	// Display all photons in the photonImage buffer
-#if PHOTONCOMPACT 
-	photonBlocksPerGrid = ceil(numPhotonsCompact * 1.0f/photonThreadsPerBlock);
-
-	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPoolCompact, numPhotonsCompact, resolution, 
-		cam, cudaPhotonMapImage, viewProjectionViewPort, flux);
-#else
-	photonBlocksPerGrid = ceil(numPhotons*numBounces * 1.0f/photonThreadsPerBlock);
-	displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons * numBounces, resolution, 
-		cam, cudaPhotonMapImage, viewProjectionViewPort, flux);
-#endif
-
-	cudaThreadSynchronize();
-	checkCUDAError("display photons kernel failed!");
-}
-
-#if ACCUMULATION
-	combineIntoAccumulatorImage<<<pixelBlocksPerGrid,pixelThreadsPerBlock>>>(renderCam->resolution, (float)iterations, cudaPhotonMapImage, accumulatorImage);
-	sendImageToPBO<<<pixelBlocksPerGrid,pixelThreadsPerBlock>>>(PBOpos, renderCam->resolution, accumulatorImage, (float)iterations);
-#else
-	sendImageToPBO<<<pixelBlocksPerGrid,pixelThreadsPerBlock>>>(PBOpos, renderCam->resolution, cudaPhotonMapImage, 1.0f);
-#endif
-	cudaThreadSynchronize();
-	checkCUDAError("Send to PBO kernel failed!");
-
-	//retrive image from GPU
-	int imageSize = (int)resolution.x * (int) resolution.y;
-#if ACCUMULATION
-	cudaMemcpy(renderCam->image, accumulatorImage, imageSize*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
-#else
-	cudaMemcpy(renderCam->image, cudaPhotonMapImage, imageSize*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
-#endif
-
-	cudaThreadSynchronize();
-	checkCUDAError("Photon mapping kernel failed!");
-
-	cudaFreeIterationMemory();
-
-}
-#endif	
 
 void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iterations, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms, cameraData liveCamera){
-
-  // testing 
-  //streamCompact();
-
-  //if(iterations == 0)
-  //{
-  //  // Allocate Accumulator Image
-  //  cudaAllocateAccumulatorImage(renderCam);
-  //}
 
   cudaAllocateIterationMemory(renderCam);
 
@@ -1799,47 +1672,106 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
   //clear On screen buffer
   clearImage<<<fullBlocksPerGrid,threadsPerBlock>>>(renderCam->resolution, cudaimage);
 
-  //Fill ray pool with rays from camera for first iteration
-  fillRayPoolFromCamera<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudarays);
-  int numberOfRays = (int)renderCam->resolution.x * (int)renderCam->resolution.y;
+	//display photons mode
+	if (mode == DISP_PHOTONS)
+	{
+		// Calculate Viewport * Projection * View matrix from camera info
+		glm::vec3 center = cam.position + cam.view;
 
-  //std::cout<<"StreamCompaction: ";
+		glm::mat4 viewMat = glm::lookAt(cam.position, center, cam.up);
+		glm::mat4 projectionMat = glm::perspective(cam.fov.y*2, cam.resolution.x/cam.resolution.y, 0.1f, 1000.0f);
+		cudaMat4 viewProjectionViewPort = utilityCore::glmMat4ToCudaMat4(projectionMat*viewMat);
 
-  int linearTileSize = tileSize*tileSize;
-  for(int i=0; i < MAX_RECURSION_DEPTH && numberOfRays > 0; i++)
-  {
+		int photonThreadsPerBlock = 512;
+		int photonBlocksPerGrid = ceil(numPhotons * 1.0f/photonThreadsPerBlock);
+
+		// Display all photons in the photonImage buffer
+#if PHOTONCOMPACT 
+		photonBlocksPerGrid = ceil(numPhotonsCompact * 1.0f/photonThreadsPerBlock);
+
+		displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPoolCompact, numPhotonsCompact, cam.resolution, 
+			cam, cudaimage, viewProjectionViewPort, flux);
+#else
+		photonBlocksPerGrid = ceil(numPhotons*numBounces * 1.0f/photonThreadsPerBlock);
+		displayPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons * numBounces, resolution, 
+			cam, cudaimage, viewProjectionViewPort, flux);
+#endif
+
+		cudaThreadSynchronize();
+		checkCUDAError("display photons kernel failed!");
+	}	
+
+	//ray trace or photon map mode
+	else {
+		//Fill ray pool with rays from camera for first iteration
+		fillRayPoolFromCamera<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudarays);
+		int numberOfRays = (int)renderCam->resolution.x * (int)renderCam->resolution.y;
+
+		//Render indirect illumination from photons
+		if (mode == DISP_GATHER) {
+#if PHOTONCOMPACT 
+			renderIndirectLighting<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaimage, cudageoms, numGeoms,
+				cudarays, cudaPhotonPoolCompact, numPhotonsCompact, cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux);
+#else
+			renderIndirectLighting<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaimage, cudageoms, numGeoms, 
+				cudarays, cudaPhotonPool, numPhotons * numBounces, cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux);
+#endif
+
+			cudaThreadSynchronize();
+			checkCUDAError("gather photons kernel failed!");
+		}
+		else {
+			int linearTileSize = tileSize*tileSize;
+			for(int i=0; i < MAX_RECURSION_DEPTH && numberOfRays > 0; i++)
+			{
 #if COMPACTION
-	    dim3 linearGridSize((int)ceil(numberOfRays*1.0f/linearTileSize),1,1);
-		raytraceRay<<<linearGridSize, dim3(linearTileSize,1,1)>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i,
-															cudaimage, cudageoms, numberOfGeoms, cudamaterials, numberOfMaterials,
-															i%2==0?cudarays : cudarays2,
-															numberOfRays);
-		checkCUDAError("Ray Trace Failed!");	 
-
- 		numberOfRays = streamCompactRayPool( i%2==0? cudarays : cudarays2,
-			  						         i%2==0? cudarays2 : cudarays,
-										     numberOfRays);
+				dim3 linearGridSize((int)ceil(numberOfRays*1.0f/linearTileSize),1,1);
+#if PHOTONCOMPACT
+				raytraceRay<<<linearGridSize, dim3(linearTileSize,1,1)>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i,
+					cudaimage, cudageoms, numberOfGeoms, cudamaterials, numberOfMaterials, cudaPhotonPoolCompact, numPhotonsCompact,
+					cudaGridFirstPhotonIndex, cudaPhotonGridIndex, mode, grid, flux,
+					i%2==0?cudarays : cudarays2,
+					numberOfRays);
 #else
-	//kernel launches
-	raytraceRay<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i, cudaimage, cudageoms, numberOfGeoms, cudamaterials, numberOfMaterials, cudarays);
+				raytraceRay<<<linearGridSize, dim3(linearTileSize,1,1)>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i,
+					cudaimage, cudageoms, numberOfGeoms, cudamaterials, numberOfMaterials, cudaPhotonPool, numPhotons * numBounces,
+					cudaGridFirstPhotonIndex, cudaPhotonGridIndex, mode, grid, flux,
+					i%2==0?cudarays : cudarays2,
+					numberOfRays);
 #endif
-  }
+				checkCUDAError("Ray Trace Failed!");	 
 
-  //getchar();
+				numberOfRays = streamCompactRayPool( i%2==0? cudarays : cudarays2,
+					i%2==0? cudarays2 : cudarays,
+					numberOfRays);
+#else
+#if PHOTONCOMPACT
+				raytraceRay<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i, cudaimage,
+					cudageoms, numberOfGeoms, cudamaterials, numberOfMaterials, cudaPhotonPoolCompact, numPhotonsCompact, cudaGridFirstPhotonIndex,
+					cudaPhotonGridIndex, mode, grid, flux, cudarays);
+#else
+				raytraceRay<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i, cudaimage,
+					cudageoms, numberOfGeoms, cudamaterials, numberOfMaterials, cudaPhotonPool, numPhotons * numBounces, cudaGridFirstPhotonIndex,
+					cudaPhotonGridIndex, mode, grid, flux, cudarays);
+#endif
+#endif
+			}
+		}
+	}
 
 #if ACCUMULATION
-  combineIntoAccumulatorImage<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cudaimage, accumulatorImage);
-  sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, accumulatorImage, (float)iterations);
+	combineIntoAccumulatorImage<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cudaimage, accumulatorImage);
+	sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, accumulatorImage, (float)iterations);
 #else
-  sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, cudaimage, 1.0f);
+	sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, cudaimage, 1.0f);
 #endif
 
-  //retrieve image from GPU for sending to bmp file
-  if(singleFrameMode)
+	//retrieve image from GPU for sending to bmp file
+	if(singleFrameMode)
 #if ACCUMULATION
-	cudaMemcpy( renderCam->image, accumulatorImage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
+		cudaMemcpy( renderCam->image, accumulatorImage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
 #else
-	cudaMemcpy( renderCam->image, cudaimage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
+		cudaMemcpy( renderCam->image, cudaimage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
 #endif
 
   // make certain the kernel has completed

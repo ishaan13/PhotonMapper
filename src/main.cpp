@@ -126,11 +126,11 @@ void runCuda(){
     iterations++;
     cudaGLMapBufferObject((void**)&dptr, pbo);
   
-    // execute the kernel
-	if(mode==DISP_RAYTRACE)
-		cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera);
-	else if (mode == DISP_PHOTONS || mode == DISP_GATHER)
+  // Construct photon map
+		if (mode == DISP_PHOTONS || mode == DISP_GATHER || mode == DISP_COMBINED)
 		cudaPhotonMapCore(renderCam, targetFrame, iterations, dptr, liveCamera);
+	// Render scene
+	cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera);
 
     // unmap buffer object
     cudaGLUnmapBufferObject(pbo);
@@ -221,9 +221,13 @@ void runCuda(){
 		{
 			case DISP_RAYTRACE: sprintf(modeName, "Ray Tracing: Direct Lighting");
 								break;
+			case DISP_PATHTRACE: sprintf(modeName, "Path Tracing: Direct Lighting + Indirect Lighting");
+								break;
 			case DISP_PHOTONS:	sprintf(modeName, "Photon Mapping: Visualize Photons");
 								break;
 			case DISP_GATHER:	sprintf(modeName, "Photon Mapping: Indirect Lighting Photon Gather");
+								break;
+			case DISP_COMBINED:	sprintf(modeName, "Photon Mapping: Direct Lighting + Indirect Lighting");
 								break;
 		}
 		
@@ -316,12 +320,22 @@ void runCuda(){
 		   case('2'):
 			   iterations = 1;
 			   cudaClearAccumulatorImage(renderCam);
-			   mode = DISP_PHOTONS;
+			   mode = DISP_PATHTRACE;
 			   break;
 		   case('3'):
 			   iterations = 1;
 			   cudaClearAccumulatorImage(renderCam);
+			   mode = DISP_PHOTONS;
+			   break;
+			case('4'):
+			   iterations = 1;
+			   cudaClearAccumulatorImage(renderCam);
 			   mode = DISP_GATHER;
+			   break;
+			case('5'):
+			   iterations = 1;
+			   cudaClearAccumulatorImage(renderCam);
+			   mode = DISP_COMBINED;
 			   break;
 		}
 	}

@@ -28,14 +28,12 @@ struct ray {
 
 };
 
-#if PHOTONMAP
 struct photon {
 	bool stored;			// Check if the current photon has been stored, i.e. do not bounce this photon further
 	glm::vec3 position;		// Position of photon
 	glm::vec3 din;	// Incoming direction of photon (potentially use theta phi?)
 	glm::vec3 dout; // Outgoing direction
 	glm::vec3 color;		// I think this essentially stores flux as well. : change to spectral eventually?
-	unsigned short bounces;
 	short geomid; // Which surface the photon is on, -1 means no intersection
 #if COMPACTION
 	int originalIndex;		// If using stream compaction
@@ -55,7 +53,6 @@ struct gridAttributes {
 	};
 };
 
-#endif
 
 struct geom {
 	enum GEOMTYPE type;

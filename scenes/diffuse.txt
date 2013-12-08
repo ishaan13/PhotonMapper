@@ -92,7 +92,7 @@ REFRIOR     0
 SCATTER     0        
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
-EMITTANCE   5
+EMITTANCE   1
 
 CAMERA
 RES         800 800

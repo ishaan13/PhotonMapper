@@ -112,6 +112,37 @@ __host__ __device__ glm::vec3 getNormalOfPointOnUnitCube(glm::vec3 point) {
 	return normal;
 }
 
+__host__ __device__ void getClosestIntersection(ray r, staticGeom* geoms, int numberOfGeoms, glm::vec3& minIntersectionPoint,
+																								glm::vec3& minNormal, int& intersectedGeom, int& intersectedMaterial) {
+	float minDepth = FLT_MAX;
+
+	for (int iter=0; iter < numberOfGeoms; iter++)
+	{
+		float depth=-1;
+		glm::vec3 intersection;
+		glm::vec3 normal;
+		staticGeom currentGeometry = geoms[iter];
+		if (currentGeometry.type == CUBE)
+		{
+			depth = boxIntersectionTest(currentGeometry,r,intersection,normal);
+		}
+
+		else if (geoms[iter].type == SPHERE)
+		{
+			depth = sphereIntersectionTest(currentGeometry,r,intersection,normal);
+		}
+
+		if (depth > 0 && depth < minDepth)
+		{
+			minDepth = depth;
+			minIntersectionPoint = intersection;
+			minNormal = normal;
+			intersectedGeom = iter;
+			intersectedMaterial = currentGeometry.materialid;
+		}
+	}
+}
+
 //TODO: IMPLEMENT THIS FUNCTION
 //Cube intersection test, return -1 if no intersection, otherwise, distance to intersection
 __host__ __device__ float boxIntersectionTest(staticGeom box, ray r, glm::vec3& intersectionPoint, glm::vec3& normal){
@@ -377,7 +408,7 @@ __host__ __device__ void getRandomPointAndNormalOnCube(staticGeom cube, float ra
 
 	glm::vec3 extendedPoint = point + normal;
 
-    point = multiplyMV(cube.transform, glm::vec4(point,1.0f));
+  point = multiplyMV(cube.transform, glm::vec4(point,1.0f));
 	extendedPoint = multiplyMV(cube.transform, glm::vec4(extendedPoint,1.0f));
 
 	normal = glm::normalize(extendedPoint - point);
