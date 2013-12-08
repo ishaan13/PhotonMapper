@@ -107,7 +107,9 @@ __host__ __device__ glm::vec3 getRandomDirectionInSphere(float xi1, float xi2) {
 //returns 0 if diffuse scatter, 1 if reflected, 2 if transmitted.
 __host__ __device__ int calculateBSDF(ray& r, glm::vec3 intersect, glm::vec3 normal, glm::vec3 emittedColor,
                                        AbsorptionAndScatteringProperties& currentAbsorptionAndScattering,
-                                       glm::vec3& color, glm::vec3& unabsorbedColor, material m){
+                                       glm::vec3& color, glm::vec3& unabsorbedColor, material m, 
+									   // More variables for random data generation
+									   glm::vec2 resolution, float time, float rayDepth, int x, int y){
 
 	// Reflected
 	if(fabs(m.hasReflective) > FLOAT_EPSILON)
@@ -140,24 +142,51 @@ __host__ __device__ int calculateBSDF(ray& r, glm::vec3 intersect, glm::vec3 nor
 			refracted.direction = r.direction - 2.0f * normal  * glm::dot(normal,r.direction);
 			refracted.origin = intersect + NUDGE * refracted.direction;
 			r = refracted;
-			return 1;
+			return 2;
 		}
-		
-		/*
-		float dotValue = glm::dot(r.direction,normal);
-		float IOR = 1.0f/m.indexOfRefraction;
-		if(dotValue > 0)
-		{
-			IOR = 1.0f/IOR;
-			normal = -normal;
-		}
-
-		glm::vec3 refractedDirection = glm::refract(r.direction,normal,IOR);
-		refracted.direction = refractedDirection;
-		*/
 
 		refracted.direction = glm::normalize(r.direction * IOR + normal * (IOR * cosValue - sqrt(k)));
 		refracted.origin = intersect + 0.001f * refracted.direction;
+
+#if 1
+		// Fresnel Calculation
+
+		// Fabs because the angle is always between 0 and 90, direction not-withstanding
+		float nd = fabs(glm::dot(r.direction, normal));
+		float nt = fabs(glm::dot(refracted.direction, normal));
+		float n_a = nd < 0 ? 1.0f : m.indexOfRefraction;
+		float n_b = nd < 0 ? m.indexOfRefraction : 1.0f;
+		float amountReflected;
+
+#if SCHLICK
+		// Schlick's Approximation
+
+		float RO = (n_a - n_b) * (n_a - n_b) / ( (n_a + n_b) * (n_a + n_b));
+		float c;
+		if(n_a < n_b)
+			c = 1 - nd;
+		else
+			c = 1 - nt;
+
+		amountReflected = RO + (1-RO) * c * c * c * c * c;
+
+#else
+		// Fresnels equations
+		float reflectedParallel = (n_b * nd - n_a * nt) * (n_b * nd - n_a * nt) / ((n_b * nd + n_a * nt) * (n_b * nd + n_a * nt));
+		float reflectedPerpendicular = (n_a * nd - n_b * nt) * (n_a * nd - n_b * nt) / ((n_a * nd + n_b * nt) * (n_a * nd + n_b * nt));
+		amountReflected = 0.5 * (reflectedParallel + reflectedPerpendicular);
+#endif
+		// Stochastically decide whether to reflect or refract
+		glm::vec3 randVector = generateRandomNumberFromThread(resolution,time * (rayDepth+1),x,y);
+
+		// If a uniform variable is less than the reflected amount, this ray shall be reflected
+		if(randVector.y  < amountReflected)
+		{
+			refracted.direction = r.direction - 2.0f * normal  * glm::dot(normal,r.direction);
+			refracted.origin = intersect + NUDGE * refracted.direction;
+		}
+#endif
+
 		r = refracted;
 		return 2;
 	}

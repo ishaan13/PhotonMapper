@@ -124,19 +124,19 @@ void runCuda(){
   if(iterations<renderCam->iterations){
     uchar4 *dptr=NULL;
     iterations++;
-    cudaGLMapBufferObject((void**)&dptr, pbo);
-  
-  // Construct photon map
-		if (mode == DISP_PHOTONS || mode == DISP_GATHER || mode == DISP_COMBINED)
+	cudaGLMapBufferObject((void**)&dptr, pbo);
+
+	// Construct photon map
+	if (mode == DISP_PHOTONS || mode == DISP_GATHER || mode == DISP_COMBINED)
 		cudaPhotonMapCore(renderCam, targetFrame, iterations, dptr, liveCamera);
 	// Render scene
 	cudaRaytraceCore(dptr, renderCam, targetFrame, iterations, materials, renderScene->materials.size(), geoms, renderScene->objects.size(), liveCamera);
 
-    // unmap buffer object
-    cudaGLUnmapBufferObject(pbo);
+	// unmap buffer object
+	cudaGLUnmapBufferObject(pbo);
   }else{
 
-    if(!finishedRender){
+	  if(!finishedRender){
       //output image file
       image outputImage(renderCam->resolution.x, renderCam->resolution.y);
 

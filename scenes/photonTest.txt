@@ -196,7 +196,7 @@ SCALE       2 2 2
 
 OBJECT 8
 sphere
-material 8
+material 5
 frame 0
 TRANS       -3 8 0
 ROTAT       0 0 0
@@ -204,9 +204,8 @@ SCALE       1 1 1
 
 OBJECT 9
 sphere
-material 9
+material 8
 frame 0
 TRANS       3 8 0
 ROTAT       0 0 0
 SCALE       1 1 1
-
