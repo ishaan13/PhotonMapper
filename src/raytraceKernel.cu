@@ -1093,39 +1093,13 @@ __global__ void renderIndirectLighting(glm::vec2 resolution, float time, cameraD
 	if((x<=resolution.x && y<=resolution.y) && glm::length(rayPool[index].transmission) > FLOAT_EPSILON){
 		ray r = rayPool[index];        
 
-		//Check all geometry for intersection
+		//intersection testing
 		int intersectedGeom = -1;
 		int intersectedMaterial = -1;
-		float minDepth = 1000000.0f;
 		glm::vec3 minIntersectionPoint;
 		glm::vec3 minNormal = glm::vec3(0.0f);
-		for(int iter=0; iter < numberOfGeoms; iter++)
-		{
-			float depth=-1;
-			glm::vec3 intersection;
-			glm::vec3 normal;
-			staticGeom currentGeometry = geoms[iter];
-			if(currentGeometry.type == CUBE)
-			{
-				depth = boxIntersectionTest(currentGeometry,r,intersection,normal);
-			}
 
-			else if(geoms[iter].type == SPHERE)
-			{
-				depth = sphereIntersectionTest(currentGeometry,r,intersection,normal);
-			}
-
-
-			if(depth > 0 && depth < minDepth)
-			{
-				minDepth = depth;
-				minIntersectionPoint = intersection;
-				minNormal = normal;
-				intersectedGeom = iter;
-				intersectedMaterial = currentGeometry.materialid;
-			}
-
-		}
+		getClosestIntersection(r, geoms, numberOfGeoms, minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial);
 
 		//Calculate radiance if any geometry is intersected
 		if(intersectedGeom > -1)
