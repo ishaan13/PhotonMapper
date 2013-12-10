@@ -58,6 +58,16 @@ bool singleFrameMode;
 //-------------------------------
 geom* geoms;
 material* materials;
+triangle* faces;
+glm::vec3* vertices;
+glm::vec3* normals;
+
+int numberOfGeoms;
+int numberOfMaterials;
+int numberOfVertices;
+int numberOfNormals;
+int numberOfFaces;
+int numberOfTextures;
 
 //-------------------------------
 //------------GL STUFF-----------
@@ -87,6 +97,7 @@ int main(int argc, char** argv);
 //-------------------------------
 
 void runCuda();
+void sendCurrentFrameDataToGPU();
 
 #ifdef __APPLE__
 	void display();
@@ -124,11 +135,14 @@ void initTextures();
 void initVAO();
 GLuint initShader(const char *vertexShaderPath, const char *fragmentShaderPath);
 
+void copyDataFromScene();
+
 //-------------------------------
 //---------CLEANUP STUFF---------
 //-------------------------------
 
 void cleanupCuda();
+void freeCPUMemory();
 void deletePBO(GLuint* pbo);
 void deleteTexture(GLuint* tex);
 void shut_down(int return_code);

@@ -7,8 +7,12 @@
 #include <iostream>
 #include "scene.h"
 #include <cstring>
+#include "stb_image/stb_image.h"
 
 scene::scene(string filename){
+	vertexcount = 0;
+	normalcount = 0;
+	widthcount = 0;
 	cout << "Reading scene from " << filename << " ..." << endl;
 	cout << " " << endl;
 	char* fname = (char*)filename.c_str();
@@ -16,18 +20,21 @@ scene::scene(string filename){
 	if(fp_in.is_open()){
 		while(fp_in.good()){
 			string line;
-            utilityCore::safeGetline(fp_in,line);
+			utilityCore::safeGetline(fp_in,line);
 			if(!line.empty()){
 				vector<string> tokens = utilityCore::tokenizeString(line);
-				if(strcmp(tokens[0].c_str(), "MATERIAL")==0){
-				    loadMaterial(tokens[1]);
-				    cout << " " << endl;
+				if(strcmp(tokens[0].c_str(), "TEXTURE")==0){
+					loadTexture(tokens[1]);
+					cout << " " << endl;
+				}else if(strcmp(tokens[0].c_str(), "MATERIAL")==0){
+					loadMaterial(tokens[1]);
+					cout << " " << endl;
 				}else if(strcmp(tokens[0].c_str(), "OBJECT")==0){
-				    loadObject(tokens[1]);
-				    cout << " " << endl;
+					loadObject(tokens[1]);
+					cout << " " << endl;
 				}else if(strcmp(tokens[0].c_str(), "CAMERA")==0){
-				    loadCamera();
-				    cout << " " << endl;
+					loadCamera();
+					cout << " " << endl;
 				}
 			}
 		}
@@ -35,114 +42,124 @@ scene::scene(string filename){
 }
 
 int scene::loadObject(string objectid){
-    int id = atoi(objectid.c_str());
-    if(id!=objects.size()){
-        cout << "ERROR: OBJECT ID does not match expected number of objects" << endl;
-        return -1;
-    }else{
-        cout << "Loading Object " << id << "..." << endl;
-        geom newObject;
-        string line;
-        
-        //load object type 
-        utilityCore::safeGetline(fp_in,line);
-        if (!line.empty() && fp_in.good()){
-            if(strcmp(line.c_str(), "sphere")==0){
-                cout << "Creating new sphere..." << endl;
+	int id = atoi(objectid.c_str());
+	if(id!=objects.size()){
+		cout << "ERROR: OBJECT ID does not match expected number of objects" << endl;
+		return -1;
+	}else{
+		cout << "Loading Object " << id << "..." << endl;
+		geom newObject;
+		string line;
+
+		//load object type 
+		utilityCore::safeGetline(fp_in,line);
+		if (!line.empty() && fp_in.good()){
+			if(strcmp(line.c_str(), "sphere")==0){
+				cout << "Creating new sphere..." << endl;
 				newObject.type = SPHERE;
-            }else if(strcmp(line.c_str(), "cube")==0){
-                cout << "Creating new cube..." << endl;
+			}else if(strcmp(line.c_str(), "cube")==0){
+				cout << "Creating new cube..." << endl;
 				newObject.type = CUBE;
-            }else{
+			}else{
+				//load mesh from obj file
 				string objline = line;
-                string name;
-                string extension;
-                istringstream liness(objline);
-                getline(liness, name, '.');
-                getline(liness, extension, '.');
-                if(strcmp(extension.c_str(), "obj")==0){
-                    cout << "Creating new mesh..." << endl;
-                    cout << "Reading mesh from " << line << "... " << endl;
-		    		newObject.type = MESH;
-                }else{
-                    cout << "ERROR: " << line << " is not a valid object type!" << endl;
-                    return -1;
-                }
-            }
-        }
-       
-	//link material
-    utilityCore::safeGetline(fp_in,line);
-	if(!line.empty() && fp_in.good()){
-	    vector<string> tokens = utilityCore::tokenizeString(line);
-	    newObject.materialid = atoi(tokens[1].c_str());
-	    cout << "Connecting Object " << objectid << " to Material " << newObject.materialid << "..." << endl;
-        }
-        
-	//load frames
-    int frameCount = 0;
-    utilityCore::safeGetline(fp_in,line);
-	vector<glm::vec3> translations;
-	vector<glm::vec3> scales;
-	vector<glm::vec3> rotations;
-    while (!line.empty() && fp_in.good()){
-	    
-	    //check frame number
-	    vector<string> tokens = utilityCore::tokenizeString(line);
-        if(strcmp(tokens[0].c_str(), "frame")!=0 || atoi(tokens[1].c_str())!=frameCount){
-            cout << "ERROR: Incorrect frame count!" << endl;
-            return -1;
-        }
-	    
-	    //load tranformations
-	    for(int i=0; i<3; i++){
-            glm::vec3 translation; glm::vec3 rotation; glm::vec3 scale;
-            utilityCore::safeGetline(fp_in,line);
-            tokens = utilityCore::tokenizeString(line);
-            if(strcmp(tokens[0].c_str(), "TRANS")==0){
-                translations.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
-            }else if(strcmp(tokens[0].c_str(), "ROTAT")==0){
-                rotations.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
-            }else if(strcmp(tokens[0].c_str(), "SCALE")==0){
-                scales.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
-            }
-	    }
-	    
-	    frameCount++;
-        utilityCore::safeGetline(fp_in,line);
+				string name;
+				string extension;
+				istringstream liness(objline);
+				getline(liness, name, '.');
+				getline(liness, extension, '.');
+				if(strcmp(extension.c_str(), "obj")==0){
+					cout << "Creating new mesh..." << endl;
+					cout << "Reading mesh from " << line << "... " << endl;
+					obj* mesh = new obj();
+					objLoader* loader = new objLoader(objline, mesh);
+					delete loader;
+					newObject.type = MESH;
+					newObject.vertexcount = mesh->getVertexCount();
+					newObject.normalcount = mesh->getNormalCount();
+					newObject.facecount = mesh->getFaceCount();
+					convertObj(mesh, id);
+					vertexcount += mesh->getVertexCount();
+					normalcount += mesh->getNormalCount();
+				}else{
+					cout << "ERROR: " << line << " is not a valid object type!" << endl;
+					return -1;
+				}
+			}
+		}
+
+		//link material
+		utilityCore::safeGetline(fp_in,line);
+		if(!line.empty() && fp_in.good()){
+			vector<string> tokens = utilityCore::tokenizeString(line);
+			newObject.materialid = atoi(tokens[1].c_str());
+			cout << "Connecting Object " << objectid << " to Material " << newObject.materialid << "..." << endl;
+		}
+
+		//load frames
+		int frameCount = 0;
+		utilityCore::safeGetline(fp_in,line);
+		vector<glm::vec3> translations;
+		vector<glm::vec3> scales;
+		vector<glm::vec3> rotations;
+		while (!line.empty() && fp_in.good()){
+
+			//check frame number
+			vector<string> tokens = utilityCore::tokenizeString(line);
+			if(strcmp(tokens[0].c_str(), "frame")!=0 || atoi(tokens[1].c_str())!=frameCount){
+				cout << "ERROR: Incorrect frame count!" << endl;
+				return -1;
+			}
+
+			//load tranformations
+			for(int i=0; i<3; i++){
+				glm::vec3 translation; glm::vec3 rotation; glm::vec3 scale;
+				utilityCore::safeGetline(fp_in,line);
+				tokens = utilityCore::tokenizeString(line);
+				if(strcmp(tokens[0].c_str(), "TRANS")==0){
+					translations.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
+				}else if(strcmp(tokens[0].c_str(), "ROTAT")==0){
+					rotations.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
+				}else if(strcmp(tokens[0].c_str(), "SCALE")==0){
+					scales.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
+				}
+			}
+
+			frameCount++;
+			utilityCore::safeGetline(fp_in,line);
+		}
+
+		//move frames into CUDA readable arrays
+		newObject.translations = new glm::vec3[frameCount];
+		newObject.rotations = new glm::vec3[frameCount];
+		newObject.scales = new glm::vec3[frameCount];
+		newObject.transforms = new cudaMat4[frameCount];
+		newObject.inverseTransforms = new cudaMat4[frameCount];
+		for(int i=0; i<frameCount; i++){
+			newObject.translations[i] = translations[i];
+			newObject.rotations[i] = rotations[i];
+			newObject.scales[i] = scales[i];
+			glm::mat4 transform = utilityCore::buildTransformationMatrix(translations[i], rotations[i], scales[i]);
+			newObject.transforms[i] = utilityCore::glmMat4ToCudaMat4(transform);
+			newObject.inverseTransforms[i] = utilityCore::glmMat4ToCudaMat4(glm::inverse(transform));
+		}
+
+		objects.push_back(newObject);
+
+		cout << "Loaded " << frameCount << " frames for Object " << objectid << "!" << endl;
+		return 1;
 	}
-	
-	//move frames into CUDA readable arrays
-	newObject.translations = new glm::vec3[frameCount];
-	newObject.rotations = new glm::vec3[frameCount];
-	newObject.scales = new glm::vec3[frameCount];
-	newObject.transforms = new cudaMat4[frameCount];
-	newObject.inverseTransforms = new cudaMat4[frameCount];
-	for(int i=0; i<frameCount; i++){
-		newObject.translations[i] = translations[i];
-		newObject.rotations[i] = rotations[i];
-		newObject.scales[i] = scales[i];
-		glm::mat4 transform = utilityCore::buildTransformationMatrix(translations[i], rotations[i], scales[i]);
-		newObject.transforms[i] = utilityCore::glmMat4ToCudaMat4(transform);
-		newObject.inverseTransforms[i] = utilityCore::glmMat4ToCudaMat4(glm::inverse(transform));
-	}
-	
-        objects.push_back(newObject);
-	
-	cout << "Loaded " << frameCount << " frames for Object " << objectid << "!" << endl;
-        return 1;
-    }
 }
 
 int scene::loadCamera(){
 	cout << "Loading Camera ..." << endl;
-        camera newCamera;
+	camera newCamera;
 	float fovy;
-	
+
 	//load static properties
 	for(int i=0; i<4; i++){
 		string line;
-        utilityCore::safeGetline(fp_in,line);
+		utilityCore::safeGetline(fp_in,line);
 		vector<string> tokens = utilityCore::tokenizeString(line);
 		if(strcmp(tokens[0].c_str(), "RES")==0){
 			newCamera.resolution = glm::vec2(atoi(tokens[1].c_str()), atoi(tokens[2].c_str()));
@@ -154,50 +171,50 @@ int scene::loadCamera(){
 			newCamera.imageName = tokens[1];
 		}
 	}
-        
+
 	//load time variable properties (frames)
-    int frameCount = 0;
+	int frameCount = 0;
 	string line;
-    utilityCore::safeGetline(fp_in,line);
+	utilityCore::safeGetline(fp_in,line);
 	vector<glm::vec3> positions;
 	vector<glm::vec3> views;
 	vector<glm::vec3> ups;
 	vector<float> apertures;
 	vector<float> focusPlanes;
-    while (!line.empty() && fp_in.good()){
-	    
-	    //check frame number
-	    vector<string> tokens = utilityCore::tokenizeString(line);
-        if(strcmp(tokens[0].c_str(), "frame")!=0 || atoi(tokens[1].c_str())!=frameCount){
-            cout << "ERROR: Incorrect frame count!" << endl;
-            return -1;
-        }
-	    
-	    //load camera properties
-	    for(int i=0; i<5; i++){
-            //glm::vec3 translation; glm::vec3 rotation; glm::vec3 scale;
-            utilityCore::safeGetline(fp_in,line);
-            tokens = utilityCore::tokenizeString(line);
-            if(strcmp(tokens[0].c_str(), "EYE")==0){
-                positions.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
-            }else if(strcmp(tokens[0].c_str(), "VIEW")==0){
-                views.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
-            }else if(strcmp(tokens[0].c_str(), "UP")==0){
-                ups.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
-            }
+	while (!line.empty() && fp_in.good()){
+
+		//check frame number
+		vector<string> tokens = utilityCore::tokenizeString(line);
+		if(strcmp(tokens[0].c_str(), "frame")!=0 || atoi(tokens[1].c_str())!=frameCount){
+			cout << "ERROR: Incorrect frame count!" << endl;
+			return -1;
+		}
+
+		//load camera properties
+		for(int i=0; i<5; i++){
+			//glm::vec3 translation; glm::vec3 rotation; glm::vec3 scale;
+			utilityCore::safeGetline(fp_in,line);
+			tokens = utilityCore::tokenizeString(line);
+			if(strcmp(tokens[0].c_str(), "EYE")==0){
+				positions.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
+			}else if(strcmp(tokens[0].c_str(), "VIEW")==0){
+				views.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
+			}else if(strcmp(tokens[0].c_str(), "UP")==0){
+				ups.push_back(glm::vec3(atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str())));
+			}
 			else if(strcmp(tokens[0].c_str(), "APERTURE")==0){
 				apertures.push_back(atof(tokens[1].c_str()));
 			}else if(strcmp(tokens[0].c_str(), "FOCUSPLANE")==0){
 				focusPlanes.push_back(atof(tokens[1].c_str()));
 			}
-			
-	    }
-	    
-	    frameCount++;
-        utilityCore::safeGetline(fp_in,line);
+
+		}
+
+		frameCount++;
+		utilityCore::safeGetline(fp_in,line);
 	}
 	newCamera.frames = frameCount;
-	
+
 	//move frames into CUDA readable arrays
 	newCamera.positions = new glm::vec3[frameCount];
 	newCamera.views = new glm::vec3[frameCount];
@@ -219,16 +236,54 @@ int scene::loadCamera(){
 	newCamera.fov = glm::vec2(fovx, fovy);
 
 	renderCam = newCamera;
-	
+
 	//set up render camera stuff
 	renderCam.image = new glm::vec3[(int)renderCam.resolution.x*(int)renderCam.resolution.y];
 	renderCam.rayList = new ray[(int)renderCam.resolution.x*(int)renderCam.resolution.y];
 	for(int i=0; i<renderCam.resolution.x*renderCam.resolution.y; i++){
 		renderCam.image[i] = glm::vec3(0,0,0);
 	}
-	
+
 	cout << "Loaded " << frameCount << " frames for camera!" << endl;
 	return 1;
+}
+
+int scene::loadTexture(string textureid){
+	int id = atoi(textureid.c_str());
+	if(id != textures.size()){
+		cout << "ERROR: TEXTURE ID does not match expected number of textures" << endl;
+		return -1;
+	}else{
+		cout << "Loading Texture " << id << "..." << endl;
+		cputexture newTexture;
+
+		// load texture from file
+		string filename;
+		utilityCore::safeGetline(fp_in,filename);
+		
+		int width, height, n;
+		unsigned char* colorData = stbi_load(filename.c_str(), &width, &height, &n, 3);
+
+		glm::vec3* colors = new glm::vec3[width * height];
+		for (int y=0; y<height; ++y) {
+			for (int x=0; x<width; ++x) {
+				int idx = y * width + x;
+				colors[idx].r = (int)colorData[idx*3]/255.0;
+				colors[idx].g = (int)colorData[idx*3+1]/255.0;
+				colors[idx].b = (int)colorData[idx*3+2]/255.0;
+			}
+		}
+		
+		delete [] colorData;
+
+		newTexture.width = width;
+		newTexture.height = height;
+		newTexture.colors = colors;
+		textures.push_back(newTexture);
+		widthcount += width;
+		maxheight = max(height, maxheight);
+		return 1;
+	}
 }
 
 int scene::loadMaterial(string materialid){
@@ -239,11 +294,11 @@ int scene::loadMaterial(string materialid){
 	}else{
 		cout << "Loading Material " << id << "..." << endl;
 		material newMaterial;
-	
+
 		//load static properties
-		for(int i=0; i<10; i++){
+		for(int i=0; i<11; i++){
 			string line;
-            utilityCore::safeGetline(fp_in,line);
+			utilityCore::safeGetline(fp_in,line);
 			vector<string> tokens = utilityCore::tokenizeString(line);
 			if(strcmp(tokens[0].c_str(), "RGB")==0){
 				glm::vec3 color( atof(tokens[1].c_str()), atof(tokens[2].c_str()), atof(tokens[3].c_str()) );
@@ -268,10 +323,38 @@ int scene::loadMaterial(string materialid){
 				newMaterial.reducedScatterCoefficient = atof(tokens[1].c_str());					  
 			}else if(strcmp(tokens[0].c_str(), "EMITTANCE")==0){
 				newMaterial.emittance = atof(tokens[1].c_str());					  
-			
+			}else if(strcmp(tokens[0].c_str(), "TEXTURE")==0){
+				newMaterial.textureid = atof(tokens[1].c_str());					  
 			}
 		}
 		materials.push_back(newMaterial);
 		return 1;
 	}
+}
+
+// Use the loaded mesh's information to populate the vector of faces
+int scene::convertObj(obj* mesh, int geomid) {
+	for (int i=0; i<mesh->getFaceCount(); ++i) {
+		vector<int> facePoints = mesh->getFaces()->at(i);
+		vector<int> faceNormals = mesh->getFaceNormals()->at(i);
+		if (facePoints.size() != 3) {
+			cout << "ERROR: mesh is not triangulated" << endl;
+			return -1;
+		}
+		triangle* face = new triangle(geomid, facePoints[0]+vertexcount, facePoints[1]+vertexcount, facePoints[2]+vertexcount,
+			faceNormals[0]+normalcount, faceNormals[1]+normalcount, faceNormals[2]+normalcount);
+		faces.push_back(face);
+	}
+
+	for (int i=0; i<mesh->getVertexCount(); ++i) {
+		glm::vec3* vert = new glm::vec3(mesh->getPoints()->at(i).x, mesh->getPoints()->at(i).y, mesh->getPoints()->at(i).z);
+		vertices.push_back(vert);
+	}
+
+	for (int i=0; i<mesh->getNormalCount(); ++i) {
+		glm::vec3* norm = new glm::vec3(mesh->getNormals()->at(i).x, mesh->getNormals()->at(i).y, mesh->getNormals()->at(i).z);
+		normals.push_back(norm);
+	}
+	
+	return 1;
 }

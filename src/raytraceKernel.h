@@ -20,8 +20,6 @@
     #include <cutil_math.h>
 #endif
 
-#define PHOTONMAP 1
-
 extern glm::vec3* accumulatorImage;
 
 void cudaAllocateAccumulatorImage(camera *renderCam);
@@ -34,7 +32,8 @@ void cudaRaytraceCore(uchar4* pos, camera* renderCam, int frame, int iterations,
 void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBOPos, cameraData liveCamera);
 
 //for allocating and deallocating memory
-void cudaAllocateMemory(camera* renderCam, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms);
+void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms,
+												glm::vec3* vertices, int numberOfVertices, glm::vec3* normals, int numberOfNormals, triangle* faces, int numberOfFaces);
 void cudaFreeMemory();
 
 int streamCompactPhotons (photon* inputPhotons, photon* outputPhotons, int size);

@@ -13,6 +13,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include "ObjCore\objloader.h"
 
 using namespace std;
 
@@ -20,14 +21,24 @@ class scene{
 private:
     ifstream fp_in;
     int loadMaterial(string materialid);
+		int loadTexture(string textureid);
     int loadObject(string objectid);
     int loadCamera();
+		int convertObj(obj* mesh, int geomid);
 public:
     scene(string filename);
     ~scene();
 
     vector<geom> objects;
     vector<material> materials;
+		vector<cputexture> textures;
+		vector<triangle*> faces; // faces of all meshes
+		vector<glm::vec3*> vertices;
+		vector<glm::vec3*> normals;
+		int vertexcount;
+		int normalcount;
+		int widthcount; // the sum of all textures' width
+		int maxheight; // the largest height of all textures
     camera renderCam;
 };
 

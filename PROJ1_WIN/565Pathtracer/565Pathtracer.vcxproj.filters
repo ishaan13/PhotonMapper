@@ -12,6 +12,12 @@
     <ClCompile Include="..\..\src\stb_image\stb_image_write.c">
       <Filter>stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ObjCore\obj.cpp">
+      <Filter>ObjCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ObjCore\objloader.cpp">
+      <Filter>ObjCore</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\cudaMat4.h" />
@@ -30,6 +36,12 @@
     <ClInclude Include="..\..\src\stb_image\stb_image.h">
       <Filter>stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\ObjCore\obj.h">
+      <Filter>ObjCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ObjCore\objloader.h">
+      <Filter>ObjCore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="..\..\src\raytraceKernel.cu" />
@@ -37,6 +49,9 @@
   <ItemGroup>
     <Filter Include="stb_image">
       <UniqueIdentifier>{011aa553-95e8-4e59-b7ff-1bb89aebe21d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ObjCore">
+      <UniqueIdentifier>{ac6f92d3-89de-4af1-9d9c-7d0858c950cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

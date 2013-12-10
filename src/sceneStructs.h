@@ -14,7 +14,20 @@
 enum GEOMTYPE{ SPHERE, CUBE, MESH };
 
 #define COMPACTION 1
-#define PHOTONMAP 1
+
+struct triangle {
+	int geomid;
+	int v1;
+	int v2;
+	int v3;
+	int n1;
+	int n2;
+	int n3;
+
+	triangle() {};
+	triangle(int id, int vi1, int vi2, int vi3, int ni1, int ni2, int ni3) :
+		geomid(id), v1(vi1), v2(vi2), v3(vi3), n1(ni1), n2(ni2), n3(ni3) {};
+};
 
 struct ray {
 	glm::vec3 origin;
@@ -63,6 +76,11 @@ struct geom {
 	glm::vec3* scales;
 	cudaMat4* transforms;
 	cudaMat4* inverseTransforms;
+
+	// for mesh
+	int vertexcount;
+	int normalcount;
+	int facecount;
 };
 
 struct staticGeom {
@@ -111,6 +129,21 @@ struct material{
 	glm::vec3 absorptionCoefficient;
 	float reducedScatterCoefficient;
 	float emittance;
+	int textureid; // -1 means no texture
+};
+
+// texture structure on CPU
+struct cputexture {
+	int width;
+	int height;
+	glm::vec3* colors;
+};
+
+// texture structure on CUDA
+struct cudatexture {
+	int width;
+	int height;
+	int xindex; // the x index of the first pixel in the texture object with all textures
 };
 
 #endif //CUDASTRUCTS_H
