@@ -1,4 +1,5 @@
 #include "sceneStructs.h"
+#include "intersections.h"
 #include <vector>
 
 #define MAX_PRIMS_PER_LEAF 10
@@ -56,5 +57,7 @@ public:
 	KDNode* tree;
 	void buildKD();
 	KDNode* buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList);
+
+	float traverse(ray& r, KDNode* root);
 
 };

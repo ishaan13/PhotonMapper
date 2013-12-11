@@ -216,3 +216,21 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 	return current;
 }
 
+float KDTree::traverse(ray& r, KDNode* root) {
+	
+	float entry = FLT_MAX; 
+	float exit = FLT_MIN;
+
+	//find entry and exit distances of the ray into the tree
+	//create a geometry for the bounding box
+
+	 
+
+	while (entry < exit) {
+		
+
+	
+	}
+
+}
+
