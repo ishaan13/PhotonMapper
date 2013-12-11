@@ -158,9 +158,9 @@ OBJECT 5
 obj/tetrahedron.obj
 material 1
 frame 0
-TRANS       0 1 0
+TRANS       0 2 0
 ROTAT       0 180 0
-SCALE       1 1 1
+SCALE       3 3 3
 
 OBJECT 6
 cube
