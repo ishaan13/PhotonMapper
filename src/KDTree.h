@@ -34,18 +34,13 @@ public:
 	int numberOfPrims;
 	int *primIndices;
 
-	KDNode *first;
-	KDNode *second;
+	KDNode *first; // left/bottom/back
+	KDNode *second; // right/top/front
 
 	Plane splitPlane;
 
 	// ropes
-	KDNode *left;
-	KDNode *right;
-	KDNode *top;
-	KDNode *bottom;
-	KDNode *front;
-	KDNode *back;
+	KDNode* ropes[6];
 
 	bool isLeaf();
 };
@@ -57,4 +52,6 @@ public:
 	void buildKD();
 	KDNode* buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList);
 
+	KDNode* optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf);
+	KDNode* processNode(KDNode* node, KDNode* ropes[], glm::vec3 llb, glm::vec3 urf);
 };
