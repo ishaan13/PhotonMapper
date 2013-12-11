@@ -88,6 +88,16 @@ struct geom {
 	int facecount;
 };
 
+//axis aligned bounding box
+struct AABB {
+	
+	//min and max positions of bounding box
+	glm::vec3 xyzMin;
+	glm::vec3 xyzMax;
+	glm::vec3 dimension; 
+
+};
+
 struct staticGeom {
 	enum GEOMTYPE type;
 	int materialid;
@@ -96,6 +106,7 @@ struct staticGeom {
 	glm::vec3 scale;
 	cudaMat4 transform;
 	cudaMat4 inverseTransform;
+	AABB boundingBox;
 };
 
 struct cameraData {

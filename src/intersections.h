@@ -551,6 +551,25 @@ __host__ __device__ void getRandomPointAndNormalOnSphere(staticGeom sphere, floa
 	normal = glm::normalize(point - centerViewSpace);
 }
 
+
+//finds the axis aligned bounding box given a geomtry
+__host__ __device__ void buildAABB(staticGeom& geom) {
+
+	//build unit cube
+	glm::vec3 unitXYZmin (-0.5f);
+	glm::vec3 unitXYZmax (0.5f);
+
+	//apply transforms to unit cube
+	unitXYZmin = multiplyMV(geom.transform, glm::vec4(unitXYZmin, 1.0f));
+	unitXYZmax = multiplyMV(geom.transform, glm::vec4(unitXYZmax, 1.0f));
+
+	//take min and max of points as bounds of box
+	geom.boundingBox.xyzMin = glm::min(unitXYZmin, unitXYZmax);
+	geom.boundingBox.xyzMax = glm::max(unitXYZmin, unitXYZmax);
+	geom.boundingBox.dimension = glm::abs(geom.boundingBox.xyzMax - geom.boundingBox.xyzMin);
+	
+}
+
 #endif
 
 
