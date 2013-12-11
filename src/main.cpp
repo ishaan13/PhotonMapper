@@ -121,10 +121,11 @@ void runCuda(){
 
 	if(iterations<renderCam->iterations){
 		if (iterations == 0) {
+			cudaFreeMemory();
 			//copy stuff to the gpu at the beginning of every frame
 			//copy stuff to the gpu
 			cudaAllocateMemory(targetFrame, renderCam, materials, numberOfMaterials, geoms, numberOfGeoms, vertices, numberOfVertices,
-				normals, numberOfNormals, faces, numberOfFaces);
+				normals, numberOfNormals, faces, numberOfFaces, uvs, numberOfUVs);
 		}
 		uchar4 *dptr=NULL;
 		iterations++;
@@ -445,12 +446,14 @@ void copyDataFromScene(){
 	numberOfNormals = renderScene->normals.size();
 	numberOfFaces = renderScene->faces.size();
 	numberOfTextures = renderScene->textures.size();
+	numberOfUVs = renderScene->uvs.size();
 
 	geoms = new geom[numberOfGeoms];
 	materials = new material[numberOfMaterials];
 	faces = new triangle[numberOfFaces];
 	vertices = new glm::vec3[numberOfVertices];
 	normals = new glm::vec3[numberOfNormals];
+	uvs = new glm::vec2[numberOfUVs];
 
 	for(int i=0; i<numberOfGeoms; i++){
     geoms[i] = renderScene->objects[i];
@@ -458,14 +461,53 @@ void copyDataFromScene(){
 	for(int i=0; i<numberOfMaterials; i++){
 		materials[i] = renderScene->materials[i];
 	}
-	for (int i=0; i<numberOfFaces; ++i) {
-		faces[i] = triangle(*(renderScene->faces[i]));
+	for(int i=0; i<numberOfFaces; ++i) {
+		faces[i] = renderScene->faces[i];
 	}
-	for (int i=0; i<numberOfVertices; ++i) {
-		vertices[i] = glm::vec3(*(renderScene->vertices[i]));
+	for(int i=0; i<numberOfVertices; ++i) {
+		vertices[i] = renderScene->vertices[i];
 	}
-	for (int i=0; i<numberOfNormals; ++i) {
-		normals[i] = glm::vec3(*(renderScene->normals[i]));
+	for(int i=0; i<numberOfNormals; ++i) {
+		normals[i] = renderScene->normals[i];
+	}
+	for(int i=0; i<numberOfUVs; ++i) {
+		uvs[i] = renderScene->uvs[i];
+	}
+	
+	cout<<"Copied geometry data from scene"<<endl;
+
+	if (numberOfTextures > 0) {
+		// pack textures into a long cuda 2d array
+		float4* cputexturedata = new float4[renderScene->widthcount * renderScene->maxheight];
+		int storedPixelCount = 0;
+		int accumWidth = 0; // accumulated width
+		cudatexture* textures = new cudatexture[numberOfTextures];
+		for(int i=0; i<numberOfTextures; i++) {
+			int width = renderScene->textures[i].width;
+			int height = renderScene->textures[i].height;
+
+			textures[i].width = width;
+			textures[i].height = height;
+			textures[i].xindex = accumWidth;
+			for (int j=0; j<width; j++) {
+				for (int k=0; k<height; k++) {
+					int index = j * height + k + storedPixelCount; // assume textures are stored in column-major order in cuda
+					glm::vec3 pixelcolor = renderScene->textures[i].colors[index];
+					cputexturedata[index].x = pixelcolor.x;
+					cputexturedata[index].y = pixelcolor.y;
+					cputexturedata[index].z = pixelcolor.z;
+				}
+			}
+			storedPixelCount += width * renderScene->maxheight;
+			accumWidth += width;
+		}
+
+		cout<<"Copied texture data from scene"<<endl;
+
+		initTexture(textures, cputexturedata, numberOfTextures, renderScene->widthcount, renderScene->maxheight);
+
+		delete[] textures;
+		delete[] cputexturedata;
 	}
 }
 
@@ -551,6 +593,7 @@ GLuint initShader(const char *vertexShaderPath, const char *fragmentShaderPath){
 void cleanupCuda(){
 	if(pbo) deletePBO(&pbo);
 	if(displayImage) deleteTexture(&displayImage);
+	cudaFreeTexture();
 }
 
 void freeCPUMemory(){

@@ -26,7 +26,7 @@ Plane findSplitPlane(glm::vec3 llb, glm::vec3 urf)
 }
 
 void calculateBoundingBoxes(glm::vec3 llb, glm::vec3 urf, Plane splitPlane, glm::vec3 &firstllb, glm::vec3 &firsturf,
-																			glm::vec3 &secondllb, glm::vec3 &secondurf)
+														glm::vec3 &secondllb, glm::vec3 &secondurf)
 {
 	if(splitPlane.axis == X_AXIS)
 	{
@@ -87,6 +87,10 @@ bool Plane::isSecond(prim p)
 	}
 }
 
+bool KDNode::isLeaf()
+{
+	return (first == NULL && right == NULL);
+}
 
 // Wrapepr function which'll do magic
 void KDTree::buildKD()
@@ -146,7 +150,7 @@ void KDTree::buildKD()
 }
 
 // recursive build
-KDNode * buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
+KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
 {
 	KDNode * current;
 
@@ -203,6 +207,7 @@ KDNode * buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
 		calculateBoundingBoxes(llb,urf,splitPlane,firstllb,firsturf,secondllb,secondurf);
 
 		// Split the primitives based on left and right
+		current->splitPlane = splitPlane;
 		current->first = buildTree(firstllb,firsturf,firstPrimsList);
 		current->second = buildTree(secondllb, secondurf,secondPrimsList);
 		current->numberOfPrims = 0;

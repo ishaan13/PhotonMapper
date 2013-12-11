@@ -340,3 +340,7 @@ int obj::getNormalCount(){
 int obj::getFaceCount(){
 	return faces.size();
 }
+
+int obj::getTexcoordCount(){
+	return texturecoords.size();
+}

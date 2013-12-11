@@ -75,6 +75,7 @@ public:
 	int getVertexCount();
 	int getNormalCount();
 	int getFaceCount();
+	int getTexcoordCount();
 };
 
 #endif

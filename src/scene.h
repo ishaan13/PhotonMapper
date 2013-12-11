@@ -32,11 +32,13 @@ public:
     vector<geom> objects;
     vector<material> materials;
 		vector<cputexture> textures;
-		vector<triangle*> faces; // faces of all meshes
-		vector<glm::vec3*> vertices;
-		vector<glm::vec3*> normals;
+		vector<triangle> faces; // faces of all meshes
+		vector<glm::vec3> vertices;
+		vector<glm::vec3> normals;
+		vector<glm::vec2> uvs;
 		int vertexcount;
 		int normalcount;
+		int uvcount;
 		int widthcount; // the sum of all textures' width
 		int maxheight; // the largest height of all textures
     camera renderCam;
