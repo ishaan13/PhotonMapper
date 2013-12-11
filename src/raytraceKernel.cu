@@ -49,6 +49,7 @@ enum {
 
 
 int numPhotons = 10000;
+
 int numPhotonsCompact = numPhotons;
 
 int numBounces = 10;			//hard limit of n bounces for now
@@ -67,8 +68,8 @@ int* cudaGridFirstPhotonIndex;
 
 #define RADIUS 1.0f
 
-gridAttributes grid(-5.5, -0.5, -5.5, 5.5, 10.5, 5.5, RADIUS);
-
+//gridAttributes grid(-5.5, -0.5, -5.5, 5.5, 10.5, 5.5, RADIUS);
+gridAttributes grid(0, 0, 0, 0, 0, 0, RADIUS);		//for testing grid bounding box
 
 glm::vec3* accumulatorImage = NULL;
 extern bool singleFrameMode;
@@ -1158,6 +1159,11 @@ void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials,
 
 	int transVCount = 0; //number of vertices transformed
 	int transNCount = 0; //number of normals transformed
+
+	//for finding the grid data
+	glm::vec3 gridMin(100000);
+	glm::vec3 gridMax(-100000);
+
   for(int i=0; i<numberOfGeoms; ++i){
 		staticGeom newStaticGeom;
 		newStaticGeom.type = geoms[i].type;
@@ -1167,7 +1173,12 @@ void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials,
 		newStaticGeom.scale = geoms[i].scales[targetFrame];
 		newStaticGeom.transform = geoms[i].transforms[targetFrame];
 		newStaticGeom.inverseTransform = geoms[i].inverseTransforms[targetFrame];
+		buildAABB(newStaticGeom);		//find the bounding box for this geometry
 		geomList[i] = newStaticGeom;
+		
+		//find the corners of biggest bounding box
+		gridMin = glm::min(gridMin, newStaticGeom.boundingBox.xyzMin);
+		gridMax = glm::max(gridMax, newStaticGeom.boundingBox.xyzMax);
 
 		if (geoms[i].type == MESH) {
 			// transform vertices
@@ -1191,6 +1202,13 @@ void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials,
 			totalEmittance += materials[geoms[i].materialid].emittance;
 		}
   }
+
+	//update grid size
+	grid.xmin = gridMin.x; grid.ymin = gridMin.y; grid.zmin = gridMin.z;
+	grid.xmax = gridMax.x; grid.ymax = gridMax.y; grid.zmax = gridMax.z;
+	grid.xdim = abs(gridMax.x - gridMin.x);
+	grid.ydim = abs(gridMax.y - gridMin.y);
+	grid.zdim = abs(gridMax.z = gridMin.z);
 
 	totalEnergy = totalEmittance * emitEnergyScale;
 

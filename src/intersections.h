@@ -259,8 +259,6 @@ __host__ __device__ float boxIntersectionTest(staticGeom box, ray r, glm::vec3& 
 
 	return distanceLocal;
 
-	
-
 	/*
 	560- ray tracer implementation
 	
@@ -523,6 +521,25 @@ __host__ __device__ void getRandomPointAndNormalOnSphere(staticGeom sphere, floa
 	glm::vec3 centerViewSpace = multiplyMV(sphere.transform, glm::vec4(0.0f,0.0f,0.0f,1.0f));
 
 	normal = glm::normalize(point - centerViewSpace);
+}
+
+
+//finds the axis aligned bounding box given a geomtry
+__host__ __device__ void buildAABB(staticGeom& geom) {
+
+	//build unit cube
+	glm::vec3 unitXYZmin (-0.5f);
+	glm::vec3 unitXYZmax (0.5f);
+
+	//apply transforms to unit cube
+	unitXYZmin = multiplyMV(geom.transform, glm::vec4(unitXYZmin, 1.0f));
+	unitXYZmax = multiplyMV(geom.transform, glm::vec4(unitXYZmax, 1.0f));
+
+	//take min and max of points as bounds of box
+	geom.boundingBox.xyzMin = glm::min(unitXYZmin, unitXYZmax);
+	geom.boundingBox.xyzMax = glm::max(unitXYZmin, unitXYZmax);
+	geom.boundingBox.dimension = glm::abs(geom.boundingBox.xyzMax - geom.boundingBox.xyzMin);
+	
 }
 
 #endif
