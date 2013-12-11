@@ -1,18 +1,18 @@
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_config.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\sal.h
-c:\program files (x86)\microsoft visual studio 10.0\vc\include\codeanalysis\sourceannotations.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\vadefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\sal.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ConcurrencySal.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\vadefs.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\limits.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stddef.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\limits.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stddef.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\driver_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
@@ -68,12 +68,12 @@ c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\string.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\time.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\wtime.inl
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\time.inl
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\string.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\time.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\wtime.inl
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\time.inl
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\math_functions.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
@@ -82,16 +82,19 @@ c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\surface_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\texture_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\vector_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\host_defines.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\math.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdlib.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cmath
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\yvals.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\use_ansi.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\math.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cstdlib
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\math.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdlib.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cmath
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\yvals.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xkeycheck.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\use_ansi.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\math.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xtgmath.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xtr1common
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cstdlib
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\cuda_surface_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\builtin_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\device_types.h
@@ -251,26 +254,26 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/co
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\host_defines.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/debug.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/compiler_fence.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\intrin.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\setjmp.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\immintrin.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\wmmintrin.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\nmmintrin.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\smmintrin.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\tmmintrin.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\pmmintrin.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\emmintrin.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xmmintrin.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\mmintrin.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\malloc.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\ammintrin.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\mm3dnow.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\mmintrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\intrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\setjmp.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\immintrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\wmmintrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\nmmintrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\smmintrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\tmmintrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\pmmintrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\emmintrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xmmintrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\mmintrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\malloc.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ammintrin.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\mm3dnow.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\mmintrin.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/forceinline.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/config/hd_warning_disable.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/device_malloc_allocator.h
@@ -282,82 +285,61 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/ty
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/type_traits/is_metafunction_defined.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/type_traits/has_nested_type.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/iterator/iterator_traits.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\iterator
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\istream
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\ostream
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\ios
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xlocnum
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\climits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cstdio
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\swprintf.inl
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\streambuf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xiosbase
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xlocale
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cstring
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdexcept
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\exception
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xstddef
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cstddef
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\eh.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xstring
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xmemory
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\new
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xutility
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\utility
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\iosfwd
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cwchar
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\wchar.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdbg.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\type_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\limits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\ymath.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cfloat
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\float.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtwrn.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xtr1common
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxtype_traits
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\typeinfo
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xlocinfo
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xlocinfo.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\ctype.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\locale.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xdebug
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\system_error
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cerrno
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\errno.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\share.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\iterator
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\istream
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ostream
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ios
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xlocnum
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\climits
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cstdio
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\swprintf.inl
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\streambuf
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xiosbase
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xlocale
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cstring
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdexcept
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\exception
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xstddef
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cstddef
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\eh.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xstring
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xmemory0
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\limits
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ymath.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cfloat
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\float.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtwrn.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cwchar
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\wchar.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\new
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xutility
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\utility
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\iosfwd
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdbg.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\type_traits
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xrefwrap
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xatomic0.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\typeinfo
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xlocinfo
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xlocinfo.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\ctype.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\locale.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xdebug
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xfacet
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\system_error
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cerrno
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\errno.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\share.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/iterator/detail/iterator_traversal_tags.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/iterator/detail/host_system_tag.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cpp/detail/execution_policy.h
@@ -399,244 +381,15 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cu
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cuda/detail/guarded_cuda_runtime_api.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime_api.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/system_error.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\string
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\string
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/error_code.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/detail/errno.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\iostream
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\iostream
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/detail/error_category.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/functional.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\functional
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfunctional
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxresult
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxresult
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxresult
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxresult
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxresult
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxresult
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxresult
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxresult
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxresult
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxresult
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxresult
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallobj
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallobj
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallobj
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallobj
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallobj
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallobj
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallobj
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallobj
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallobj
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallobj
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallobj
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxpmfcaller
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxpmfcaller
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxpmfcaller
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxpmfcaller
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxpmfcaller
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxpmfcaller
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxpmfcaller
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxpmfcaller
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxpmfcaller
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxpmfcaller
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxpmfcaller
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallpmf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallpmf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallpmf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallpmf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallpmf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallpmf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallpmf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallpmf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallpmf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallpmf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallpmf
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallfun
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallfun
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallfun
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallfun
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallfun
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallfun
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallfun
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallfun
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallfun
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallfun
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallfun
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xawrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxcallwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxrefwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxmem_fn
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxmem_fn
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxmem_fn
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxmem_fn
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxmem_fn
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxmem_fn
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxmem_fn
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxmem_fn
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxmem_fn
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxmem_fn
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxfunction
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxfunction
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxfunction
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxfunction
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxfunction
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxfunction
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxfunction
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxfunction
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxfunction
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxfunction
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxfunction
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xawrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind0
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind0
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind0
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind0
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind0
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind0
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind0
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind0
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind0
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind0
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind0
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxbind1
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\functional
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xfunctional
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\tuple
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/functional/placeholder.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/functional/actor.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/tuple.h
@@ -679,76 +432,10 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/ra
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/raw_reference_cast.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/tuple_transform.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/tuple_meta_transform.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\memory
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xfwrap1
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xxshared
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\memory
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xmemory
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdint.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/transform.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/transform.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/detail/generic/transform.h
@@ -886,7 +573,7 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/ve
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/iterator/reverse_iterator.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/iterator/detail/reverse_iterator_base.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/iterator/detail/reverse_iterator.inl
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\vector
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\vector
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/vector_base.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/overlapped_copy.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/equal.h
@@ -1046,8 +733,8 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cu
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/detail/generic/scalar/binary_search.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/detail/generic/scalar/binary_search.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cuda/detail/detail/cached_temporary_allocator.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\map
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\xtree
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\map
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\xtree
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cuda/detail/block/merge.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cuda/detail/block/merge.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cuda/detail/block/copy.h
@@ -1077,7 +764,7 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/de
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cpp/detail/sequence.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cuda/detail/sequence.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cuda/detail/detail/b40c/radixsort_api.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\math.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\math.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\thrust\system\cuda\detail\detail\b40c\radixsort_reduction_kernel.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\thrust\system\cuda\detail\detail\b40c\radixsort_kernel_common.h
 c:\program files\nvidia gpu computing toolkit\cuda\v5.5\include\thrust\system\cuda\detail\detail\b40c\kernel_utils.h
@@ -1112,130 +799,130 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cu
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/system/cuda/detail/temporary_indirect_permutation.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/detail/trivial_sequence.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\sceneStructs.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/setup.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/_detail.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\setup.hpp
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\cassert
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\assert.h
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\crtdefs.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/type.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_half.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_half.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_detail.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_half.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\setup.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\setup.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_detail.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_gentype.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec1.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_gentype.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle_func.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec1.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec2.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec2.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec3.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec3.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec4.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_float.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_int.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_size.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_swizzle.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_vec4.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x2.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_gentype.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x2.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x3.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x3.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x4.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat2x4.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x2.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x2.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x3.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x3.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x4.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat3x4.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x2.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x2.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x3.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x3.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x4.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\type_mat4x4.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_trigonometric.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_trigonometric.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_exponential.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_exponential.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_common.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_fixes.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_common.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_packing.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_packing.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_geometric.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_geometric.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_matrix.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_matrix.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_vector_relational.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_detail.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_vector_relational.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_integer.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_integer.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\_vectorize.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/func_noise.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core\func_noise.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\./core/_swizzle.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\cudaMat4.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\sceneStructs.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/setup.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/_detail.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\setup.hpp
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\cassert
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\assert.h
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\crtdefs.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/type.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_half.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_half.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_detail.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_float.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_half.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\setup.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_int.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\setup.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_detail.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_size.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec1.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_float.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_int.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_size.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_swizzle_func.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec1.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec2.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_float.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_int.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_size.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec2.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec3.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_float.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_int.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_size.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec3.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec4.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_float.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_int.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_size.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_swizzle.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_vec4.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x2.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_gentype.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x2.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x3.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x3.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x4.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat2x4.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x2.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x2.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x3.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x3.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x4.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat3x4.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x2.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x2.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x3.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x3.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x4.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\type_mat4x4.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_trigonometric.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_trigonometric.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_exponential.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_exponential.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_common.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_fixes.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_common.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_packing.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_packing.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_geometric.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_geometric.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_matrix.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_matrix.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_vector_relational.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_detail.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_vector_relational.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_integer.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_integer.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\_vectorize.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/func_noise.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core\func_noise.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\./core/_swizzle.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\cudaMat4.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/gtc/matrix_transform.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\gtc\../glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\gtc\matrix_transform.inl
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\utilities.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\algorithm
-c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\sstream
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\cudaMat4.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\raytraceKernel.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm/gtc/matrix_transform.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\gtc\../glm.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\gtc\matrix_transform.inl
+c:\users\hms\desktop\ziagpu\photonmapper\src\utilities.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\algorithm
+C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\sstream
+c:\users\hms\desktop\ziagpu\photonmapper\src\cudaMat4.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\raytraceKernel.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/discard_block_engine.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/random_core_access.h
@@ -1262,15 +949,15 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/de
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/normal_distribution.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\math_constants.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\sceneStructs.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\sceneStructs.h
 C:/ProgramData/NVIDIA Corporation/CUDA Samples/v5.5/common/inc\helper_math.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\intersections.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\sceneStructs.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\cudaMat4.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\utilities.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\interactions.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\intersections.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\intersections.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\sceneStructs.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\cudaMat4.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\utilities.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\interactions.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\intersections.h
 C:/ProgramData/NVIDIA Corporation/CUDA Samples/v5.5/common/inc\helper_math.h

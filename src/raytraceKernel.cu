@@ -844,6 +844,7 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 			if (intersectedGeom > -1) {
 				p.position = minIntersectionPoint;
 
+				//don't store first bounce because it counts as direct lighting
 				if (currentBounces <= 1) {
 					p.stored = false;
 				} else {

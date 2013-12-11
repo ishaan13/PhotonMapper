@@ -109,6 +109,10 @@ void KDTree::buildKD()
 		if(vertices[faces[i].v2].z < llb.z)	llb.z = vertices[faces[i].v2].z;
 		if(vertices[faces[i].v3].z < llb.z)	llb.z = vertices[faces[i].v3].z;
 
+		//faster way?
+		//llb = glm::min(vertices[faces[i].v1], vertices[faces[i].v2]);
+		//llb = glm::min(llb, vertices[faces[i].v3]);
+
 		// Update Max
 		if(vertices[faces[i].v1].x > urf.x)	urf.x = vertices[faces[i].v1].x;
 		if(vertices[faces[i].v2].x > urf.x)	urf.x = vertices[faces[i].v2].x;
@@ -121,6 +125,10 @@ void KDTree::buildKD()
 		if(vertices[faces[i].v1].z > urf.z)	urf.z = vertices[faces[i].v1].z;
 		if(vertices[faces[i].v2].z > urf.z)	urf.z = vertices[faces[i].v2].z;
 		if(vertices[faces[i].v3].z > urf.z)	urf.z = vertices[faces[i].v3].z;
+
+		//urf = glm::max(vertices[faces[i].v1], vertices[faces[i].v2]);
+		//urf = glm::max(urf, vertices[faces[i].v3]);
+	
 	}
 
 	// build vector of triangles
