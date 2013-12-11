@@ -89,7 +89,7 @@ bool Plane::isSecond(prim p)
 
 bool KDNode::isLeaf()
 {
-	return (first == NULL && right == NULL);
+	return (first == NULL && second == NULL);
 }
 
 // Wrapepr function which'll do magic
@@ -216,6 +216,110 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 	return current;
 }
 
+// optimize rope
+KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
+{
+	Plane splitPlane = rope->splitPlane;
+
+	while (!rope->isLeaf())
+	{
+		bool splitted = false;
+
+		if (side == LEFT || side == RIGHT) {
+			if (splitPlane.axis == X_AXIS) {
+				rope = side == RIGHT ? rope->first : rope->second;
+				splitted = true;
+			}
+			else if (splitPlane.axis == Y_AXIS) {
+				if (splitPlane.splitPoint >= urf.y) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.y) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+			else {
+				if (splitPlane.splitPoint >= urf.z) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.z) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+		}
+		else if (side == TOP || side == BOTTOM) {
+			if (splitPlane.axis == Y_AXIS) {
+				rope = side == TOP ? rope->first : rope->second;
+				splitted = true;
+			}
+			else if (splitPlane.axis == X_AXIS) {
+				if (splitPlane.splitPoint >= urf.x) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.x) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+			else {
+				if (splitPlane.splitPoint >= urf.z) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.z) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+		}
+		else {
+			if (splitPlane.axis == Z_AXIS) {
+				rope = side == FRONT ? rope->first : rope->second;
+				splitted = true;
+			}
+			else if (splitPlane.axis == X_AXIS) {
+				if (splitPlane.splitPoint >= urf.x) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.x) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+			else {
+				if (splitPlane.splitPoint >= urf.y) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.y) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+		}
+
+		if (!splitted) {
+			break;
+		}
+	}
+
+	return rope;
+}
+
+KDNode* KDTree::processNode(KDNode* node, KDNode* ropes[], glm::vec3 llb, glm::vec3 urf)
+{
+	//if (node->isLeaf()) {
+	//	
+	//}
+	return NULL;
+}
+
 float KDTree::traverse(ray& r, KDNode* root) {
 	
 	float entry = FLT_MAX; 
@@ -233,4 +337,3 @@ float KDTree::traverse(ray& r, KDNode* root) {
 	}
 
 }
-
