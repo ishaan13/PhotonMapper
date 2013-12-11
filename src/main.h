@@ -61,6 +61,7 @@ material* materials;
 triangle* faces;
 glm::vec3* vertices;
 glm::vec3* normals;
+glm::vec2* uvs;
 
 int numberOfGeoms;
 int numberOfMaterials;
@@ -68,6 +69,7 @@ int numberOfVertices;
 int numberOfNormals;
 int numberOfFaces;
 int numberOfTextures;
+int numberOfUVs;
 
 //-------------------------------
 //------------GL STUFF-----------

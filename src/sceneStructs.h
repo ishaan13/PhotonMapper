@@ -24,9 +24,14 @@ struct triangle {
 	int n2;
 	int n3;
 
+	//texture coordinates
+	int t1;
+	int t2;
+	int t3;
+
 	triangle() {};
-	triangle(int id, int vi1, int vi2, int vi3, int ni1, int ni2, int ni3) :
-		geomid(id), v1(vi1), v2(vi2), v3(vi3), n1(ni1), n2(ni2), n3(ni3) {};
+	triangle(int id, int vi1, int vi2, int vi3, int ni1, int ni2, int ni3, int ti1, int ti2, int ti3) :
+		geomid(id), v1(vi1), v2(vi2), v3(vi3), n1(ni1), n2(ni2), n3(ni3), t1(ti1), t2(ti2), t3(ti3) {};
 };
 
 struct ray {

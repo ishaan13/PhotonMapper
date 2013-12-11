@@ -12,7 +12,9 @@
 scene::scene(string filename){
 	vertexcount = 0;
 	normalcount = 0;
+	uvcount = 0;
 	widthcount = 0;
+	maxheight = 0;
 	cout << "Reading scene from " << filename << " ..." << endl;
 	cout << " " << endl;
 	char* fname = (char*)filename.c_str();
@@ -81,6 +83,7 @@ int scene::loadObject(string objectid){
 					convertObj(mesh, id);
 					vertexcount += mesh->getVertexCount();
 					normalcount += mesh->getNormalCount();
+					uvcount += mesh->getTexcoordCount();
 				}else{
 					cout << "ERROR: " << line << " is not a valid object type!" << endl;
 					return -1;
@@ -337,23 +340,30 @@ int scene::convertObj(obj* mesh, int geomid) {
 	for (int i=0; i<mesh->getFaceCount(); ++i) {
 		vector<int> facePoints = mesh->getFaces()->at(i);
 		vector<int> faceNormals = mesh->getFaceNormals()->at(i);
+		vector<int> faceUVs = mesh->getFaceTextures()->at(i);
 		if (facePoints.size() != 3) {
 			cout << "ERROR: mesh is not triangulated" << endl;
 			return -1;
 		}
-		triangle* face = new triangle(geomid, facePoints[0]+vertexcount, facePoints[1]+vertexcount, facePoints[2]+vertexcount,
-			faceNormals[0]+normalcount, faceNormals[1]+normalcount, faceNormals[2]+normalcount);
+		triangle face(geomid, facePoints[0]+vertexcount, facePoints[1]+vertexcount, facePoints[2]+vertexcount,
+			faceNormals[0]+normalcount, faceNormals[1]+normalcount, faceNormals[2]+normalcount,
+			faceUVs[0]+uvcount, faceUVs[1]+uvcount, faceUVs[2]+uvcount);
 		faces.push_back(face);
 	}
 
 	for (int i=0; i<mesh->getVertexCount(); ++i) {
-		glm::vec3* vert = new glm::vec3(mesh->getPoints()->at(i).x, mesh->getPoints()->at(i).y, mesh->getPoints()->at(i).z);
+		glm::vec3 vert(mesh->getPoints()->at(i).x, mesh->getPoints()->at(i).y, mesh->getPoints()->at(i).z);
 		vertices.push_back(vert);
 	}
 
 	for (int i=0; i<mesh->getNormalCount(); ++i) {
-		glm::vec3* norm = new glm::vec3(mesh->getNormals()->at(i).x, mesh->getNormals()->at(i).y, mesh->getNormals()->at(i).z);
+		glm::vec3 norm(mesh->getNormals()->at(i).x, mesh->getNormals()->at(i).y, mesh->getNormals()->at(i).z);
 		normals.push_back(norm);
+	}
+
+	for (int i=0; i<mesh->getTexcoordCount(); ++i) {
+		glm::vec2 uv(mesh->getTextureCoords()->at(i).x, mesh->getTextureCoords()->at(i).y);
+		uvs.push_back(uv);
 	}
 	
 	return 1;

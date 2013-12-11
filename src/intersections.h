@@ -18,10 +18,10 @@ __host__ __device__ glm::vec3 multiplyMV(cudaMat4 m, glm::vec4 v);
 __host__ __device__ cudaMat4 getNormalTransform(cudaMat4 a);
 __host__ __device__ glm::vec3 getSignOfRay(ray r);
 __host__ __device__ glm::vec3 getInverseDirectionOfRay(ray r);
-__host__ __device__ float boxIntersectionTest(staticGeom sphere, ray r, glm::vec3& intersectionPoint, glm::vec3& normal);
-__host__ __device__ float sphereIntersectionTest(staticGeom sphere, ray r, glm::vec3& intersectionPoint, glm::vec3& normal);
+__host__ __device__ float boxIntersectionTest(staticGeom sphere, ray r, glm::vec3& intersectionPoint, glm::vec3& normal,glm::vec2& uv);
+__host__ __device__ float sphereIntersectionTest(staticGeom sphere, ray r, glm::vec3& intersectionPoint, glm::vec3& normal, glm::vec2& uv);
 __host__ __device__ float triangleIntersectionTest(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 n1, glm::vec3 n2, glm::vec3 n3,
-																									 ray r, glm::vec3& intersection, glm::vec3& normal, glm::vec2& uv);
+																									 glm::vec2 t1, glm::vec2 t2, glm::vec2 t3, ray r, glm::vec3& intersection, glm::vec3& normal, glm::vec2& uv);
 __host__ __device__ void getRandomPointAndNormalOnCube(staticGeom cube, float randomSeed, glm::vec3& point, glm::vec3& normal);
 __host__ __device__ void getRandomPointAndNormalOnSphere(staticGeom cube, float randomSeed, glm::vec3& point, glm::vec3& normal);
 
@@ -121,9 +121,41 @@ __host__ __device__ glm::vec3 getNormalOfPointOnUnitCube(glm::vec3 point) {
 	return normal;
 }
 
+__host__ __device__ glm::vec2 getUVOfPointOnUnitCube(glm::vec3 point) {
+	float halfWidth = 0.5f;
+	glm::vec2 uv;
+
+	if(fabs(point.x - -halfWidth) < FLOAT_EPSILON)
+	{
+		uv = glm::vec2(point.z+0.5, point.y+0.5);
+	}
+	else if( fabs(point.x - halfWidth) < FLOAT_EPSILON)
+	{
+		uv = glm::vec2(point.z+0.5, point.y+0.5);
+	}
+	else if(fabs(point.y - -halfWidth) < FLOAT_EPSILON)
+	{
+		uv = glm::vec2(point.z+0.5, point.x+0.5);
+	}
+	else if( fabs(point.y - halfWidth) < FLOAT_EPSILON)
+	{
+		uv = glm::vec2(point.z+0.5, point.x+0.5);
+	}
+	else if(fabs(point.z - -halfWidth) < FLOAT_EPSILON)
+	{
+		uv = glm::vec2(point.x+0.5, point.y+0.5);
+	}
+	else if( fabs(point.z - halfWidth) < FLOAT_EPSILON)
+	{
+		uv = glm::vec2(point.x+0.5, point.y+0.5);
+	}
+	
+	return uv;
+}
+
 __host__ __device__ void getClosestIntersection(ray r, staticGeom* geoms, int numberOfGeoms, triangle* faces, int numberOfFaces, glm::vec3* vertices,
-																								int numberOfVertices, glm::vec3* normals, int numberOfNormals, glm::vec3& minIntersectionPoint,
-																								glm::vec3& minNormal, int& intersectedGeom, int& intersectedMaterial) {
+																								glm::vec3* normals, glm::vec2* uvs, glm::vec3& minIntersectionPoint, glm::vec3& minNormal,
+																								int& intersectedGeom, int& intersectedMaterial, glm::vec2& minUV) {
 	float minDepth = FLT_MAX;
 
 	for (int iter=0; iter < numberOfGeoms; iter++)
@@ -132,15 +164,16 @@ __host__ __device__ void getClosestIntersection(ray r, staticGeom* geoms, int nu
 		glm::vec3 intersection;
 		glm::vec3 normal;
 		staticGeom currentGeometry = geoms[iter];
+		glm::vec2 uv;
 
 		if (currentGeometry.type == CUBE)
 		{
-			depth = boxIntersectionTest(currentGeometry,r,intersection,normal);
+			depth = boxIntersectionTest(currentGeometry,r,intersection,normal,uv);
 		}
 
 		else if (geoms[iter].type == SPHERE)
 		{
-			depth = sphereIntersectionTest(currentGeometry,r,intersection,normal);
+			depth = sphereIntersectionTest(currentGeometry,r,intersection,normal,uv);
 		}
 
 		if (depth > 0 && depth < minDepth)
@@ -150,6 +183,7 @@ __host__ __device__ void getClosestIntersection(ray r, staticGeom* geoms, int nu
 			minNormal = normal;
 			intersectedGeom = iter;
 			intersectedMaterial = currentGeometry.materialid;
+			minUV = uv;
 		}
 	}
 
@@ -161,23 +195,89 @@ __host__ __device__ void getClosestIntersection(ray r, staticGeom* geoms, int nu
 		glm::vec3 n1 = normals[faces[i].n1];
 		glm::vec3 n2 = normals[faces[i].n2];
 		glm::vec3 n3 = normals[faces[i].n3];
+		glm::vec2 t1 = uvs[faces[i].t1];
+		glm::vec2 t2 = uvs[faces[i].t2];
+		glm::vec2 t3 = uvs[faces[i].t3];
 		glm::vec3 intersection;
 		glm::vec3 normal;
 		glm::vec2 uv;
-		float depth = triangleIntersectionTest(v1, v2, v3, n1, n2, n3, r, intersection, normal, uv);
+		float depth = triangleIntersectionTest(v1, v2, v3, n1, n2, n3, t1, t2, t3, r, intersection, normal, uv);
 		if (depth > 0 && depth < minDepth) {
 			minDepth = depth;
 			minIntersectionPoint = intersection;
 			minNormal = normal;
 			intersectedGeom = faces[i].geomid;
 			intersectedMaterial = geoms[intersectedGeom].materialid;
+			minUV = uv;
 		}
 	}
 }
 
+__device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, triangle* faces, int numberOfFaces, glm::vec3* vertices,
+																glm::vec3* normals, glm::vec2* uvs, glm::vec3 pointToCheck, int lightSourceIndex)
+{
+	bool visible = true;
+	float distance = glm::length(r.origin - pointToCheck);
+
+	// Check whether any object occludes point to check from ray's origin
+	for(int iter=0; iter < numberOfGeoms; iter++)
+	{
+		// Avoid calculating self intersections
+		if(iter==lightSourceIndex)
+			continue;
+
+		float depth=-1;
+		glm::vec3 intersection;
+		glm::vec3 normal;
+		glm::vec2 uv;
+		
+		if(geoms[iter].type == CUBE)
+		{
+			depth = boxIntersectionTest(geoms[iter],r,intersection,normal,uv);
+		}
+		
+		else if(geoms[iter].type == SPHERE)
+		{
+			depth = sphereIntersectionTest(geoms[iter],r,intersection,normal,uv);
+		}
+		
+		if(depth > 0 && (depth + NUDGE) < distance)
+		{
+			//printf("Depth: %f\n", depth);
+			visible = false;
+			break;
+		}
+	}
+
+	// get closest intersection with triangles
+	for (int i=0; i<numberOfFaces; ++i) {
+		glm::vec3 v1 = vertices[faces[i].v1];
+		glm::vec3 v2 = vertices[faces[i].v2];
+		glm::vec3 v3 = vertices[faces[i].v3];
+		glm::vec3 n1 = normals[faces[i].n1];
+		glm::vec3 n2 = normals[faces[i].n2];
+		glm::vec3 n3 = normals[faces[i].n3];
+		glm::vec2 t1 = uvs[faces[i].t1];
+		glm::vec2 t2 = uvs[faces[i].t2];
+		glm::vec2 t3 = uvs[faces[i].t3];
+		glm::vec3 intersection;
+		glm::vec3 normal;
+		glm::vec2 uv;
+		float depth = triangleIntersectionTest(v1, v2, v3, n1, n2, n3, t1, t2, t3, r, intersection, normal, uv);
+
+		if(depth > 0 && (depth + NUDGE) < distance)
+		{
+			//printf("Depth: %f\n", depth);
+			visible = false;
+			break;
+		}
+	}
+	return visible;
+}
+
 //TODO: IMPLEMENT THIS FUNCTION
 //Cube intersection test, return -1 if no intersection, otherwise, distance to intersection
-__host__ __device__ float boxIntersectionTest(staticGeom box, ray r, glm::vec3& intersectionPoint, glm::vec3& normal){
+__host__ __device__ float boxIntersectionTest(staticGeom box, ray r, glm::vec3& intersectionPoint, glm::vec3& normal, glm::vec2& uv){
 
 	glm::vec3 ro = multiplyMV(box.inverseTransform,glm::vec4(r.origin,1.0f));
 	glm::vec3 rd = glm::normalize( multiplyMV(box.inverseTransform, glm::vec4(r.direction,0.0f)) );
@@ -247,94 +347,18 @@ __host__ __device__ float boxIntersectionTest(staticGeom box, ray r, glm::vec3& 
     
 	intersectionPoint = realIntersectionPoint;
 	glm::vec3 localNormal = getNormalOfPointOnUnitCube(localIntersectionPoint);
-
+	uv = getUVOfPointOnUnitCube(localIntersectionPoint);
 
 	// Psuedo point is one local unit distance behind the local intersection point in the direction of the normal
 	glm::vec3 realPseudoPoint = multiplyMV(box.transform, glm::vec4(localIntersectionPoint - localNormal ,1.0f));
 	normal = glm::normalize(realIntersectionPoint - realPseudoPoint);
-    
-	// @DO: something is not normalized. Confirm what
-	//return glm::length(r.origin - realIntersectionPoint);
-	//return glm::length(r.origin - realIntersectionPoint) * glm::length(r.direction);
 
 	return distanceLocal;
-
-	
-
-	/*
-	560- ray tracer implementation
-	
-	float tNear = -1000000, tFar = 10000000;
-	float t1,t2;
-
-	float returnT;
-
-	for(int i=0; i<3;i++)
-	{
-		float xD, xo;
-		switch(i)
-		{
-			case 0: xD = rt.direction.x; xo = rt.origin.x; break;
-			case 1: xD = rt.direction.y; xo = rt.origin.y; break;
-			case 2: xD = rt.direction.z; xo = rt.origin.z; break;
-		}
-		if(fabs(xD)<0.00001)
-		{
-			if(xo < -halfWidth || xo > halfWidth) 
-				return -1;	// Handle Parallel Case
-		}
-		t1 = (-halfWidth - xo)/xD; //(-0.5 - xo)/xD; // my implementation has -1 to 1
-		t2 = ( halfWidth - xo)/xD; //( 0.5 - xo)/xD; // my implementation has -1 to 1
-
-
-		//@DO: is this how insides are checked?
-		if ( t1 > t2)// && !(t2<0)) 
-		{
-			float temp = t2;
-			t2 = t1;
-			t1 = temp;
-		}
-		if (t1 > tNear )
-			tNear = t1;
-		if (t2 < tFar)// && t2>0)
-			tFar = t2;
-		if( tNear > tFar)
-			return -1;//Box missed, do something
-		if( tFar < 0 )
-			return -1;//Box behind ray, do something
-
-		if(tNear < 0)
-			returnT = tFar;
-		else
-			returnT = tNear;
-	}
-	//cout<<tNear<<endl;
-	glm::vec3 position = rt.origin + returnT * rt.direction;
-	glm::vec4 tNrm;
-
-	if(fabs(position.x - halfWidth)< FLOAT_EPSILON)
-		tNrm = glm::vec4(1,0,0,0);
-	else if(fabs(position.x - (-halfWidth))< FLOAT_EPSILON)
-		tNrm = glm::vec4(-1,0,0,0);
-	else if(fabs(position.y - halfWidth)< FLOAT_EPSILON)
-		tNrm = glm::vec4(0,1,0,0);
-	else if(fabs(position.y - (-halfWidth))< FLOAT_EPSILON)
-		tNrm = glm::vec4(0,-1,0,0);
-	else if(fabs(position.z - halfWidth)< FLOAT_EPSILON)
-		tNrm = glm::vec4(0,0,1,0);
-	else if(fabs(position.z - (-halfWidth))< FLOAT_EPSILON)
-		tNrm =glm:: vec4(0,0,-1,0);
-	
-	intersectionPoint = multiplyMV(box.transform,glm::vec4(position,1.0f));
-	normal = glm::normalize(multiplyMV(box.transform,tNrm));
-
-	return returnT;
-	*/
 }
 
 //LOOK: Here's an intersection test example from a sphere. Now you just need to figure out cube and, optionally, triangle.
 //Sphere intersection test, return -1 if no intersection, otherwise, distance to intersection
-__host__ __device__ float sphereIntersectionTest(staticGeom sphere, ray r, glm::vec3& intersectionPoint, glm::vec3& normal){
+__host__ __device__ float sphereIntersectionTest(staticGeom sphere, ray r, glm::vec3& intersectionPoint, glm::vec3& normal, glm::vec2& uv){
   
   float radius = .5;
         
@@ -368,6 +392,9 @@ __host__ __device__ float sphereIntersectionTest(staticGeom sphere, ray r, glm::
 
   intersectionPoint = realIntersectionPoint;
   normal = glm::normalize(realIntersectionPoint - realOrigin);
+	
+	//TODO: assign the correct uv
+	uv = glm::vec2(0.0f);
         
   return glm::length(r.origin - realIntersectionPoint);
 }
@@ -387,7 +414,7 @@ __host__ __device__ float planeIntersectionTest(glm::vec3 pointOnPlane, glm::vec
 }
 
 __host__ __device__ float triangleIntersectionTest(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 n1, glm::vec3 n2, glm::vec3 n3,
-																									 ray r, glm::vec3& intersection, glm::vec3& normal, glm::vec2& uv){
+																									 glm::vec2 t1, glm::vec2 t2, glm::vec2 t3, ray r, glm::vec3& intersection, glm::vec3& normal, glm::vec2& uv){
 	if (glm::length(v1 - v2) < EPSILON || glm::length(v1 - v3) < EPSILON || glm::length(v2 - v3) < EPSILON)
 		return -1;
 
@@ -403,12 +430,11 @@ __host__ __device__ float triangleIntersectionTest(glm::vec3 v1, glm::vec3 v2, g
 	float s1 = glm::dot(glm::cross(v2 - v1, x - v1), n);
 	float s2 = glm::dot(glm::cross(v3 - v2, x - v2), n);
 	float s3 = glm::dot(glm::cross(v1 - v3, x - v3), n);
+	float s = glm::dot(glm::cross(v2 - v1, v3 - v1), n);
 	if (s1 >= 0 && s2 >= 0 && s3 >= 0) {
 		intersection = x;
-		normal = glm::normalize(s1 * n1 + s2 * n2 + s3 * n3);
-
-		// temp
-		uv = glm::vec2(0, 0);
+		normal = glm::normalize(s1/s * n1 + s2/s * n2 + s3/s * n3);
+		uv = s1/s * t1 + s2/s * t2 + s3/s * t3;
 
 		return glm::length(r.origin - x);
 	}
