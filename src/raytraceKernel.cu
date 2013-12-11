@@ -207,7 +207,8 @@ __global__ void sendImageToPBO(uchar4* PBOpos, glm::vec2 resolution, glm::vec3* 
   }
 }
 
-__device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, glm::vec3 pointToCheck, int geomShotFrom, int lightSourceIndex)
+__device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, triangle* faces, int numberOfFaces, glm::vec3* vertices,
+																int numberOfVertices, glm::vec3* normals, int numberOfNormals, glm::vec3 pointToCheck, int lightSourceIndex)
 {
 	bool visible = true;
 	float distance = glm::length(r.origin - pointToCheck);
@@ -233,6 +234,27 @@ __device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, glm
 			depth = sphereIntersectionTest(geoms[iter],r,intersection,normal);
 		}
 		
+		if(depth > 0 && (depth + NUDGE) < distance)
+		{
+			//printf("Depth: %f\n", depth);
+			visible = false;
+			break;
+		}
+	}
+
+	// get closest intersection with triangles
+	for (int i=0; i<numberOfFaces; ++i) {
+		glm::vec3 v1 = vertices[faces[i].v1];
+		glm::vec3 v2 = vertices[faces[i].v2];
+		glm::vec3 v3 = vertices[faces[i].v3];
+		glm::vec3 n1 = normals[faces[i].n1];
+		glm::vec3 n2 = normals[faces[i].n2];
+		glm::vec3 n3 = normals[faces[i].n3];
+		glm::vec3 intersection;
+		glm::vec3 normal;
+		glm::vec2 uv;
+		float depth = triangleIntersectionTest(v1, v2, v3, n1, n2, n3, r, intersection, normal, uv);
+
 		if(depth > 0 && (depth + NUDGE) < distance)
 		{
 			//printf("Depth: %f\n", depth);
@@ -1468,7 +1490,8 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 						shadowRay.origin = minIntersectionPoint + NUDGE * L;
 						shadowRay.direction = L;
 
-						bool visible = visibilityCheck(shadowRay,geoms,numberOfGeoms,lightSourceSample, intersectedGeom, iter);
+						bool visible = visibilityCheck(shadowRay,geoms,numberOfGeoms,cudafaces, numFaces, cudavertices, numVertices, cudanormals, numNormals,
+							lightSourceSample,iter);
 
 						if(visible)
 						{
