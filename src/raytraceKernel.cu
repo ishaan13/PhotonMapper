@@ -48,11 +48,11 @@ enum {
 };
 
 
-int numPhotons = 100000;
+int numPhotons = 10000;
 int numPhotonsCompact = numPhotons;
 
 int numBounces = 10;			//hard limit of n bounces for now
-float emitEnergyScale = 100; //Empirically Verify this value
+float emitEnergyScale = 1000; //Empirically Verify this value
 float totalEnergy;	//total amount of energy in the scene, used for calculating flux per photon
 float flux;
 
