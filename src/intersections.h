@@ -286,7 +286,6 @@ __host__ __device__ float boxIntersectionTest(staticGeom box, ray r, glm::vec3& 
 
 	float halfWidth = 0.5f;
 
-	
 	// Now box is in its own local unit space 
 	glm::vec3 inverseDirection;
 
@@ -355,6 +354,25 @@ __host__ __device__ float boxIntersectionTest(staticGeom box, ray r, glm::vec3& 
 
 	return distanceLocal;
 }
+
+
+////box intersection test with bounding boxes
+//__host__ __device__ bool aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& tFar, float& tNear) {
+//	
+//	tNear = FLT_MIN;
+//	tFar = FLT_MAX;
+//
+//	//x planes
+//
+//	
+//	//y planes
+//
+//
+//	//z planes
+//	return false;
+//
+//}
+
 
 //LOOK: Here's an intersection test example from a sphere. Now you just need to figure out cube and, optionally, triangle.
 //Sphere intersection test, return -1 if no intersection, otherwise, distance to intersection
