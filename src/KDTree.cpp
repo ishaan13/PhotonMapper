@@ -87,9 +87,126 @@ bool Plane::isSecond(prim p)
 	}
 }
 
+//return true if point is in left split, false if in right
+bool Plane::isPointInFirst(glm::vec3 p) {
+	
+	if (axis == X_AXIS) {
+		return p.x <= splitPoint;	
+	}
+
+	else if (axis == Y_AXIS) {
+		return p.y <= splitPoint;
+	}
+
+	else {
+		return p.z <= splitPoint;
+	}
+}
+
+
 bool KDNode::isLeaf()
 {
 	return (first == NULL && second == NULL);
+}
+
+//box intersection test with bounding boxes
+bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& tNear, float& tFar) {
+	
+	tNear = FLT_MIN;
+	tFar = FLT_MAX;
+	float t1, t2 = 0.0f;
+
+	//x planes
+	//check if parallel to x plane
+	if (abs(r.direction.x) < FLT_EPSILON) {
+		if (r.direction.x < low.x || r.direction.x > high.x) {
+			return false;
+		}
+	}
+	else {
+		t1 = (low.x - r.origin.x)/r.direction.x;
+		t2 = (high.x - r.origin.x)/r.direction.x;
+		if (t1 > t2) {		
+			float temp = t1;
+			t2 = t1;
+			t1 = temp;
+		}
+
+		if (t1 > tNear) {
+			tNear = t1;
+		}
+
+		if (t2 < tFar) {
+			tFar = t2;
+		} 
+
+		if (tNear > tFar || tFar < 0) {
+			return false;
+		}
+	}
+
+	//y planes
+	//check if parallel to y slabs
+	if (abs(r.direction.y) < FLT_EPSILON) {
+		//if within slabs
+		if (r.direction.y < low.y || r.direction.y > high.y) {
+			return false;
+		}
+	}
+	else {
+		t1 = (low.y - r.origin.y)/r.direction.y;
+		t2 = (high.y - r.origin.y)/r.direction.y;
+		if (t1 > t2) {		
+			float temp = t1;
+			t2 = t1;
+			t1 = temp;
+		}
+
+		if (t1 > tNear) {
+			tNear = t1;
+		}
+
+		if (t2 < tFar) {
+			tFar = t2;
+		} 
+		
+		if (tNear > tFar || tFar < 0) {
+			return false;
+		}
+	}
+
+	//z planes
+	//check if parallel to z planes
+	if (abs(r.direction.z) < FLT_EPSILON) {
+		//if within slabs
+		if (r.direction.z < low.z || r.direction.z > high.z) {
+			return false;
+		}
+	}
+	else {
+		t1 = (low.z - r.origin.z)/r.direction.z;
+		t2 = (high.z - r.origin.z)/r.direction.z;
+		if (t1 > t2) {		
+			float temp = t1;
+			t2 = t1;
+			t1 = temp;
+		}
+
+		if (t1 > tNear) {
+			tNear = t1;
+		}
+
+		if (t2 < tFar) {
+			tFar = t2;
+		} 
+		
+		if (tNear > tFar || tFar < 0) {
+			return false;
+		}
+	}
+
+	return true;
+
 }
 
 // Wrapepr function which'll do magic
@@ -320,20 +437,47 @@ KDNode* KDTree::processNode(KDNode* node, KDNode* ropes[], glm::vec3 llb, glm::v
 	return NULL;
 }
 
-float KDTree::traverse(ray& r, KDNode* root) {
+float KDTree::traverse(ray& r, KDNode* node, std::vector<prim> primsList) {
 	
-	float entry = FLT_MAX; 
-	float exit = FLT_MIN;
+	float entry = FLT_MIN; 
+	float exit = FLT_MAX;
 
 	//find entry and exit distances of the ray into the tree
-	//create a geometry for the bounding box
-
-	 
+	//if (!aabbIntersectionTest(node->urf, node->llb, r, entry, exit)) {
+		//no intersection, so return
+		//return -1;
+	//}
 
 	while (entry < exit) {
 		
+		//downward traversal to find a leaf node
+		glm::vec3 pEntry = r.origin + entry * r.direction;
+		
+		while (!node->isLeaf()) {
+			//check which child to traverse down on
+			if (node->splitPlane.isPointInFirst(pEntry)) {
+				node = node->first;
+			} 
+			else {
+				node = node->second;
+			}
+		}
 
-	
+		//now at a leaf, check for intersection with primitives
+		for (int i = 0; i < node->numberOfPrims; ++i) {
+
+			//intersect with triangle
+			prim tri = primsList[node->primIndices[i]];
+		
+		}	//exit leaf node
+
+		entry = exit;
+		//go to the next exit node
+		
 	}
 
 }
+
+
+
+
