@@ -606,12 +606,10 @@ float KDTree::traverse(ray& r) {
 		return -1;
 	}
 
-	while (entry - exit < -EPSILON) {
-		
-		//printf("%1.5f %1.5f %1.5f!\n",entry,exit,entry-exit);
-		//save this value for going to neighbor nodes, since we update exit later
-		//float rootExit = exit;
+	//save this value for going to neighbor nodes, since we update exit later
+	float rootExit = exit;
 
+	while (entry - exit < -EPSILON) {
 		//downward traversal to find a leaf node
 		glm::vec3 pEntry = r.origin + entry * r.direction;
 		
@@ -624,7 +622,7 @@ float KDTree::traverse(ray& r) {
 				node = node->second;
 			}
 		}
-
+		aabbIntersectionTest(node->urf, node->llb, r, entry, exit);
 		bool intersectionFound = false;
 		//now at a leaf, check for intersection with primitives
 		for (int i = 0; i < node->numberOfPrims; ++i) {
@@ -651,12 +649,9 @@ float KDTree::traverse(ray& r) {
 			return exit;
 		}
 
-		//update entry
-		float newEntry;
-		aabbIntersectionTest(node->urf, node->llb, r, entry, newEntry);
-
-		//update the new entry point to the exit 
-		entry = newEntry;	
+		//update entry and reset exit
+		entry = exit;
+		exit = rootExit;
 		
 		//if no intersection, go to the next node using rope
 		//if no more neigbours, return -1
