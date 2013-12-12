@@ -1,6 +1,3 @@
-TEXTURE 0
-textures/checkerboard.png
-
 MATERIAL 0				//white diffuse
 RGB         1 1 1       
 SPECEX      0      
@@ -116,13 +113,13 @@ SCATTER     0
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
 EMITTANCE   0
-TEXTURE		0
+TEXTURE		-1
 
 CAMERA
 RES         800 800
 FOVY        35
-ITERATIONS  1
-FILE        sphere.png
+ITERATIONS  3000
+FILE        tetrahedron.png
 frame 0
 EYE         0 5 12
 VIEW        0 0 -1
@@ -171,22 +168,14 @@ ROTAT       0 0 0
 SCALE       .01 10 10
 
 OBJECT 5
-obj/tetrahedron.obj
+obj/sphere.obj
 material 8
 frame 0
-TRANS       2.5 2 0
-ROTAT       180 -59 37
+TRANS       0 3 0
+ROTAT       0 0 0
 SCALE       2 2 2
 
 OBJECT 6
-obj/tetrahedron.obj
-material 5
-frame 0
-TRANS       -2.5 2 0
-ROTAT       15 45 75
-SCALE       2 4 6
-
-OBJECT 7
 cube
 material 7
 frame 0

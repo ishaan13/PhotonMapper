@@ -326,11 +326,11 @@ void cpuRaytrace() {
 
 	//find rays
 	for (int x = 0; x < resolution.x; ++x) {
-		for (int y = 0; y < resolution.y; ++y) { 
+		//cout<<x<<endl;
+		for (int y = 0; y < resolution.y; ++y) {
 
 			int index = y * resolution.x + x;
-
-			if (x == 480 && y == 520) {
+			if (x == 395 && y == 371) {
 				int debug = 1;
 			}
 
@@ -348,12 +348,12 @@ void cpuRaytrace() {
 			r.origin = screenPoint;
 			r.direction = glm::normalize(screenPoint - eye);
 			
-			//trace the ray
+			//intersect testing using KD tree
 			
 			float f = kdTree ->traverse(r);
-			cpuImage [index] = glm::vec3(f);
-			//cpuImage [index] = glm::vec3(1.0f, 0.0f, 0.0f);
-			//cpuImage[index] = glm::vec3(glm::abs(r.direction));
+			f = max(0.0f, f);
+			cpuImage[index] = glm::vec3(f/16.0f);
+
 		}
 	}
 
@@ -363,6 +363,32 @@ void cpuRaytrace() {
 
 		// unmap buffer object
 		cudaGLUnmapBufferObject(pbo);
+
+		//cout<<"iteration finished"<<endl;
+
+		//output image file
+		image outputImage(renderCam->resolution.x, renderCam->resolution.y);
+
+		for(int x=0; x<renderCam->resolution.x; x++){
+			for(int y=0; y<renderCam->resolution.y; y++){
+				int index = x + (y * renderCam->resolution.x);
+				outputImage.writePixelRGB(renderCam->resolution.x-1-x,y,cpuImage[index]);
+			}
+		}
+
+		gammaSettings gamma;
+		gamma.applyGamma = true;
+		gamma.gamma = 1.0;//2.2;
+		gamma.divisor = renderCam->iterations;
+		outputImage.setGammaSettings(gamma);
+		string filename = renderCam->imageName;
+		string s;
+		stringstream out;
+		out << targetFrame;
+		s = out.str();
+		utilityCore::replaceString(filename, ".bmp", "."+s+".bmp");
+		utilityCore::replaceString(filename, ".png", "."+s+".png");
+		outputImage.saveImageRGB(filename);
 }
 
 
@@ -638,7 +664,9 @@ void initCuda(){
 
 	copyDataFromScene();
 
-	//runCuda();
+#if CPUTRACE != 1
+	runCuda();
+#endif
 }
 
 void initTextures(){
