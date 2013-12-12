@@ -124,7 +124,7 @@ FOVY        35
 ITERATIONS  1
 FILE        cow.png
 frame 0
-EYE         0 5 12
+EYE         0 5 8
 VIEW        0 0 -1
 UP          0 1 0
 APERTURE    0

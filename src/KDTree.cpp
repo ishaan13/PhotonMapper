@@ -178,7 +178,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 	//x planes
 	//check if parallel to x plane
 	if (abs(r.direction.x) < EPSILON) {
-		if (r.direction.x < low.x || r.direction.x > high.x) {
+		if (r.origin.x < low.x || r.origin.x > high.x) {
 			return false;
 		}
 	}
@@ -208,7 +208,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 	//check if parallel to y slabs
 	if (abs(r.direction.y) < EPSILON) {
 		//if within slabs
-		if (r.direction.y < low.y || r.direction.y > high.y) {
+		if (r.origin.y < low.y || r.origin.y > high.y) {
 			return false;
 		}
 	}
@@ -238,7 +238,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 	//check if parallel to z planes
 	if (abs(r.direction.z) < EPSILON) {
 		//if within slabs
-		if (r.direction.z < low.z || r.direction.z > high.z) {
+		if (r.origin.z < low.z || r.origin.z > high.z) {
 			return false;
 		}
 	}
@@ -455,12 +455,11 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 // optimize rope
 KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
 {
-	Plane splitPlane = rope->splitPlane;
-
 	while (!rope->isLeaf())
 	{
 		bool splitted = false;
 
+		Plane splitPlane = rope->splitPlane;
 		if (side == LEFT || side == RIGHT) {
 			if (splitPlane.axis == X_AXIS) {
 				rope = side == RIGHT ? rope->first : rope->second;
@@ -610,9 +609,8 @@ float KDTree::traverse(ray& r) {
 	while (entry - exit < -EPSILON) {
 		
 		//printf("%1.5f %1.5f %1.5f!\n",entry,exit,entry-exit);
-
-	////save this value for going to neighbor nodes, since we update exit later
-	//float rootExit = exit;
+		//save this value for going to neighbor nodes, since we update exit later
+		//float rootExit = exit;
 
 		//downward traversal to find a leaf node
 		glm::vec3 pEntry = r.origin + entry * r.direction;

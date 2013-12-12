@@ -331,7 +331,7 @@ void cpuRaytrace() {
 
 			int index = y * resolution.x + x;
 
-			if (x == 395 && y == 371) {
+			if (x == 462 && y == 390) {
 				int debug = 1;
 			}
 
@@ -346,7 +346,8 @@ void cpuRaytrace() {
 				(2.0f * (1.0f * x / (resolution.x-1)) - 1.0f) * viewPlaneX + 
 				(1.0f - 2.0f * (1.0f * y / (resolution.y-1))) * viewPlaneY;
 
-			r.origin = screenPoint;
+			r.origin = eye;
+			//r.origin = screenPoint;
 			r.direction = glm::normalize(screenPoint - eye);
 			
 			//intersect testing using KD tree
@@ -365,7 +366,7 @@ void cpuRaytrace() {
 		// unmap buffer object
 		cudaGLUnmapBufferObject(pbo);
 
-		//cout<<"iteration finished"<<endl;
+		cout<<"iteration finished"<<endl;
 
 		//output image file
 		image outputImage(renderCam->resolution.x, renderCam->resolution.y);
@@ -373,7 +374,8 @@ void cpuRaytrace() {
 		for(int x=0; x<renderCam->resolution.x; x++){
 			for(int y=0; y<renderCam->resolution.y; y++){
 				int index = x + (y * renderCam->resolution.x);
-				outputImage.writePixelRGB(renderCam->resolution.x-1-x,y,cpuImage[index]);
+				//outputImage.writePixelRGB(renderCam->resolution.x-1-x,y,cpuImage[index]);
+				outputImage.writePixelRGB(x, y, cpuImage[index]);
 			}
 		}
 
