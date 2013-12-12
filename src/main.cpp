@@ -330,6 +330,7 @@ void cpuRaytrace() {
 		for (int y = 0; y < resolution.y; ++y) {
 
 			int index = y * resolution.x + x;
+
 			if (x == 395 && y == 371) {
 				int debug = 1;
 			}

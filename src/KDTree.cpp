@@ -378,8 +378,8 @@ void KDTree::buildKD()
 		primList.push_back(p);
 	}
 	// call recursive build
-	tree = buildTree(llb,urf,primList, 0);
 
+	tree = buildTree(llb,urf,primList, 0);
 	// build rope structure
 	KDNode* ropes[] = {NULL, NULL, NULL, NULL, NULL, NULL};
 	processNode(tree, ropes);
@@ -607,10 +607,12 @@ float KDTree::traverse(ray& r) {
 		return -1;
 	}
 
-
 	while (entry - exit < -EPSILON) {
 		
 		//printf("%1.5f %1.5f %1.5f!\n",entry,exit,entry-exit);
+
+	////save this value for going to neighbor nodes, since we update exit later
+	//float rootExit = exit;
 
 		//downward traversal to find a leaf node
 		glm::vec3 pEntry = r.origin + entry * r.direction;

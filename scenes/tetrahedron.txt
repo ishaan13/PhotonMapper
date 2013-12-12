@@ -171,22 +171,14 @@ ROTAT       0 0 0
 SCALE       .01 10 10
 
 OBJECT 5
-obj/tetrahedron.obj
+obj/largesphere.obj
 material 8
 frame 0
-TRANS       2.5 2 0
-ROTAT       180 -59 37
+TRANS       0 4 0
+ROTAT       0 0 0
 SCALE       2 2 2
 
 OBJECT 6
-obj/tetrahedron.obj
-material 5
-frame 0
-TRANS       -2.5 2 0
-ROTAT       15 45 75
-SCALE       2 4 6
-
-OBJECT 7
 cube
 material 7
 frame 0
