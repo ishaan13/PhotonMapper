@@ -4,6 +4,7 @@
 
 #define MAX_PRIMS_PER_LEAF 10
 #define EPSILON 0.0001
+#define MAX_TREE_DEPTH 20 
 
 enum {X_AXIS, Y_AXIS, Z_AXIS};
 enum {LEFT, RIGHT, BOTTOM, TOP, BACK, FRONT};
@@ -55,7 +56,7 @@ class KDTree
 public:
 	KDNode* tree;
 	void buildKD();
-	KDNode* buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList);
+	KDNode* buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList, int depth);
 
 	KDNode* optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf);
 	void processNode(KDNode* node, KDNode* ropes[]);

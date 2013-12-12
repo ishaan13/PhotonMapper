@@ -5,19 +5,23 @@ Plane findSplitPlane(glm::vec3 llb, glm::vec3 urf)
 {
 	Plane p;
 	glm::vec3 diff = urf-llb;
+
+	//if (abs(urf.y-6.0f) < 0.00001f && abs(llb.y-2.0f) < 0.00001f) {
+	//	int debug = 1;
+	//}
 	
 	// find longest axis and split down the middle
-	if(diff.x > diff.y && diff.x > diff.z)
+	if(diff.x >= diff.y && diff.x >= diff.z)
 	{
 		p.axis = X_AXIS;
 		p.splitPoint = llb.x + diff.x/2.0f;
 	}
-	else if(diff.y > diff.x && diff.y > diff.z)
+	else if(diff.y >= diff.x && diff.y >= diff.z)
 	{
 		p.axis = Y_AXIS;
 		p.splitPoint = llb.y + diff.y/2.0f;
 	}
-	else
+	else if(diff.z >= diff.y && diff.z >= diff.x)
 	{
 		p.axis = Z_AXIS;
 		p.splitPoint = llb.z + diff.z/2.0f;
@@ -127,7 +131,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 		t1 = (low.x - r.origin.x)/r.direction.x;
 		t2 = (high.x - r.origin.x)/r.direction.x;
 		if (t1 > t2) {		
-			float temp = t1;
+			float temp = t2;
 			t2 = t1;
 			t1 = temp;
 		}
@@ -157,7 +161,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 		t1 = (low.y - r.origin.y)/r.direction.y;
 		t2 = (high.y - r.origin.y)/r.direction.y;
 		if (t1 > t2) {		
-			float temp = t1;
+			float temp = t2;
 			t2 = t1;
 			t1 = temp;
 		}
@@ -187,7 +191,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 		t1 = (low.z - r.origin.z)/r.direction.z;
 		t2 = (high.z - r.origin.z)/r.direction.z;
 		if (t1 > t2) {		
-			float temp = t1;
+			float temp = t2;
 			t2 = t1;
 			t1 = temp;
 		}
@@ -235,7 +239,8 @@ float KDTree::triangleIntersectionTest(ray& r, glm::vec3 v1, glm::vec3 v2, glm::
 }
 
 //given a point, find which face the point is on and use that to find the neighbor using ropes
-KDNode* KDTree:: findNeighbor (glm::vec3 p, KDNode* k) {
+// Make sure that the node that the rope takes us to has an exit point larger than the old entry
+KDNode* KDTree:: findNeighbor (glm::vec3 p, KDNode* k, float oldEntry) {
 
 	if (abs(p.x - k->llb.x) < EPSILON) {
 		return k->ropes[LEFT];		
@@ -250,10 +255,10 @@ KDNode* KDTree:: findNeighbor (glm::vec3 p, KDNode* k) {
 		return k->ropes[TOP];
 	}
 	else if (abs(p.z - k->llb.z) < EPSILON) {
-		return k->ropes[FRONT];
+		return k->ropes[BACK];
 	}
 	else if (abs(p.z - k->urf.z) < EPSILON) {
-		return k->ropes[BACK];
+		return k->ropes[FRONT];
 	}
 	else {
 		return NULL;
@@ -314,7 +319,7 @@ void KDTree::buildKD()
 		primList.push_back(p);
 	}
 	// call recursive build
-	tree = buildTree(llb,urf,primList);
+	tree = buildTree(llb,urf,primList,0);
 
 	// build rope structure
 	KDNode* ropes[] = {NULL, NULL, NULL, NULL, NULL, NULL};
@@ -322,7 +327,7 @@ void KDTree::buildKD()
 }
 
 // recursive build
-KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
+KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList, int depth)
 {
 	KDNode * current;
 
@@ -333,7 +338,7 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 	current->second = NULL;
 
 	// Recursion termination condition
-	if(primsList.size() <= MAX_PRIMS_PER_LEAF)
+	if(primsList.size() <= MAX_PRIMS_PER_LEAF || depth >= MAX_TREE_DEPTH)
 	{
 		// if primList is empty, this volume is empty; return with bounding box
 		if(primsList.size() == 0)
@@ -367,7 +372,7 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 			{
 				firstPrimsList.push_back(primsList[i]);
 			}
-			else if(splitPlane.isSecond(primsList[i]))
+			if(splitPlane.isSecond(primsList[i]))
 			{
 				secondPrimsList.push_back(primsList[i]);
 			}
@@ -380,8 +385,8 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 
 		// Split the primitives based on left and right
 		current->splitPlane = splitPlane;
-		current->first = buildTree(firstllb,firsturf,firstPrimsList);
-		current->second = buildTree(secondllb, secondurf,secondPrimsList);
+		current->first = buildTree(firstllb,firsturf,firstPrimsList,depth+1);
+		current->second = buildTree(secondllb, secondurf,secondPrimsList,depth+1);
 		current->numberOfPrims = 0;
 		current->primIndices = NULL;
 	}
@@ -542,11 +547,13 @@ float KDTree::traverse(ray& r) {
 		return -1;
 	}
 
-	//save this value for going to neighbor nodes, since we update exit later
-	float rootExit = exit;
+	////save this value for going to neighbor nodes, since we update exit later
+	//float rootExit = exit;
 
-	while (entry < exit) {
+	while (entry - exit < -EPSILON) {
 		
+		printf("%1.5f %1.5f %1.5f!\n",entry,exit,entry-exit);
+
 		//downward traversal to find a leaf node
 		glm::vec3 pEntry = r.origin + entry * r.direction;
 		
@@ -565,7 +572,8 @@ float KDTree::traverse(ray& r) {
 		for (int i = 0; i < node->numberOfPrims; ++i) {
 
 			//intersect with triangle in range of entry and exit
-			triangle tri = faces[node->primIndices[i]];
+			int primIndex = node->primIndices[i];
+			triangle tri = faces[primIndex];
 			glm::vec3 v1 = vertices[tri.v1];
 			glm::vec3 v2 = vertices[tri.v2];
 			glm::vec3 v3 = vertices[tri.v3];
@@ -583,14 +591,17 @@ float KDTree::traverse(ray& r) {
 			return exit;
 		}
 
+		//update entry
+		float newEntry;
+		aabbIntersectionTest(node->urf, node->llb, r, entry, newEntry);
+
 		//update the new entry point to the exit 
-		entry = exit;	
-		exit = rootExit;		//reset exit point to the exit point of the kd tree
+		entry = newEntry;	
 		
 		//if no intersection, go to the next node using rope
 		//if no more neigbours, return -1
-		glm::vec3 newEntry = r.origin + exit * r.direction;
-		node = findNeighbor(newEntry, node);
+		glm::vec3 newEntryPoint = r.origin + entry * r.direction;
+		node = findNeighbor(newEntryPoint, node, entry);
 
 		//return -1 if no neighbors found
 		if (!node) {
