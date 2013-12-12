@@ -20,6 +20,7 @@
 #include "intersections.h"
 #include "interactions.h"
 #include <vector>
+#include "KDTree.h"
 
 // Optimizations and add ons
 #define JITTER 1
@@ -30,9 +31,7 @@
 #define SCHLICK 0
 #define PAINTERLY 0
 #define PHOTONCOMPACT 1
-#define K 10
-
-
+#define K 25
 
 #if CUDA_VERSION >= 5000
     #include <helper_math.h>
@@ -49,11 +48,16 @@ enum {
 	DISP_TOTAL
 };
 
+KDTree tree;
+
 int numPhotons = 10000;
 int numPhotonsCompact = numPhotons;
 
-int numBounces = 10;			//hard limit of n bounces for now
-float emitEnergyScale = 1.0; //Empirically Verify this value
+int numBounces = 10;						//hard limit of n bounces for now
+float emitEnergyScale = 1.0;				//Empirically Verify this value
+
+//Lower Direct lighting by this contribution factor
+__device__ float lowerDirectScale = (2.0f*PI_F);
 
 float totalEnergy;	//total amount of energy in the scene, used for calculating flux per photon
 float flux;
@@ -67,7 +71,7 @@ photon* cudaPhotonPoolCompact;		//stores output photons after stream compaction
 int* cudaPhotonGridIndex;			//maps photonID to gridID
 int* cudaGridFirstPhotonIndex;
 
-#define RADIUS 1.0f
+#define RADIUS 0.25f
 
 //gridAttributes grid(-5.5, -0.5, -5.5, 5.5, 10.5, 5.5, RADIUS);
 gridAttributes grid(0, 0, 0, 0, 0, 0, RADIUS);		//for testing grid bounding box
@@ -1513,7 +1517,7 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 
 			// Compute direct illumination
 			// Direct illumination scaled down by 2*pi
-			glm::vec3 surfaceColor = emittance + (diffuseLight * diffuseColor +  phongLight * specularColor)/(2.0f * PI_F);
+			glm::vec3 surfaceColor = emittance + (diffuseLight * diffuseColor +  phongLight * specularColor)/(lowerDirectScale);
 			// Compute indirect illumination if we are using photon map
 			if (mode == DISP_COMBINED) {
 				surfaceColor += gatherPhotons(intersectedGeom, minIntersectionPoint, minNormal, photons, numTotalPhotons, gridFirstPhotonIndices, gridIndices, grid, flux);

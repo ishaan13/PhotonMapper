@@ -5,7 +5,6 @@
 #define SPLIT_BINS 10
 #define MAX_PRIMS_PER_LEAF 10
 #define MAX_TREE_DEPTH 20
-#define EPSILON 0.0001
 
 enum {X_AXIS, Y_AXIS, Z_AXIS};
 enum {LEFT, RIGHT, BOTTOM, TOP, BACK, FRONT};
@@ -31,6 +30,12 @@ public:
 
 	//for checking if a point is in left or right of split
 	bool isPointInFirst(glm::vec3 p);
+};
+
+struct PlaneGPU
+{
+	int axis;
+	float splitPoint;
 };
 
 class KDNode
@@ -61,6 +66,8 @@ struct KDNodeGPU
 	int numPrims;
 	glm::vec3 llb;
 	glm::vec3 urf;
+	PlaneGPU splitPlane;
+
 };
 
 class KDTree

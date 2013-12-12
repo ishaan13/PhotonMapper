@@ -1,4 +1,5 @@
 #include "KDTree.h"
+#define EPSILON 0.0001f
 
 // Helper funcitons
 
@@ -226,7 +227,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 
 	//y planes
 	//check if parallel to y slabs
-	if (abs(r.direction.y) < FLT_EPSILON) {
+	if (abs(r.direction.y) < EPSILON) {
 		//if within slabs
 		if (r.direction.y < low.y || r.direction.y > high.y) {
 			return false;
@@ -256,7 +257,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 
 	//z planes
 	//check if parallel to z planes
-	if (abs(r.direction.z) < FLT_EPSILON) {
+	if (abs(r.direction.z) < EPSILON) {
 		//if within slabs
 		if (r.direction.z < low.z || r.direction.z > high.z) {
 			return false;
@@ -708,15 +709,17 @@ void KDTree::setIndices(KDNode * current, int &index)
 void KDTree::setGPUTreeData(KDNode * current, KDNodeGPU *gpuTree, std::vector<int> &primIndexList)
 {
 	int index = current->kdIndex;
-	gpuTree[index].llb				= current->llb;
-	gpuTree[index].urf				= current->urf;
+	gpuTree[index].llb					= current->llb;
+	gpuTree[index].urf					= current->urf;
+	gpuTree[index].splitPlane.axis		= current->splitPlane.axis;
+	gpuTree[index].splitPlane.splitPoint = current->splitPlane.splitPoint;
+
 	if(current->isLeaf())
 	{
 		gpuTree[index].first			= -1;
 		gpuTree[index].second			= -1;
 		gpuTree[index].numPrims			= current->numberOfPrims;
-		gpuTree[index].startPrimIndex	= primIndex.size(); 
-
+		gpuTree[index].startPrimIndex	= primIndex.size();		
 		for(int i=0; i< 6; i++)
 		{
 			if(current->ropes[i] != NULL)
@@ -757,11 +760,13 @@ void KDTree::setGPUTreeData(KDNode * current, KDNodeGPU *gpuTree, std::vector<in
 int  KDTree::buildGPUKDTree(KDNodeGPU *gpuTree)
 {
 	int numElts = 0;
-	setIndices(tree, numElts);
+	if(tree!=NULL)
+	{
+		setIndices(tree, numElts);
 
-	gpuTree = new KDNodeGPU[numElts];
+		gpuTree = new KDNodeGPU[numElts];
 
-	setGPUTreeData(tree, gpuTree, primIndex);
-
+		setGPUTreeData(tree, gpuTree, primIndex);
+	}
 	return numElts;
 }
