@@ -53,7 +53,7 @@ int numPhotons = 10000;
 int numPhotonsCompact = numPhotons;
 
 int numBounces = 10;			//hard limit of n bounces for now
-float emitEnergyScale = 1000; //Empirically Verify this value
+float emitEnergyScale = 1.0; //Empirically Verify this value
 
 float totalEnergy;	//total amount of energy in the scene, used for calculating flux per photon
 float flux;
@@ -1183,8 +1183,6 @@ void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials,
 		if(materials[geoms[i].materialid].emittance > 0)
 		{
 			lightVec.push_back(i);
-			// Add surface area of light here too?
-			totalEmittance += materials[geoms[i].materialid].emittance;
 		}
   }
 
@@ -1194,8 +1192,6 @@ void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials,
 	grid.xdim = abs(gridMax.x - gridMin.x);
 	grid.ydim = abs(gridMax.y - gridMin.y);
 	grid.zdim = abs(gridMax.z = gridMin.z);
-
-	totalEnergy = totalEmittance * emitEnergyScale;
 
 	//copy geoms to memory
 	cudageoms = NULL;
@@ -1282,6 +1278,8 @@ void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials,
 	for (int i=0; i<numLights; ++i) {
 		accumAccumLightProbabilities[i] /= totalEmittanceTimesArea;
 	}
+
+	totalEnergy = totalEmittanceTimesArea * emitEnergyScale;
 
 	cudaAccumLightProbabilities = NULL;
 	cudaMalloc((void**)&cudaAccumLightProbabilities, numLights*sizeof(float));
@@ -1454,6 +1452,7 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 			//finalColor = materials[geoms[intersectedGeom].materialid].color;
 			material m = materials[intersectedMaterial];
 			diffuseColor = getMaterialColor(m, cudatextures, minUV);
+
 			specularColor = m.specularColor;
 			// Emmited color is the same as material color
 			emittance = m.color * m.emittance;
@@ -1513,7 +1512,8 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 												resolution, time, rayDepth, x, y);
 
 			// Compute direct illumination
-			glm::vec3 surfaceColor = emittance + diffuseLight * diffuseColor +  phongLight * specularColor;
+			// Direct illumination scaled down by 2*pi
+			glm::vec3 surfaceColor = emittance + (diffuseLight * diffuseColor +  phongLight * specularColor)/(2.0f * PI_F);
 			// Compute indirect illumination if we are using photon map
 			if (mode == DISP_COMBINED) {
 				surfaceColor += gatherPhotons(intersectedGeom, minIntersectionPoint, minNormal, photons, numTotalPhotons, gridFirstPhotonIndices, gridIndices, grid, flux);

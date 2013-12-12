@@ -274,6 +274,7 @@ void display(){
 void initKDTree() {
 	kdTree = new KDTree();
 	kdTree -> buildKD();
+	std::cout<<"Built KD Tree\n";
 }
 
 

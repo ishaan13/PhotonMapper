@@ -58,12 +58,12 @@ Plane findSplitPlane(glm::vec3 llb, glm::vec3 urf)
 	glm::vec3 diff = urf-llb;
 	
 	// find longest axis and split down the middle
-	if(diff.x > diff.y && diff.x > diff.z)
+	if(diff.x >= diff.y && diff.x >= diff.z)
 	{
 		p.axis = X_AXIS;
 		p.splitPoint = llb.x + diff.x/2.0f;
 	}
-	else if(diff.y > diff.x && diff.y > diff.z)
+	else if(diff.y >= diff.x && diff.y >= diff.z)
 	{
 		p.axis = Y_AXIS;
 		p.splitPoint = llb.y + diff.y/2.0f;
@@ -82,12 +82,12 @@ Plane findOptimalSplitPlane(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prim
 	glm::vec3 diff = urf-llb;
 	
 	// find longest axis and split down the middle
-	if(diff.x > diff.y && diff.x > diff.z)
+	if(diff.x >= diff.y && diff.x >= diff.z)
 	{
 		p.axis = X_AXIS;
 		//p.splitPoint = llb.x + diff.x/2.0f;
 	}
-	else if(diff.y > diff.x && diff.y > diff.z)
+	else if(diff.y >= diff.x && diff.y >= diff.z)
 	{
 		p.axis = Y_AXIS;
 		//p.splitPoint = llb.y + diff.y/2.0f;
@@ -206,7 +206,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 		t1 = (low.x - r.origin.x)/r.direction.x;
 		t2 = (high.x - r.origin.x)/r.direction.x;
 		if (t1 > t2) {		
-			float temp = t1;
+			float temp = t2;
 			t2 = t1;
 			t1 = temp;
 		}
@@ -236,7 +236,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 		t1 = (low.y - r.origin.y)/r.direction.y;
 		t2 = (high.y - r.origin.y)/r.direction.y;
 		if (t1 > t2) {		
-			float temp = t1;
+			float temp = t2;
 			t2 = t1;
 			t1 = temp;
 		}
@@ -266,7 +266,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 		t1 = (low.z - r.origin.z)/r.direction.z;
 		t2 = (high.z - r.origin.z)/r.direction.z;
 		if (t1 > t2) {		
-			float temp = t1;
+			float temp = t2;
 			t2 = t1;
 			t1 = temp;
 		}
@@ -329,15 +329,14 @@ KDNode* KDTree:: findNeighbor (glm::vec3 p, KDNode* k) {
 		return k->ropes[TOP];
 	}
 	else if (abs(p.z - k->llb.z) < EPSILON) {
-		return k->ropes[FRONT];
+		return k->ropes[BACK];
 	}
 	else if (abs(p.z - k->urf.z) < EPSILON) {
-		return k->ropes[BACK];
+		return k->ropes[FRONT];
 	}
 	else {
 		return NULL;
 	}
-
 }
 
 // Wrapepr function which'll do magic
@@ -393,7 +392,7 @@ void KDTree::buildKD()
 		primList.push_back(p);
 	}
 	// call recursive build
-	tree = buildTree(llb,urf,primList);
+	tree = buildTree(llb,urf,primList, 0);
 
 	// build rope structure
 	KDNode* ropes[] = {NULL, NULL, NULL, NULL, NULL, NULL};
@@ -401,7 +400,7 @@ void KDTree::buildKD()
 }
 
 // recursive build
-KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
+KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList, int depth)
 {
 	KDNode * current;
 
@@ -412,7 +411,7 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 	current->second = NULL;
 
 	// Recursion termination condition
-	if(primsList.size() <= MAX_PRIMS_PER_LEAF)
+	if(primsList.size() <= MAX_PRIMS_PER_LEAF || depth > MAX_TREE_DEPTH)
 	{
 		// if primList is empty, this volume is empty; return with bounding box
 		if(primsList.size() == 0)
@@ -435,7 +434,7 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 	{
 
 		// Split the tree
-		//Plane splitPlane = findSplitPlane(llb,urf);
+		// Plane splitPlane = findSplitPlane(llb,urf);
 
 		// Optimal Split Plane
 		Plane splitPlane = findOptimalSplitPlane(llb,urf,primsList);
@@ -449,7 +448,7 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 			{
 				firstPrimsList.push_back(primsList[i]);
 			}
-			else if(splitPlane.isSecond(primsList[i]))
+			if(splitPlane.isSecond(primsList[i]))
 			{
 				secondPrimsList.push_back(primsList[i]);
 			}
@@ -462,8 +461,8 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 
 		// Split the primitives based on left and right
 		current->splitPlane = splitPlane;
-		current->first = buildTree(firstllb,firsturf,firstPrimsList);
-		current->second = buildTree(secondllb, secondurf,secondPrimsList);
+		current->first = buildTree(firstllb,firsturf,firstPrimsList, depth+1);
+		current->second = buildTree(secondllb, secondurf,secondPrimsList, depth+1);
 		current->numberOfPrims = 0;
 		current->primIndices = NULL;
 	}
@@ -709,6 +708,8 @@ void KDTree::setIndices(KDNode * current, int &index)
 void KDTree::setGPUTreeData(KDNode * current, KDNodeGPU *gpuTree, std::vector<int> &primIndexList)
 {
 	int index = current->kdIndex;
+	gpuTree[index].llb				= current->llb;
+	gpuTree[index].urf				= current->urf;
 	if(current->isLeaf())
 	{
 		gpuTree[index].first			= -1;

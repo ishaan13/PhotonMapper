@@ -148,7 +148,7 @@ SCALE       .01 10 10
 
 OBJECT 2
 cube
-material 0
+material 8
 frame 0
 TRANS       0 10 0
 ROTAT       0 0 90
@@ -172,7 +172,7 @@ SCALE       .01 10 10
 
 OBJECT 5
 obj/tetrahedron.obj
-material 0
+material 4
 frame 0
 TRANS       2.5 2 0
 ROTAT       180 -59 37
@@ -180,7 +180,7 @@ SCALE       2 2 2
 
 OBJECT 6
 obj/tetrahedron.obj
-material 0
+material 5
 frame 0
 TRANS       -2.5 2 0
 ROTAT       15 45 75
@@ -188,7 +188,7 @@ SCALE       2 4 6
 
 OBJECT 7
 cube
-material 7
+material 6
 frame 0
 TRANS       0 10 0
 ROTAT       0 0 90
