@@ -1,6 +1,7 @@
 #include "sceneStructs.h"
 #include <vector>
 
+#define SPLIT_BINS 10
 #define MAX_PRIMS_PER_LEAF 10
 
 enum {X_AXIS, Y_AXIS, Z_AXIS};
@@ -33,6 +34,7 @@ public:
 	int numberOfPrims;
 	int *primIndices;
 
+	int kdIndex;
 	KDNode *first;
 	KDNode *second;
 

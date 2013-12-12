@@ -148,7 +148,7 @@ __host__ __device__ int calculateBSDF(ray& r, glm::vec3 intersect, glm::vec3 nor
 		refracted.direction = glm::normalize(r.direction * IOR + normal * (IOR * cosValue - sqrt(k)));
 		refracted.origin = intersect + 0.001f * refracted.direction;
 
-#if 1
+#if 0
 		// Fresnel Calculation
 
 		// Fabs because the angle is always between 0 and 90, direction not-withstanding

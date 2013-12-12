@@ -1,28 +1,26 @@
 #include "KDTree.h"
 
 // Helper funcitons
-Plane findSplitPlane(glm::vec3 llb, glm::vec3 urf)
+
+void splitPrimList(Plane p, std::vector<prim> primsList, std::vector<prim> &firstTempList,std::vector<prim> &secondTempList)
 {
-	Plane p;
-	glm::vec3 diff = urf-llb;
-	
-	// find longest axis and split down the middle
-	if(diff.x > diff.y && diff.x > diff.z)
+	for(int i=0; i< primsList.size(); i++)
 	{
-		p.axis = X_AXIS;
-		p.splitPoint = llb.x + diff.x/2.0f;
+		if(p.isFirst(primsList[i]))
+		{
+			firstTempList.push_back(primsList[i]);
+		}
+		if(p.isSecond(primsList[i]))
+		{
+			secondTempList.push_back(primsList[i]);
+		}
 	}
-	else if(diff.y > diff.x && diff.y > diff.z)
-	{
-		p.axis = Y_AXIS;
-		p.splitPoint = llb.y + diff.y/2.0f;
-	}
-	else
-	{
-		p.axis = Z_AXIS;
-		p.splitPoint = llb.z + diff.z/2.0f;
-	}
-	return p;
+}
+
+float surfaceArea(glm::vec3 llb, glm::vec3 urf)
+{
+	glm::vec3 diff = urf - llb;
+	return 2.0f*(diff.x*diff.y + diff.y*diff.z + diff.z*diff.x);
 }
 
 void calculateBoundingBoxes(glm::vec3 llb, glm::vec3 urf, Plane splitPlane, glm::vec3 &firstllb, glm::vec3 &firsturf,
@@ -53,6 +51,87 @@ void calculateBoundingBoxes(glm::vec3 llb, glm::vec3 urf, Plane splitPlane, glm:
 		secondurf = urf;
 	}
 }
+
+Plane findSplitPlane(glm::vec3 llb, glm::vec3 urf)
+{
+	Plane p;
+	glm::vec3 diff = urf-llb;
+	
+	// find longest axis and split down the middle
+	if(diff.x > diff.y && diff.x > diff.z)
+	{
+		p.axis = X_AXIS;
+		p.splitPoint = llb.x + diff.x/2.0f;
+	}
+	else if(diff.y > diff.x && diff.y > diff.z)
+	{
+		p.axis = Y_AXIS;
+		p.splitPoint = llb.y + diff.y/2.0f;
+	}
+	else
+	{
+		p.axis = Z_AXIS;
+		p.splitPoint = llb.z + diff.z/2.0f;
+	}
+	return p;
+}
+
+Plane findOptimalSplitPlane(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
+{
+	Plane p;
+	glm::vec3 diff = urf-llb;
+	
+	// find longest axis and split down the middle
+	if(diff.x > diff.y && diff.x > diff.z)
+	{
+		p.axis = X_AXIS;
+		//p.splitPoint = llb.x + diff.x/2.0f;
+	}
+	else if(diff.y > diff.x && diff.y > diff.z)
+	{
+		p.axis = Y_AXIS;
+		//p.splitPoint = llb.y + diff.y/2.0f;
+	}
+	else
+	{
+		p.axis = Z_AXIS;
+		//p.splitPoint = llb.z + diff.z/2.0f;
+	}
+	
+	float minCost = FLT_MAX;
+	Plane optimalPlane;
+	float cost;
+
+	std::vector<prim> firstTempList;
+	std::vector<prim> secondTempList;
+
+	for(int i=0; i < SPLIT_BINS-1; i++)
+	{
+
+		firstTempList.resize(0);
+		secondTempList.resize(0);
+
+		if(p.axis == X_AXIS)
+			p.splitPoint = llb.x + (i+1) * diff.x / (SPLIT_BINS) ;
+		else if(p.axis == Y_AXIS)
+			p.splitPoint = llb.y + (i+1) * diff.y / (SPLIT_BINS) ;
+		else
+			p.splitPoint = llb.z + (i+1) * diff.z / (SPLIT_BINS) ;
+
+		splitPrimList(p,primsList,firstTempList,secondTempList);
+		glm::vec3 fllb, furf;
+		glm::vec3 sllb, surf;
+		calculateBoundingBoxes(llb,urf,p,fllb,furf,sllb,surf);
+		cost = surfaceArea(fllb,furf)*firstTempList.size() + surfaceArea(sllb,surf)*secondTempList.size();
+		if(cost < minCost)
+		{
+			minCost = cost;
+			optimalPlane = p;
+		}
+	}
+	return optimalPlane;
+}
+
 
 // Plane direction checker
 bool Plane::isFirst(prim p)
@@ -172,7 +251,10 @@ KDNode * buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
 	{
 
 		// Split the tree
-		Plane splitPlane = findSplitPlane(llb,urf);
+		//Plane splitPlane = findSplitPlane(llb,urf);
+
+		// Optimal Split Plane
+		Plane splitPlane = findOptimalSplitPlane(llb,urf,primsList);
 
 		// Make two lists of primitives based on positive and negative side of this plane. if confused, put in both.
 		std::vector<prim> firstPrimsList;
