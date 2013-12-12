@@ -3,7 +3,8 @@
 #include <vector>
 
 #define MAX_PRIMS_PER_LEAF 10
-#define EPSILON 0.0001
+#define EPSILON 0.00001
+#define LARGER_EPSILON 0.0001
 #define MAX_TREE_DEPTH 20 
 
 enum {X_AXIS, Y_AXIS, Z_AXIS};

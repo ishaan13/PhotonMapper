@@ -240,7 +240,7 @@ float KDTree::triangleIntersectionTest(ray& r, glm::vec3 v1, glm::vec3 v2, glm::
 
 //given a point, find which face the point is on and use that to find the neighbor using ropes
 // Make sure that the node that the rope takes us to has an exit point larger than the old entry
-KDNode* KDTree:: findNeighbor (glm::vec3 p, KDNode* k, float oldEntry) {
+KDNode* KDTree:: findNeighbor (glm::vec3 p, KDNode* k) {
 
 	if (abs(p.x - k->llb.x) < EPSILON) {
 		return k->ropes[LEFT];		
@@ -408,21 +408,21 @@ KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
 				splitted = true;
 			}
 			else if (splitPlane.axis == Y_AXIS) {
-				if (splitPlane.splitPoint >= urf.y) {
+				if (splitPlane.splitPoint > urf.y + LARGER_EPSILON) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.y) {
+				else if (splitPlane.splitPoint < llb.y - LARGER_EPSILON) {
 					rope = rope->second;
 					splitted = true;
 				}
 			}
 			else {
-				if (splitPlane.splitPoint >= urf.z) {
+				if (splitPlane.splitPoint > urf.z + LARGER_EPSILON) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.z) {
+				else if (splitPlane.splitPoint < llb.z - LARGER_EPSILON) {
 					rope = rope->second;
 					splitted = true;
 				}
@@ -434,21 +434,21 @@ KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
 				splitted = true;
 			}
 			else if (splitPlane.axis == X_AXIS) {
-				if (splitPlane.splitPoint >= urf.x) {
+				if (splitPlane.splitPoint > urf.x + LARGER_EPSILON) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.x) {
+				else if (splitPlane.splitPoint < llb.x - LARGER_EPSILON) {
 					rope = rope->second;
 					splitted = true;
 				}
 			}
 			else {
-				if (splitPlane.splitPoint >= urf.z) {
+				if (splitPlane.splitPoint > urf.z + LARGER_EPSILON) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.z) {
+				else if (splitPlane.splitPoint < llb.z - LARGER_EPSILON) {
 					rope = rope->second;
 					splitted = true;
 				}
@@ -601,7 +601,7 @@ float KDTree::traverse(ray& r) {
 		//if no intersection, go to the next node using rope
 		//if no more neigbours, return -1
 		glm::vec3 newEntryPoint = r.origin + entry * r.direction;
-		node = findNeighbor(newEntryPoint, node, entry);
+		node = findNeighbor(newEntryPoint, node);
 
 		//return -1 if no neighbors found
 		if (!node) {
