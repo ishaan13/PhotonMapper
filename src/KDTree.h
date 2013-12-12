@@ -3,6 +3,7 @@
 #include <vector>
 
 #define MAX_PRIMS_PER_LEAF 10
+#define EPSILON 0.0001
 
 enum {X_AXIS, Y_AXIS, Z_AXIS};
 enum {LEFT, RIGHT, BOTTOM, TOP, BACK, FRONT};
@@ -68,5 +69,8 @@ public:
 	
 	//checking intersection with primitives and if intersection point is between entry and exit
 	float triIntersectInRange(ray& r, prim& tri, float& entry, float& exit);
+
+	//finds which neighbor node to use from an exit point
+	KDNode* findNeighbor (glm::vec3 p, KDNode* k);
 
 };
