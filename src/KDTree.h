@@ -3,6 +3,7 @@
 #include <vector>
 
 #define MAX_PRIMS_PER_LEAF 10
+#define EPSILON 0.0001
 
 enum {X_AXIS, Y_AXIS, Z_AXIS};
 enum {LEFT, RIGHT, BOTTOM, TOP, BACK, FRONT};
@@ -67,6 +68,9 @@ public:
 	bool aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& tNear, float& tFar);
 	
 	//checking intersection with primitives and if intersection point is between entry and exit
-	float triangleIntersectTest(ray& r, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3);
+	float triangleIntersectionTest(ray& r, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3);
+
+	//finds which neighbor node to use from an exit point
+	KDNode* findNeighbor (glm::vec3 p, KDNode* k);
 
 };

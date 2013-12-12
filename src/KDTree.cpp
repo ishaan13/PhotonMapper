@@ -234,6 +234,33 @@ float KDTree::triangleIntersectionTest(ray& r, glm::vec3 v1, glm::vec3 v2, glm::
 	}
 }
 
+//given a point, find which face the point is on and use that to find the neighbor using ropes
+KDNode* KDTree:: findNeighbor (glm::vec3 p, KDNode* k) {
+
+	if (abs(p.x - k->llb.x) < EPSILON) {
+		return k->ropes[LEFT];		
+	}
+	else if (abs(p.x - k->urf.x) < EPSILON) {
+		return k->ropes[RIGHT];
+	}
+	else if (abs(p.y - k->llb.y) < EPSILON) {
+		return k->ropes[BOTTOM];
+	}
+	else if (abs(p.y - k->urf.y) < EPSILON) {
+		return k->ropes[TOP];
+	}
+	else if (abs(p.z - k->llb.z) < EPSILON) {
+		return k->ropes[FRONT];
+	}
+	else if (abs(p.z - k->urf.z) < EPSILON) {
+		return k->ropes[BACK];
+	}
+	else {
+		return NULL;
+	}
+
+}
+
 // Wrapepr function which'll do magic
 void KDTree::buildKD()
 {
@@ -508,10 +535,13 @@ float KDTree::traverse(ray& r, KDNode* node) {
 	float exit = FLT_MAX;
 
 	//find entry and exit distances of the ray into the tree
-	//if (!aabbIntersectionTest(node->urf, node->llb, r, entry, exit)) {
+	if (!aabbIntersectionTest(node->urf, node->llb, r, entry, exit)) {
 		//no intersection, so return
-		//return -1;
-	//}
+		return -1;
+	}
+
+	//save this value for going to neighbor nodes, since we update exit later
+	float rootExit = exit;
 
 	while (entry < exit) {
 		
@@ -528,7 +558,7 @@ float KDTree::traverse(ray& r, KDNode* node) {
 			}
 		}
 
-		float closestIntersection = exit;
+		bool intersectionFound = false;
 		//now at a leaf, check for intersection with primitives
 		for (int i = 0; i < node->numberOfPrims; ++i) {
 
@@ -537,18 +567,36 @@ float KDTree::traverse(ray& r, KDNode* node) {
 			glm::vec3 v1 = vertices[tri.v1];
 			glm::vec3 v2 = vertices[tri.v2];
 			glm::vec3 v3 = vertices[tri.v3];
-			float depth = triangleIntersectionTest(r, v1, v2, v3);	
-			if (depth >= entry && depth < closestIntersection) {
-				closestIntersection = depth;
-			}
+			float intersect = triangleIntersectionTest(r, v1, v2, v3);	
 
+			//update exit point if new intersection point is closer to us
+			if (intersect >= entry && intersect < exit) {
+				intersectionFound = true;
+				exit = intersect;
+			}
 		}	//exit leaf node
 
-		entry = exit;
-		//go to the next exit node
+		//if intersection found in this node, it is the closest one, so return
+		if (intersectionFound) {
+			return exit;
+		}
+
+		//update the new entry point to the exit 
+		entry = exit;	
+		exit = rootExit;		//reset exit point to the exit point of the kd tree
 		
+		//if no intersection, go to the next node using rope
+		//if no more neigbours, return -1
+		glm::vec3 newEntry = r.origin + exit * r.direction;
+		node = findNeighbor(newEntry, node);
+
+		//return -1 if no neighbors found
+		if (!node) {
+			return -1;
+		}
 	}
 
+	return -1;
 }
 
 
