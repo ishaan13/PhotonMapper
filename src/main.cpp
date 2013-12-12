@@ -319,15 +319,12 @@ void cpuRaytrace() {
 	glm::vec2 fov = renderCam->fov;
 	glm::vec2 resolution = renderCam->resolution;
 
-
-
 	//find rays
 	for (int x = 0; x < resolution.x; ++x) {
 		for (int y = 0; y < resolution.y; ++y) { 
 
 			int index = y * resolution.x + x;
 			//cout<<"cpu raytrace"<<endl;
-
 			if (x == 480 && y == 520) {
 				int debug = 1;
 			}
@@ -350,7 +347,6 @@ void cpuRaytrace() {
 			int intersecteGeom = -1;
 			
 			float f = kdTree ->traverse(r);
-
 			f = max(0.0, f);
 
 			//cpuImage [index] = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -358,14 +354,13 @@ void cpuRaytrace() {
 		}
 	}
 
-	uchar4 *dptr=NULL;
-	cudaGLMapBufferObject((void**)&dptr, pbo);
+		uchar4 *dptr=NULL;
+		cudaGLMapBufferObject((void**)&dptr, pbo);
 
-	cudaDrawCPUImage(dptr, renderCam, cpuImage);
+		cudaDrawCPUImage(dptr, renderCam, cpuImage);
 
-	// unmap buffer object
-	cudaGLUnmapBufferObject(pbo);
-
+		// unmap buffer object
+		cudaGLUnmapBufferObject(pbo);
 }
 
 
