@@ -67,6 +67,6 @@ public:
 	bool aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& tNear, float& tFar);
 	
 	//checking intersection with primitives and if intersection point is between entry and exit
-	bool triIntersectInRange(ray& r, prim& tri, float entry, float exit);
+	bool triIntersectInRange(ray& r, prim& tri, float& entry, float& exit, float& closestIntersection);
 
 };

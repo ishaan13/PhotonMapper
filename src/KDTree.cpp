@@ -503,12 +503,14 @@ float KDTree::traverse(ray& r, KDNode* node, std::vector<prim> primsList) {
 			}
 		}
 
+		float closestIntersection = exit;
 		//now at a leaf, check for intersection with primitives
 		for (int i = 0; i < node->numberOfPrims; ++i) {
 
-			//intersect with triangle
+			//intersect with triangle in range of entry and exit
 			prim tri = primsList[node->primIndices[i]];
-		
+			triIntersectInRange(r, tri, entry, exit, closestIntersection);			
+
 		}	//exit leaf node
 
 		entry = exit;
