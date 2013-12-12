@@ -44,5 +44,7 @@ int streamCompactPhotons (photon* inputPhotons, photon* outputPhotons, int size)
 __host__ __device__ glm::vec3 generateRandomNumberFromThread(glm::vec2 resolution, float time, int x, int y);
 
 
+//for cpu debugging
+void cudaDrawCPUImage(uchar4 * pos, camera* renderCam, glm::vec3* cpuImage);
 
 #endif

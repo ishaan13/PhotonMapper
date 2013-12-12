@@ -78,6 +78,8 @@ int main(int argc, char** argv){
 
 #if CPUTRACE == 1
 	initKDTree();
+	cpuImage = new glm::vec3[(int)renderCam->resolution.x * (int)renderCam->resolution.y];
+
 #endif
 
 	GLuint passthroughProgram;
@@ -103,6 +105,9 @@ int main(int argc, char** argv){
 
 	glutMainLoop();
 #endif
+
+	delete kdTree;
+	delete [] cpuImage;
 
 	return 0;
 }
@@ -264,7 +269,7 @@ void display(){
 }
 
 
-///////////////////////CPU SHIT///////////////////////////
+///////////////////////CPU STUFF///////////////////////////
 void initKDTree() {
 	kdTree = new KDTree();
 	kdTree -> buildKD();
@@ -280,15 +285,14 @@ void cpuRaytrace() {
 	glm::vec2 fov = renderCam->fov;
 	glm::vec2 resolution = renderCam->resolution;
 
-	uchar4 *dptr=NULL;
-	cudaGLMapBufferObject((void**)&dptr, pbo);
-
+	
 	//find rays
 	for (int x = 0; x < resolution.x; ++x) {
 		for (int y = 0; y < resolution.y; ++y) { 
 			
-			int index = y * resolution.x + y;
-
+			int index = y * resolution.x + x;
+			//cout<<"cpu raytrace"<<endl;
+			
 			glm::vec3 axis_a = glm::cross(view, up);
 			glm::vec3 axis_b = glm::cross(axis_a, view);
 			glm::vec3 midPoint = eye + view;
@@ -308,20 +312,20 @@ void cpuRaytrace() {
 			
 			float f = kdTree ->traverse(r);
 
-			if (f != -1) {
-				cout << f<<endl;
-			}
-
 			f = max(0.0, f);
-			dptr[index].w = 0;
-			dptr[index].x = 1;
-			dptr[index].y = 0;
-			dptr[index].z = 0;
+
+			//cpuImage [index] = glm::vec3(1.0f, 0.0f, 0.0f);
+			cpuImage[index] = glm::vec3(f);
 		}
 	}
 
-	cudaGLUnmapBufferObject(pbo);
+	uchar4 *dptr=NULL;
+	cudaGLMapBufferObject((void**)&dptr, pbo);
 
+	cudaDrawCPUImage(dptr, renderCam, cpuImage);
+
+	// unmap buffer object
+	cudaGLUnmapBufferObject(pbo);
 
 }
 
@@ -585,6 +589,9 @@ void copyDataFromScene(){
 }
 
 void initCuda(){
+
+	cout<<"init cuda"<<endl;
+
 	// Use device with highest Gflops/s
 	cudaGLSetGLDevice( compat_getMaxGflopsDeviceId() );
 
