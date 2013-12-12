@@ -139,6 +139,9 @@ void KDTree::buildKD()
 	// call recursive build
 	tree = buildTree(llb,urf,primList);
 
+	// build rope structure
+	KDNode* ropes[] = {NULL, NULL, NULL, NULL, NULL, NULL};
+	processNode(tree, ropes);
 }
 
 // recursive build
@@ -304,10 +307,47 @@ KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
 	return rope;
 }
 
-KDNode* KDTree::processNode(KDNode* node, KDNode* ropes[], glm::vec3 llb, glm::vec3 urf)
+void KDTree::processNode(KDNode* node, KDNode* ropes[])
 {
-	//if (node->isLeaf()) {
-	//	
-	//}
-	return NULL;
+	if (node->isLeaf()) {
+		for (int i=0; i<6; ++i) {
+			node->ropes[i] = ropes[i];
+		}
+	}
+	else {
+		for (int i=0; i<6; ++i) {
+			if (node->ropes[i] != NULL) {
+				node->ropes[i] = optimize(node->ropes[i], i, node->llb, node->urf);
+			}
+		}
+	}
+
+	int side1, side2;
+	Plane splitPlane = node->splitPlane;
+	if (splitPlane.axis == X_AXIS) {
+		side1 = LEFT;
+		side2 = RIGHT;
+	}
+	else if (splitPlane.axis == Y_AXIS) {
+		side1 = BOTTOM;
+		side2 = TOP;
+	}
+	else {
+		side1 = BACK;
+		side2 = FRONT;
+	}
+
+	KDNode* ropes1[6]; // the ropes of the node's first child
+	for (int i=0; i<6; ++i) {
+		ropes1[i] = ropes[i];
+	}
+	ropes1[side2] = node->second;
+	processNode(node->first, ropes1);
+
+	KDNode* ropes2[6]; // the ropes of the node's second child
+	for (int i=0; i<6; ++i) {
+		ropes2[i] = ropes[i];
+	}
+	ropes2[side1] = node->first;
+	processNode(node->second, ropes2);
 }

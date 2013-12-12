@@ -4,7 +4,7 @@
 #define MAX_PRIMS_PER_LEAF 10
 
 enum {X_AXIS, Y_AXIS, Z_AXIS};
-enum {LEFT, RIGHT, TOP, BOTTOM, FRONT, BACK};
+enum {LEFT, RIGHT, BOTTOM, TOP, BACK, FRONT};
 
 extern glm::vec3* vertices;
 extern triangle* faces;
@@ -53,5 +53,5 @@ public:
 	KDNode* buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList);
 
 	KDNode* optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf);
-	KDNode* processNode(KDNode* node, KDNode* ropes[], glm::vec3 llb, glm::vec3 urf);
+	void processNode(KDNode* node, KDNode* ropes[]);
 };
