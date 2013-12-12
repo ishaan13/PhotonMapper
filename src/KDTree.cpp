@@ -112,7 +112,7 @@ bool KDNode::isLeaf()
 //box intersection test with bounding boxes
 bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& tNear, float& tFar) {
 	
-	tNear = FLT_MIN;
+	tNear = -FLT_MAX;
 	tFar = FLT_MAX;
 	float t1, t2 = 0.0f;
 

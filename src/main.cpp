@@ -252,7 +252,7 @@ void display(){
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, pbo);
 	glBindTexture(GL_TEXTURE_2D, displayImage);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, 
-		GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 	glClear(GL_COLOR_BUFFER_BIT);   
 
@@ -265,7 +265,40 @@ void display(){
 
 
 ///////////////////////CPU SHIT///////////////////////////
+glm::vec3 multiplyMVOnHost(cudaMat4 m, glm::vec4 v){
+  glm::vec3 r(1,1,1);
+  r.x = (m.x.x*v.x)+(m.x.y*v.y)+(m.x.z*v.z)+(m.x.w*v.w);
+  r.y = (m.y.x*v.x)+(m.y.y*v.y)+(m.y.z*v.z)+(m.y.w*v.w);
+  r.z = (m.z.x*v.x)+(m.z.y*v.y)+(m.z.z*v.z)+(m.z.w*v.w);
+  return r;
+}
+
+cudaMat4 getNormalTransformOnHost(cudaMat4 a){
+	glm::mat4 m = utilityCore::cudaMat4ToGlmMat4(a);
+	m = glm::inverse(glm::transpose(m));
+	return utilityCore::glmMat4ToCudaMat4(m);
+}
+
 void initKDTree() {
+	int transVCount = 0; //number of vertices transformed
+	int transNCount = 0; //number of normals transformed
+
+	for(int i=0; i<numberOfGeoms; ++i){
+		if (geoms[i].type == MESH) {
+			// transform vertices
+			for (int j=transVCount; j<transVCount+geoms[i].vertexcount; ++j) {
+				vertices[j] = multiplyMVOnHost(geoms[i].transforms[targetFrame], glm::vec4(vertices[j], 1.0f));
+			}
+			transVCount += geoms[i].vertexcount;
+
+			// transform normals
+			for (int j=transNCount; j<transNCount+geoms[i].normalcount; ++j) {
+				normals[j] = glm::normalize(multiplyMVOnHost(getNormalTransformOnHost(geoms[i].transforms[0]), glm::vec4(normals[j], 0.0f)));
+			}
+			transNCount += geoms[i].normalcount;
+		}
+	}
+
 	kdTree = new KDTree();
 	kdTree -> buildKD();
 }
@@ -280,13 +313,17 @@ void cpuRaytrace() {
 	glm::vec2 fov = renderCam->fov;
 	glm::vec2 resolution = renderCam->resolution;
 
-	uchar4 *dptr=NULL;
-	cudaGLMapBufferObject((void**)&dptr, pbo);
+	//uchar4 *dptr=NULL;
+	//cudaGLMapBufferObject((void**)&dptr, pbo);
 
 	//find rays
 	for (int x = 0; x < resolution.x; ++x) {
 		for (int y = 0; y < resolution.y; ++y) { 
 			
+			if (x == 480 && y == 520) {
+				int debug = 1;
+			}
+
 			int index = y * resolution.x + y;
 
 			glm::vec3 axis_a = glm::cross(view, up);
@@ -311,17 +348,10 @@ void cpuRaytrace() {
 			if (f != -1) {
 				cout << f<<endl;
 			}
-
-			f = max(0.0, f);
-			dptr[index].w = 0;
-			dptr[index].x = 1;
-			dptr[index].y = 0;
-			dptr[index].z = 0;
 		}
 	}
 
-	cudaGLUnmapBufferObject(pbo);
-
+	//cudaGLUnmapBufferObject(pbo);
 
 }
 
