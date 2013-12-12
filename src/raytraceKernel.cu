@@ -1795,3 +1795,36 @@ void cudaFreeAccumulatorImage()
 }
 
 
+void cudaDrawCPUImage(uchar4 * PBOpos, camera* renderCam, glm::vec3* cpuImage) {
+	
+	// set up crucial magic
+	int tileSize = 8;
+	dim3 threadsPerBlock(tileSize, tileSize);
+	dim3 fullBlocksPerGrid((int)ceil(float(renderCam->resolution.x)/float(tileSize)), (int)ceil(float(renderCam->resolution.y)/float(tileSize)));
+
+	glm::vec3* cudaCPUImage = NULL;
+	cudaMalloc((void**)&cudaCPUImage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3));
+
+	//clear On screen buffer
+	clearImage<<<fullBlocksPerGrid,threadsPerBlock>>>(renderCam->resolution, cudaCPUImage);
+	cudaThreadSynchronize();
+	checkCUDAError("clearImage failed!");
+
+	//copy cpu data to gpu
+	cudaMemcpy(cudaCPUImage, cpuImage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyHostToDevice);
+
+	sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, renderCam->resolution, cudaCPUImage, 1.0f);
+	cudaThreadSynchronize();
+	checkCUDAError("sendToPBO failed!");
+
+	cudaMemcpy(renderCam->image, cudaCPUImage, (int)renderCam->resolution.x*(int)renderCam->resolution.y*sizeof(glm::vec3), cudaMemcpyDeviceToHost);
+
+	cudaFree(cudaCPUImage);
+
+	// make certain the kernel has completed
+	cudaThreadSynchronize();
+	checkCUDAError("Kernel failed!");
+
+}
+
+

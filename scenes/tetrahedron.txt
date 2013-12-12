@@ -172,7 +172,7 @@ SCALE       .01 10 10
 
 OBJECT 5
 obj/tetrahedron.obj
-material 4
+material 0
 frame 0
 TRANS       2.5 2 0
 ROTAT       180 -59 37
@@ -180,7 +180,7 @@ SCALE       2 2 2
 
 OBJECT 6
 obj/tetrahedron.obj
-material 5
+material 0
 frame 0
 TRANS       -2.5 2 0
 ROTAT       15 45 75
