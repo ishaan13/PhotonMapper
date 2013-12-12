@@ -466,21 +466,21 @@ KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
 				splitted = true;
 			}
 			else if (splitPlane.axis == Y_AXIS) {
-				if (splitPlane.splitPoint > urf.y + LARGER_EPSILON) {
+				if (splitPlane.splitPoint > urf.y) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint < llb.y - LARGER_EPSILON) {
+				else if (splitPlane.splitPoint < llb.y) {
 					rope = rope->second;
 					splitted = true;
 				}
 			}
 			else {
-				if (splitPlane.splitPoint > urf.z + LARGER_EPSILON) {
+				if (splitPlane.splitPoint > urf.z) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint < llb.z - LARGER_EPSILON) {
+				else if (splitPlane.splitPoint < llb.z) {
 					rope = rope->second;
 					splitted = true;
 				}
@@ -492,21 +492,21 @@ KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
 				splitted = true;
 			}
 			else if (splitPlane.axis == X_AXIS) {
-				if (splitPlane.splitPoint > urf.x + LARGER_EPSILON) {
+				if (splitPlane.splitPoint > urf.x) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint < llb.x - LARGER_EPSILON) {
+				else if (splitPlane.splitPoint < llb.x) {
 					rope = rope->second;
 					splitted = true;
 				}
 			}
 			else {
-				if (splitPlane.splitPoint > urf.z + LARGER_EPSILON) {
+				if (splitPlane.splitPoint > urf.z) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint < llb.z - LARGER_EPSILON) {
+				else if (splitPlane.splitPoint < llb.z) {
 					rope = rope->second;
 					splitted = true;
 				}
@@ -518,21 +518,21 @@ KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
 				splitted = true;
 			}
 			else if (splitPlane.axis == X_AXIS) {
-				if (splitPlane.splitPoint >= urf.x) {
+				if (splitPlane.splitPoint > urf.x) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.x) {
+				else if (splitPlane.splitPoint < llb.x) {
 					rope = rope->second;
 					splitted = true;
 				}
 			}
 			else {
-				if (splitPlane.splitPoint >= urf.y) {
+				if (splitPlane.splitPoint > urf.y) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.y) {
+				else if (splitPlane.splitPoint < llb.y) {
 					rope = rope->second;
 					splitted = true;
 				}
