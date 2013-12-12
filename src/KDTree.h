@@ -1,8 +1,10 @@
 #include "sceneStructs.h"
 //#include "intersections.h"
+#include <iostream>
 #include <vector>
 
 #define MAX_PRIMS_PER_LEAF 10
+#define MAX_TREE_DEPTH 20
 #define EPSILON 0.0001
 
 enum {X_AXIS, Y_AXIS, Z_AXIS};
@@ -55,7 +57,7 @@ class KDTree
 public:
 	KDNode* tree;
 	void buildKD();
-	KDNode* buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList);
+	KDNode* buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList, int depth);
 
 	KDNode* optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf);
 	void processNode(KDNode* node, KDNode* ropes[]);

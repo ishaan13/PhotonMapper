@@ -28,6 +28,33 @@ Plane findSplitPlane(glm::vec3 llb, glm::vec3 urf)
 void calculateBoundingBoxes(glm::vec3 llb, glm::vec3 urf, Plane splitPlane, glm::vec3 &firstllb, glm::vec3 &firsturf,
 														glm::vec3 &secondllb, glm::vec3 &secondurf)
 {
+	//adding epsilon checks
+	//if(splitPlane.axis == X_AXIS)
+	//{
+	//	firstllb = llb - glm::vec3(0.001f, 0.0f, 0.0f);
+	//	firsturf = glm::vec3(splitPlane.splitPoint + 0.001f,urf.y,urf.z);
+
+	//	secondllb = glm::vec3(splitPlane.splitPoint - 0.001f,llb.y,llb.z);
+	//	secondurf = urf + glm::vec3(0.001f, 0.0f, 0.0f);
+	//}
+	//else if(splitPlane.axis == Y_AXIS)
+	//{
+	//	firstllb = llb - glm::vec3(0.0f, 0.001f, 0.0f);
+	//	firsturf = glm::vec3(urf.x,splitPlane.splitPoint + 0.001f,urf.z);
+
+	//	secondllb = glm::vec3(llb.x,splitPlane.splitPoint - 0.001f,llb.z);
+	//	secondurf = urf + glm::vec3(0.0f, 0.001f, 0.0f);
+	//}
+	//else
+	//{
+	//	firstllb = llb - glm::vec3(0.0f, 0.0f, 0.001f);
+	//	firsturf = glm::vec3(urf.x,urf.y,splitPlane.splitPoint + 0.001f);
+
+	//	secondllb = glm::vec3(llb.x,llb.y,splitPlane.splitPoint - 0.001f);
+	//	secondurf = urf + glm::vec3(0.0f, 0.0, 0.001f);
+	//}
+
+	//adding epsilon checks
 	if(splitPlane.axis == X_AXIS)
 	{
 		firstllb = llb;
@@ -52,6 +79,7 @@ void calculateBoundingBoxes(glm::vec3 llb, glm::vec3 urf, Plane splitPlane, glm:
 		secondllb = glm::vec3(llb.x,llb.y,splitPlane.splitPoint);
 		secondurf = urf;
 	}
+
 }
 
 // Plane direction checker
@@ -118,7 +146,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 
 	//x planes
 	//check if parallel to x plane
-	if (abs(r.direction.x) < FLT_EPSILON) {
+	if (abs(r.direction.x) < EPSILON) {
 		if (r.direction.x < low.x || r.direction.x > high.x) {
 			return false;
 		}
@@ -127,7 +155,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 		t1 = (low.x - r.origin.x)/r.direction.x;
 		t2 = (high.x - r.origin.x)/r.direction.x;
 		if (t1 > t2) {		
-			float temp = t1;
+			float temp = t2;
 			t2 = t1;
 			t1 = temp;
 		}
@@ -147,7 +175,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 
 	//y planes
 	//check if parallel to y slabs
-	if (abs(r.direction.y) < FLT_EPSILON) {
+	if (abs(r.direction.y) < EPSILON) {
 		//if within slabs
 		if (r.direction.y < low.y || r.direction.y > high.y) {
 			return false;
@@ -157,7 +185,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 		t1 = (low.y - r.origin.y)/r.direction.y;
 		t2 = (high.y - r.origin.y)/r.direction.y;
 		if (t1 > t2) {		
-			float temp = t1;
+			float temp = t2;
 			t2 = t1;
 			t1 = temp;
 		}
@@ -177,7 +205,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 
 	//z planes
 	//check if parallel to z planes
-	if (abs(r.direction.z) < FLT_EPSILON) {
+	if (abs(r.direction.z) < EPSILON) {
 		//if within slabs
 		if (r.direction.z < low.z || r.direction.z > high.z) {
 			return false;
@@ -187,7 +215,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 		t1 = (low.z - r.origin.z)/r.direction.z;
 		t2 = (high.z - r.origin.z)/r.direction.z;
 		if (t1 > t2) {		
-			float temp = t1;
+			float temp = t2;
 			t2 = t1;
 			t1 = temp;
 		}
@@ -250,10 +278,10 @@ KDNode* KDTree:: findNeighbor (glm::vec3 p, KDNode* k) {
 		return k->ropes[TOP];
 	}
 	else if (abs(p.z - k->llb.z) < EPSILON) {
-		return k->ropes[FRONT];
+		return k->ropes[BACK];
 	}
 	else if (abs(p.z - k->urf.z) < EPSILON) {
-		return k->ropes[BACK];
+		return k->ropes[FRONT];
 	}
 	else {
 		return NULL;
@@ -314,7 +342,7 @@ void KDTree::buildKD()
 		primList.push_back(p);
 	}
 	// call recursive build
-	tree = buildTree(llb,urf,primList);
+	tree = buildTree(llb,urf,primList, 0);
 
 	// build rope structure
 	KDNode* ropes[] = {NULL, NULL, NULL, NULL, NULL, NULL};
@@ -322,7 +350,7 @@ void KDTree::buildKD()
 }
 
 // recursive build
-KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
+KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList, int depth)
 {
 	KDNode * current;
 
@@ -333,7 +361,7 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 	current->second = NULL;
 
 	// Recursion termination condition
-	if(primsList.size() <= MAX_PRIMS_PER_LEAF)
+	if(primsList.size() <= MAX_PRIMS_PER_LEAF || depth >= MAX_TREE_DEPTH)
 	{
 		// if primList is empty, this volume is empty; return with bounding box
 		if(primsList.size() == 0)
@@ -367,7 +395,7 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 			{
 				firstPrimsList.push_back(primsList[i]);
 			}
-			else if(splitPlane.isSecond(primsList[i]))
+			if(splitPlane.isSecond(primsList[i]))
 			{
 				secondPrimsList.push_back(primsList[i]);
 			}
@@ -380,8 +408,8 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 
 		// Split the primitives based on left and right
 		current->splitPlane = splitPlane;
-		current->first = buildTree(firstllb,firsturf,firstPrimsList);
-		current->second = buildTree(secondllb, secondurf,secondPrimsList);
+		current->first = buildTree(firstllb,firsturf,firstPrimsList, depth+1);
+		current->second = buildTree(secondllb, secondurf,secondPrimsList, depth+1);
 		current->numberOfPrims = 0;
 		current->primIndices = NULL;
 	}
@@ -531,7 +559,7 @@ void KDTree::processNode(KDNode* node, KDNode* ropes[])
 
 float KDTree::traverse(ray& r) {
 	
-	float entry = FLT_MIN; 
+	float entry = -FLT_MAX; 
 	float exit = FLT_MAX;
 
 	KDNode * node = tree;
@@ -539,6 +567,7 @@ float KDTree::traverse(ray& r) {
 	//find entry and exit distances of the ray into the tree
 	if (!aabbIntersectionTest(node->urf, node->llb, r, entry, exit)) {
 		//no intersection, so return
+		//std::cout<<"no intersection with KD root"<<std::endl;
 		return -1;
 	}
 
@@ -571,8 +600,10 @@ float KDTree::traverse(ray& r) {
 			glm::vec3 v3 = vertices[tri.v3];
 			float intersect = triangleIntersectionTest(r, v1, v2, v3);	
 
+			//std::cout<<intersect<<std::endl;
+
 			//update exit point if new intersection point is closer to us
-			if (intersect >= entry && intersect < exit) {
+			if (intersect >= entry && intersect <= exit) {
 				intersectionFound = true;
 				exit = intersect;
 			}
