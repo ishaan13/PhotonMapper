@@ -309,14 +309,10 @@ void cpuRaytrace() {
 			r.origin = screenPoint;
 			r.direction = glm::normalize(screenPoint - eye);
 		
-			//trace the ray
-			int intersecteGeom = -1;
-			
 			float f = kdTree ->traverse(r);
+			f = max(0.0f, f);
+			f /= 12.0f;
 
-			f = max(0.0, f);
-
-			//cpuImage [index] = glm::vec3(1.0f, 0.0f, 0.0f);
 			cpuImage[index] = glm::vec3(f);
 		}
 	}

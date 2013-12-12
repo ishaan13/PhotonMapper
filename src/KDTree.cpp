@@ -25,31 +25,32 @@ float surfaceArea(glm::vec3 llb, glm::vec3 urf)
 }
 
 void calculateBoundingBoxes(glm::vec3 llb, glm::vec3 urf, Plane splitPlane, glm::vec3 &firstllb, glm::vec3 &firsturf,
-																			glm::vec3 &secondllb, glm::vec3 &secondurf)
+														glm::vec3 &secondllb, glm::vec3 &secondurf)
 {
+	//adding epsilon checks
 	if(splitPlane.axis == X_AXIS)
 	{
-		firstllb = llb;
-		firsturf = glm::vec3(splitPlane.splitPoint,urf.y,urf.z);
+		firstllb = llb - glm::vec3(EPSILON, 0.0f, 0.0f);
+		firsturf = glm::vec3(splitPlane.splitPoint + EPSILON,urf.y,urf.z);
 
-		secondllb = glm::vec3(splitPlane.splitPoint,llb.y,llb.z);
-		secondurf = urf;
+		secondllb = glm::vec3(splitPlane.splitPoint - EPSILON,llb.y,llb.z);
+		secondurf = urf + glm::vec3(EPSILON, 0.0f, 0.0f);
 	}
 	else if(splitPlane.axis == Y_AXIS)
 	{
-		firstllb = llb;
-		firsturf = glm::vec3(urf.x,splitPlane.splitPoint,urf.z);
+		firstllb = llb - glm::vec3(0.0f, EPSILON, 0.0f);
+		firsturf = glm::vec3(urf.x,splitPlane.splitPoint + EPSILON,urf.z);
 
-		secondllb = glm::vec3(llb.x,splitPlane.splitPoint,llb.z);
-		secondurf = urf;
+		secondllb = glm::vec3(llb.x,splitPlane.splitPoint - EPSILON,llb.z);
+		secondurf = urf + glm::vec3(0.0f, EPSILON, 0.0f);
 	}
 	else
 	{
-		firstllb = llb;
-		firsturf = glm::vec3(urf.x,urf.y,splitPlane.splitPoint);
+		firstllb = llb - glm::vec3(0.0f, 0.0f, EPSILON);
+		firsturf = glm::vec3(urf.x,urf.y,splitPlane.splitPoint + EPSILON);
 
-		secondllb = glm::vec3(llb.x,llb.y,splitPlane.splitPoint);
-		secondurf = urf;
+		secondllb = glm::vec3(llb.x,llb.y,splitPlane.splitPoint - EPSILON);
+		secondurf = urf + glm::vec3(0.0f, 0.0, EPSILON);
 	}
 }
 
@@ -199,7 +200,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 	//x planes
 	//check if parallel to x plane
 	if (abs(r.direction.x) < FLT_EPSILON) {
-		if (r.direction.x < low.x || r.direction.x > high.x) {
+		if (r.origin.x < low.x || r.origin.x > high.x) {
 			return false;
 		}
 	}
@@ -229,7 +230,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 	//check if parallel to y slabs
 	if (abs(r.direction.y) < EPSILON) {
 		//if within slabs
-		if (r.direction.y < low.y || r.direction.y > high.y) {
+		if (r.origin.y < low.y || r.origin.y > high.y) {
 			return false;
 		}
 	}
@@ -259,7 +260,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 	//check if parallel to z planes
 	if (abs(r.direction.z) < EPSILON) {
 		//if within slabs
-		if (r.direction.z < low.z || r.direction.z > high.z) {
+		if (r.origin.z < low.z || r.origin.z > high.z) {
 			return false;
 		}
 	}
@@ -473,11 +474,10 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 // optimize rope
 KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
 {
-	Plane splitPlane = rope->splitPlane;
-
 	while (!rope->isLeaf())
 	{
 		bool splitted = false;
+		Plane splitPlane = rope->splitPlane;
 
 		if (side == LEFT || side == RIGHT) {
 			if (splitPlane.axis == X_AXIS) {
@@ -485,21 +485,21 @@ KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
 				splitted = true;
 			}
 			else if (splitPlane.axis == Y_AXIS) {
-				if (splitPlane.splitPoint >= urf.y) {
+				if (splitPlane.splitPoint > urf.y) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.y) {
+				else if (splitPlane.splitPoint < llb.y) {
 					rope = rope->second;
 					splitted = true;
 				}
 			}
 			else {
-				if (splitPlane.splitPoint >= urf.z) {
+				if (splitPlane.splitPoint > urf.z) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.z) {
+				else if (splitPlane.splitPoint < llb.z) {
 					rope = rope->second;
 					splitted = true;
 				}
@@ -511,21 +511,21 @@ KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
 				splitted = true;
 			}
 			else if (splitPlane.axis == X_AXIS) {
-				if (splitPlane.splitPoint >= urf.x) {
+				if (splitPlane.splitPoint > urf.x) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.x) {
+				else if (splitPlane.splitPoint < llb.x) {
 					rope = rope->second;
 					splitted = true;
 				}
 			}
 			else {
-				if (splitPlane.splitPoint >= urf.z) {
+				if (splitPlane.splitPoint > urf.z) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.z) {
+				else if (splitPlane.splitPoint < llb.z) {
 					rope = rope->second;
 					splitted = true;
 				}
@@ -537,21 +537,21 @@ KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
 				splitted = true;
 			}
 			else if (splitPlane.axis == X_AXIS) {
-				if (splitPlane.splitPoint >= urf.x) {
+				if (splitPlane.splitPoint > urf.x) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.x) {
+				else if (splitPlane.splitPoint < llb.x) {
 					rope = rope->second;
 					splitted = true;
 				}
 			}
 			else {
-				if (splitPlane.splitPoint >= urf.y) {
+				if (splitPlane.splitPoint > urf.y) {
 					rope = rope->first;
 					splitted = true;
 				}
-				else if (splitPlane.splitPoint <= llb.y) {
+				else if (splitPlane.splitPoint < llb.y) {
 					rope = rope->second;
 					splitted = true;
 				}
@@ -627,7 +627,7 @@ float KDTree::traverse(ray& r) {
 	//save this value for going to neighbor nodes, since we update exit later
 	float rootExit = exit;
 
-	while (entry < exit) {
+	while (entry - exit < -EPSILON) {
 		
 		//downward traversal to find a leaf node
 		glm::vec3 pEntry = r.origin + entry * r.direction;
@@ -641,6 +641,8 @@ float KDTree::traverse(ray& r) {
 				node = node->second;
 			}
 		}
+
+		aabbIntersectionTest(node->urf, node->llb, r, entry, exit);
 
 		bool intersectionFound = false;
 		//now at a leaf, check for intersection with primitives
@@ -671,7 +673,7 @@ float KDTree::traverse(ray& r) {
 		
 		//if no intersection, go to the next node using rope
 		//if no more neigbours, return -1
-		glm::vec3 newEntry = r.origin + exit * r.direction;
+		glm::vec3 newEntry = r.origin + entry * r.direction;
 		node = findNeighbor(newEntry, node);
 
 		//return -1 if no neighbors found
