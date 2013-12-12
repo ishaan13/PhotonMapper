@@ -509,7 +509,7 @@ float KDTree::traverse(ray& r, KDNode* node, std::vector<prim> primsList) {
 
 			//intersect with triangle in range of entry and exit
 			prim tri = primsList[node->primIndices[i]];
-			triIntersectInRange(r, tri, entry, exit, closestIntersection);			
+			triIntersectInRange(r, tri, entry, exit);			
 
 		}	//exit leaf node
 
