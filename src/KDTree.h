@@ -1,4 +1,5 @@
 #include "sceneStructs.h"
+//#include "intersections.h"
 #include <vector>
 
 #define MAX_PRIMS_PER_LEAF 10
@@ -56,7 +57,7 @@ public:
 	KDNode* buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList);
 
 	KDNode* optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf);
-	KDNode* processNode(KDNode* node, KDNode* ropes[], glm::vec3 llb, glm::vec3 urf);
+	void processNode(KDNode* node, KDNode* ropes[]);
 
 	float traverse(ray& r, KDNode* root, std::vector<prim> primsList);
 
