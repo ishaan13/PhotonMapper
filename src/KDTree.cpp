@@ -209,6 +209,31 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 
 }
 
+float KDTree::triangleIntersectionTest(ray& r, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3) {
+	if (glm::length(v1 - v2) < 0.00001f || glm::length(v1 - v3) < 0.00001f || glm::length(v2 - v3) < 0.00001f)
+		return -1;
+
+	// ray plane intersection
+	glm::vec3 n = glm::cross(v2 - v1, v3 - v1);
+	float t = -glm::dot(r.origin - v1, n) / glm::dot(r.direction, n);
+	if (t <= 0) {
+		return -1;
+	}
+	glm::vec3 x = r.origin + t * r.direction;
+
+	// point in triangle
+	float s1 = glm::dot(glm::cross(v2 - v1, x - v1), n);
+	float s2 = glm::dot(glm::cross(v3 - v2, x - v2), n);
+	float s3 = glm::dot(glm::cross(v1 - v3, x - v3), n);
+
+	if (s1 >= 0 && s2 >= 0 && s3 >= 0) {
+		return glm::length(r.origin - x);
+	}
+	else {
+		return -1;
+	}
+}
+
 // Wrapepr function which'll do magic
 void KDTree::buildKD()
 {
@@ -477,7 +502,7 @@ void KDTree::processNode(KDNode* node, KDNode* ropes[])
 	processNode(node->second, ropes2);
 }
 
-float KDTree::traverse(ray& r, KDNode* node, std::vector<prim> primsList) {
+float KDTree::traverse(ray& r, KDNode* node) {
 	
 	float entry = FLT_MIN; 
 	float exit = FLT_MAX;
@@ -508,8 +533,14 @@ float KDTree::traverse(ray& r, KDNode* node, std::vector<prim> primsList) {
 		for (int i = 0; i < node->numberOfPrims; ++i) {
 
 			//intersect with triangle in range of entry and exit
-			prim tri = primsList[node->primIndices[i]];
-			triIntersectInRange(r, tri, entry, exit);			
+			triangle tri = faces[node->primIndices[i]];
+			glm::vec3 v1 = vertices[tri.v1];
+			glm::vec3 v2 = vertices[tri.v2];
+			glm::vec3 v3 = vertices[tri.v3];
+			float depth = triangleIntersectionTest(r, v1, v2, v3);	
+			if (depth >= entry && depth < closestIntersection) {
+				closestIntersection = depth;
+			}
 
 		}	//exit leaf node
 

@@ -59,7 +59,7 @@ public:
 	KDNode* optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf);
 	void processNode(KDNode* node, KDNode* ropes[]);
 
-	float traverse(ray& r, KDNode* root, std::vector<prim> primsList);
+	float traverse(ray& r, KDNode* root);
 
 	//leave intersection tests here for now
 	
@@ -67,6 +67,6 @@ public:
 	bool aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& tNear, float& tFar);
 	
 	//checking intersection with primitives and if intersection point is between entry and exit
-	float triIntersectInRange(ray& r, prim& tri, float& entry, float& exit);
+	float triangleIntersectTest(ray& r, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3);
 
 };
