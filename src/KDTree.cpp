@@ -493,46 +493,48 @@ void KDTree::processNode(KDNode* node, KDNode* ropes[])
 	}
 	else {
 		for (int i=0; i<6; ++i) {
-			if (node->ropes[i] != NULL) {
-				node->ropes[i] = optimize(node->ropes[i], i, node->llb, node->urf);
+			if (ropes[i] != NULL) {
+				ropes[i] = optimize(ropes[i], i, node->llb, node->urf);
 			}
 		}
-	}
 
-	int side1, side2;
-	Plane splitPlane = node->splitPlane;
-	if (splitPlane.axis == X_AXIS) {
-		side1 = LEFT;
-		side2 = RIGHT;
-	}
-	else if (splitPlane.axis == Y_AXIS) {
-		side1 = BOTTOM;
-		side2 = TOP;
-	}
-	else {
-		side1 = BACK;
-		side2 = FRONT;
-	}
+		int side1, side2;
+		Plane splitPlane = node->splitPlane;
+		if (splitPlane.axis == X_AXIS) {
+			side1 = LEFT;
+			side2 = RIGHT;
+		}
+		else if (splitPlane.axis == Y_AXIS) {
+			side1 = BOTTOM;
+			side2 = TOP;
+		}
+		else {
+			side1 = BACK;
+			side2 = FRONT;
+		}
 
-	KDNode* ropes1[6]; // the ropes of the node's first child
-	for (int i=0; i<6; ++i) {
-		ropes1[i] = ropes[i];
-	}
-	ropes1[side2] = node->second;
-	processNode(node->first, ropes1);
+		KDNode* ropes1[6]; // the ropes of the node's first child
+		for (int i=0; i<6; ++i) {
+			ropes1[i] = ropes[i];
+		}
+		ropes1[side2] = node->second;
+		processNode(node->first, ropes1);
 
-	KDNode* ropes2[6]; // the ropes of the node's second child
-	for (int i=0; i<6; ++i) {
-		ropes2[i] = ropes[i];
+		KDNode* ropes2[6]; // the ropes of the node's second child
+		for (int i=0; i<6; ++i) {
+			ropes2[i] = ropes[i];
+		}
+		ropes2[side1] = node->first;
+		processNode(node->second, ropes2);
 	}
-	ropes2[side1] = node->first;
-	processNode(node->second, ropes2);
 }
 
-float KDTree::traverse(ray& r, KDNode* node) {
+float KDTree::traverse(ray& r) {
 	
 	float entry = FLT_MIN; 
 	float exit = FLT_MAX;
+
+	KDNode * node = tree;
 
 	//find entry and exit distances of the ray into the tree
 	if (!aabbIntersectionTest(node->urf, node->llb, r, entry, exit)) {

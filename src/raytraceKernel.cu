@@ -32,6 +32,8 @@
 #define PHOTONCOMPACT 1
 #define K 10
 
+
+
 #if CUDA_VERSION >= 5000
     #include <helper_math.h>
 #else
@@ -1791,3 +1793,5 @@ void cudaFreeAccumulatorImage()
 {
 	cudaFree(accumulatorImage);
 }
+
+

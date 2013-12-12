@@ -29,6 +29,7 @@
 #include "raytraceKernel.h"
 #include "utilities.h"
 #include "scene.h"
+#include "KDTree.h"
 
 #if CUDA_VERSION >= 5000
     #include <helper_cuda.h>
@@ -39,6 +40,9 @@
     #include <cutil_gl_inline.h>
     #define compat_getMaxGflopsDeviceId() cutGetMaxGflopsDeviceId()
 #endif
+
+
+#define CPUTRACE 1
 
 using namespace std;
 
@@ -70,6 +74,11 @@ int numberOfNormals;
 int numberOfFaces;
 int numberOfTextures;
 int numberOfUVs;
+
+//-------------------------------
+//------------KD TREE -----------
+//-------------------------------
+KDTree* kdTree;
 
 //-------------------------------
 //------------GL STUFF-----------
@@ -137,6 +146,8 @@ void initTextures();
 void initVAO();
 GLuint initShader(const char *vertexShaderPath, const char *fragmentShaderPath);
 
+void initKDTree();
+
 void copyDataFromScene();
 
 //-------------------------------
@@ -148,5 +159,10 @@ void freeCPUMemory();
 void deletePBO(GLuint* pbo);
 void deleteTexture(GLuint* tex);
 void shut_down(int return_code);
+
+
+
+////CPU TESTING////
+void cpuRaytrace();
 
 #endif

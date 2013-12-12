@@ -60,7 +60,7 @@ public:
 	KDNode* optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf);
 	void processNode(KDNode* node, KDNode* ropes[]);
 
-	float traverse(ray& r, KDNode* root);
+	float traverse(ray& r);
 
 	//leave intersection tests here for now
 	

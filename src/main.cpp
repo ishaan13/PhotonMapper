@@ -69,10 +69,16 @@ int main(int argc, char** argv){
 	init(argc, argv);
 #endif
 
+//#if CPUTRACE != 1
 	initCuda();
+//#endif
 
 	initVAO();
 	initTextures();
+
+#if CPUTRACE == 1
+	initKDTree();
+#endif
 
 	GLuint passthroughProgram;
 	passthroughProgram = initShader("shaders/passthroughVS.glsl", "shaders/passthroughFS.glsl");
@@ -217,9 +223,12 @@ void display(){
 #else
 
 void display(){
-
-	runCuda();
-
+	
+#if CPUTRACE == 1
+	cpuRaytrace();
+#else
+	//runCuda();
+#endif
 
 	char modeName[50];
 	switch(mode)
@@ -253,6 +262,70 @@ void display(){
 	glutPostRedisplay();
 	glutSwapBuffers();
 }
+
+
+///////////////////////CPU SHIT///////////////////////////
+void initKDTree() {
+	kdTree = new KDTree();
+	kdTree -> buildKD();
+}
+
+
+
+void cpuRaytrace() {
+
+	glm::vec3 view = renderCam->views[targetFrame];
+	glm::vec3 up = renderCam->ups[targetFrame];
+	glm::vec3 eye = renderCam->positions[targetFrame];
+	glm::vec2 fov = renderCam->fov;
+	glm::vec2 resolution = renderCam->resolution;
+
+	uchar4 *dptr=NULL;
+	cudaGLMapBufferObject((void**)&dptr, pbo);
+
+	//find rays
+	for (int x = 0; x < resolution.x; ++x) {
+		for (int y = 0; y < resolution.y; ++y) { 
+			
+			int index = y * resolution.x + y;
+
+			glm::vec3 axis_a = glm::cross(view, up);
+			glm::vec3 axis_b = glm::cross(axis_a, view);
+			glm::vec3 midPoint = eye + view;
+			glm::vec3 viewPlaneX = axis_a * tan(PI_F * fov.x/180.0f) * glm::length(view)/glm::length(axis_a);
+			glm::vec3 viewPlaneY = axis_b * tan(PI_F * fov.y/180.0f) * glm::length(view)/glm::length(axis_b);
+
+			ray r;
+			glm::vec3 screenPoint = midPoint +
+				(2.0f * (1.0f * x / (resolution.x-1)) - 1.0f) * viewPlaneX + 
+				(1.0f - 2.0f * (1.0f * y / (resolution.y-1))) * viewPlaneY;
+
+			r.origin = screenPoint;
+			r.direction = glm::normalize(screenPoint - eye);
+		
+			//trace the ray
+			int intersecteGeom = -1;
+			
+			float f = kdTree ->traverse(r);
+
+			if (f != -1) {
+				cout << f<<endl;
+			}
+
+			f = max(0.0, f);
+			dptr[index].w = 0;
+			dptr[index].x = 1;
+			dptr[index].y = 0;
+			dptr[index].z = 0;
+		}
+	}
+
+	cudaGLUnmapBufferObject(pbo);
+
+
+}
+
+
 
 void resetAccumulator()
 {
@@ -524,7 +597,7 @@ void initCuda(){
 
 	copyDataFromScene();
 
-	runCuda();
+	//runCuda();
 }
 
 void initTextures(){
