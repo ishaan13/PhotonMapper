@@ -307,6 +307,7 @@ void initKDTree() {
 
 	kdTree = new KDTree();
 	kdTree -> buildKD();
+	printf("KD Tree constructed\n");
 }
 
 
@@ -326,14 +327,10 @@ void cpuRaytrace() {
 
 	//find rays
 	for (int x = 0; x < resolution.x; ++x) {
-		//cout<<x<<endl;
+		cout<<x<<endl;
 		for (int y = 0; y < resolution.y; ++y) {
 
 			int index = y * resolution.x + x;
-
-			if (x == 462 && y == 390) {
-				int debug = 1;
-			}
 
 			glm::vec3 axis_a = glm::cross(view, up);
 			glm::vec3 axis_b = glm::cross(axis_a, view);
