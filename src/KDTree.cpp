@@ -166,6 +166,179 @@ bool Plane::isSecond(prim p)
 	}
 }
 
+//return true if point is in left split, false if in right
+bool Plane::isPointInFirst(glm::vec3 p) {
+	
+	if (axis == X_AXIS) {
+		return p.x <= splitPoint;	
+	}
+
+	else if (axis == Y_AXIS) {
+		return p.y <= splitPoint;
+	}
+
+	else {
+		return p.z <= splitPoint;
+	}
+}
+
+
+bool KDNode::isLeaf()
+{
+	return (first == NULL && second == NULL);
+}
+
+//box intersection test with bounding boxes
+bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& tNear, float& tFar) {
+	
+	tNear = FLT_MIN;
+	tFar = FLT_MAX;
+	float t1, t2 = 0.0f;
+
+	//x planes
+	//check if parallel to x plane
+	if (abs(r.direction.x) < FLT_EPSILON) {
+		if (r.direction.x < low.x || r.direction.x > high.x) {
+			return false;
+		}
+	}
+	else {
+		t1 = (low.x - r.origin.x)/r.direction.x;
+		t2 = (high.x - r.origin.x)/r.direction.x;
+		if (t1 > t2) {		
+			float temp = t1;
+			t2 = t1;
+			t1 = temp;
+		}
+
+		if (t1 > tNear) {
+			tNear = t1;
+		}
+
+		if (t2 < tFar) {
+			tFar = t2;
+		} 
+
+		if (tNear > tFar || tFar < 0) {
+			return false;
+		}
+	}
+
+	//y planes
+	//check if parallel to y slabs
+	if (abs(r.direction.y) < FLT_EPSILON) {
+		//if within slabs
+		if (r.direction.y < low.y || r.direction.y > high.y) {
+			return false;
+		}
+	}
+	else {
+		t1 = (low.y - r.origin.y)/r.direction.y;
+		t2 = (high.y - r.origin.y)/r.direction.y;
+		if (t1 > t2) {		
+			float temp = t1;
+			t2 = t1;
+			t1 = temp;
+		}
+
+		if (t1 > tNear) {
+			tNear = t1;
+		}
+
+		if (t2 < tFar) {
+			tFar = t2;
+		} 
+		
+		if (tNear > tFar || tFar < 0) {
+			return false;
+		}
+	}
+
+	//z planes
+	//check if parallel to z planes
+	if (abs(r.direction.z) < FLT_EPSILON) {
+		//if within slabs
+		if (r.direction.z < low.z || r.direction.z > high.z) {
+			return false;
+		}
+	}
+	else {
+		t1 = (low.z - r.origin.z)/r.direction.z;
+		t2 = (high.z - r.origin.z)/r.direction.z;
+		if (t1 > t2) {		
+			float temp = t1;
+			t2 = t1;
+			t1 = temp;
+		}
+
+		if (t1 > tNear) {
+			tNear = t1;
+		}
+
+		if (t2 < tFar) {
+			tFar = t2;
+		} 
+		
+		if (tNear > tFar || tFar < 0) {
+			return false;
+		}
+	}
+
+	return true;
+
+}
+
+float KDTree::triangleIntersectionTest(ray& r, glm::vec3 v1, glm::vec3 v2, glm::vec3 v3) {
+	if (glm::length(v1 - v2) < 0.00001f || glm::length(v1 - v3) < 0.00001f || glm::length(v2 - v3) < 0.00001f)
+		return -1;
+
+	// ray plane intersection
+	glm::vec3 n = glm::cross(v2 - v1, v3 - v1);
+	float t = -glm::dot(r.origin - v1, n) / glm::dot(r.direction, n);
+	if (t <= 0) {
+		return -1;
+	}
+	glm::vec3 x = r.origin + t * r.direction;
+
+	// point in triangle
+	float s1 = glm::dot(glm::cross(v2 - v1, x - v1), n);
+	float s2 = glm::dot(glm::cross(v3 - v2, x - v2), n);
+	float s3 = glm::dot(glm::cross(v1 - v3, x - v3), n);
+
+	if (s1 >= 0 && s2 >= 0 && s3 >= 0) {
+		return glm::length(r.origin - x);
+	}
+	else {
+		return -1;
+	}
+}
+
+//given a point, find which face the point is on and use that to find the neighbor using ropes
+KDNode* KDTree:: findNeighbor (glm::vec3 p, KDNode* k) {
+
+	if (abs(p.x - k->llb.x) < EPSILON) {
+		return k->ropes[LEFT];		
+	}
+	else if (abs(p.x - k->urf.x) < EPSILON) {
+		return k->ropes[RIGHT];
+	}
+	else if (abs(p.y - k->llb.y) < EPSILON) {
+		return k->ropes[BOTTOM];
+	}
+	else if (abs(p.y - k->urf.y) < EPSILON) {
+		return k->ropes[TOP];
+	}
+	else if (abs(p.z - k->llb.z) < EPSILON) {
+		return k->ropes[FRONT];
+	}
+	else if (abs(p.z - k->urf.z) < EPSILON) {
+		return k->ropes[BACK];
+	}
+	else {
+		return NULL;
+	}
+
+}
 
 // Wrapepr function which'll do magic
 void KDTree::buildKD()
@@ -188,6 +361,10 @@ void KDTree::buildKD()
 		if(vertices[faces[i].v2].z < llb.z)	llb.z = vertices[faces[i].v2].z;
 		if(vertices[faces[i].v3].z < llb.z)	llb.z = vertices[faces[i].v3].z;
 
+		//faster way?
+		//llb = glm::min(vertices[faces[i].v1], vertices[faces[i].v2]);
+		//llb = glm::min(llb, vertices[faces[i].v3]);
+
 		// Update Max
 		if(vertices[faces[i].v1].x > urf.x)	urf.x = vertices[faces[i].v1].x;
 		if(vertices[faces[i].v2].x > urf.x)	urf.x = vertices[faces[i].v2].x;
@@ -200,6 +377,10 @@ void KDTree::buildKD()
 		if(vertices[faces[i].v1].z > urf.z)	urf.z = vertices[faces[i].v1].z;
 		if(vertices[faces[i].v2].z > urf.z)	urf.z = vertices[faces[i].v2].z;
 		if(vertices[faces[i].v3].z > urf.z)	urf.z = vertices[faces[i].v3].z;
+
+		//urf = glm::max(vertices[faces[i].v1], vertices[faces[i].v2]);
+		//urf = glm::max(urf, vertices[faces[i].v3]);
+	
 	}
 
 	// build vector of triangles
@@ -214,10 +395,13 @@ void KDTree::buildKD()
 	// call recursive build
 	tree = buildTree(llb,urf,primList);
 
+	// build rope structure
+	KDNode* ropes[] = {NULL, NULL, NULL, NULL, NULL, NULL};
+	processNode(tree, ropes);
 }
 
 // recursive build
-KDNode * buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
+KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
 {
 	KDNode * current;
 
@@ -277,6 +461,7 @@ KDNode * buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
 		calculateBoundingBoxes(llb,urf,splitPlane,firstllb,firsturf,secondllb,secondurf);
 
 		// Split the primitives based on left and right
+		current->splitPlane = splitPlane;
 		current->first = buildTree(firstllb,firsturf,firstPrimsList);
 		current->second = buildTree(secondllb, secondurf,secondPrimsList);
 		current->numberOfPrims = 0;
@@ -285,3 +470,297 @@ KDNode * buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
 	return current;
 }
 
+// optimize rope
+KDNode* KDTree::optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf)
+{
+	Plane splitPlane = rope->splitPlane;
+
+	while (!rope->isLeaf())
+	{
+		bool splitted = false;
+
+		if (side == LEFT || side == RIGHT) {
+			if (splitPlane.axis == X_AXIS) {
+				rope = side == RIGHT ? rope->first : rope->second;
+				splitted = true;
+			}
+			else if (splitPlane.axis == Y_AXIS) {
+				if (splitPlane.splitPoint >= urf.y) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.y) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+			else {
+				if (splitPlane.splitPoint >= urf.z) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.z) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+		}
+		else if (side == TOP || side == BOTTOM) {
+			if (splitPlane.axis == Y_AXIS) {
+				rope = side == TOP ? rope->first : rope->second;
+				splitted = true;
+			}
+			else if (splitPlane.axis == X_AXIS) {
+				if (splitPlane.splitPoint >= urf.x) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.x) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+			else {
+				if (splitPlane.splitPoint >= urf.z) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.z) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+		}
+		else {
+			if (splitPlane.axis == Z_AXIS) {
+				rope = side == FRONT ? rope->first : rope->second;
+				splitted = true;
+			}
+			else if (splitPlane.axis == X_AXIS) {
+				if (splitPlane.splitPoint >= urf.x) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.x) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+			else {
+				if (splitPlane.splitPoint >= urf.y) {
+					rope = rope->first;
+					splitted = true;
+				}
+				else if (splitPlane.splitPoint <= llb.y) {
+					rope = rope->second;
+					splitted = true;
+				}
+			}
+		}
+
+		if (!splitted) {
+			break;
+		}
+	}
+
+	return rope;
+}
+
+void KDTree::processNode(KDNode* node, KDNode* ropes[])
+{
+	if (node->isLeaf()) {
+		for (int i=0; i<6; ++i) {
+			node->ropes[i] = ropes[i];
+		}
+	}
+	else {
+		for (int i=0; i<6; ++i) {
+			if (ropes[i] != NULL) {
+				ropes[i] = optimize(ropes[i], i, node->llb, node->urf);
+			}
+		}
+
+		int side1, side2;
+		Plane splitPlane = node->splitPlane;
+		if (splitPlane.axis == X_AXIS) {
+			side1 = LEFT;
+			side2 = RIGHT;
+		}
+		else if (splitPlane.axis == Y_AXIS) {
+			side1 = BOTTOM;
+			side2 = TOP;
+		}
+		else {
+			side1 = BACK;
+			side2 = FRONT;
+		}
+
+		KDNode* ropes1[6]; // the ropes of the node's first child
+		for (int i=0; i<6; ++i) {
+			ropes1[i] = ropes[i];
+		}
+		ropes1[side2] = node->second;
+		processNode(node->first, ropes1);
+
+		KDNode* ropes2[6]; // the ropes of the node's second child
+		for (int i=0; i<6; ++i) {
+			ropes2[i] = ropes[i];
+		}
+		ropes2[side1] = node->first;
+		processNode(node->second, ropes2);
+	}
+}
+
+float KDTree::traverse(ray& r) {
+	
+	float entry = FLT_MIN; 
+	float exit = FLT_MAX;
+
+	KDNode * node = tree;
+
+	//find entry and exit distances of the ray into the tree
+	if (!aabbIntersectionTest(node->urf, node->llb, r, entry, exit)) {
+		//no intersection, so return
+		return -1;
+	}
+
+	//save this value for going to neighbor nodes, since we update exit later
+	float rootExit = exit;
+
+	while (entry < exit) {
+		
+		//downward traversal to find a leaf node
+		glm::vec3 pEntry = r.origin + entry * r.direction;
+		
+		while (!node->isLeaf()) {
+			//check which child to traverse down on
+			if (node->splitPlane.isPointInFirst(pEntry)) {
+				node = node->first;
+			} 
+			else {
+				node = node->second;
+			}
+		}
+
+		bool intersectionFound = false;
+		//now at a leaf, check for intersection with primitives
+		for (int i = 0; i < node->numberOfPrims; ++i) {
+
+			//intersect with triangle in range of entry and exit
+			triangle tri = faces[node->primIndices[i]];
+			glm::vec3 v1 = vertices[tri.v1];
+			glm::vec3 v2 = vertices[tri.v2];
+			glm::vec3 v3 = vertices[tri.v3];
+			float intersect = triangleIntersectionTest(r, v1, v2, v3);	
+
+			//update exit point if new intersection point is closer to us
+			if (intersect >= entry && intersect < exit) {
+				intersectionFound = true;
+				exit = intersect;
+			}
+		}	//exit leaf node
+
+		//if intersection found in this node, it is the closest one, so return
+		if (intersectionFound) {
+			return exit;
+		}
+
+		//update the new entry point to the exit 
+		entry = exit;	
+		exit = rootExit;		//reset exit point to the exit point of the kd tree
+		
+		//if no intersection, go to the next node using rope
+		//if no more neigbours, return -1
+		glm::vec3 newEntry = r.origin + exit * r.direction;
+		node = findNeighbor(newEntry, node);
+
+		//return -1 if no neighbors found
+		if (!node) {
+			return -1;
+		}
+	}
+
+	return -1;
+}
+
+// Traverse in breadth first order and  set indices
+void KDTree::setIndices(KDNode * current, int &index)
+{
+	if(current->isLeaf())
+	{
+		current->kdIndex = index;
+		index++;
+	}
+	else
+	{
+		if(current->first != NULL)
+		{
+			setIndices(current->first, index);
+		}
+		if(current->second != NULL)
+		{
+			setIndices(current->second, index);
+		}
+		current->kdIndex = index;
+		index++;
+	}
+}
+
+void KDTree::setGPUTreeData(KDNode * current, KDNodeGPU *gpuTree, std::vector<int> &primIndexList)
+{
+	int index = current->kdIndex;
+	if(current->isLeaf())
+	{
+		gpuTree[index].first			= -1;
+		gpuTree[index].second			= -1;
+		gpuTree[index].numPrims			= current->numberOfPrims;
+		gpuTree[index].startPrimIndex	= primIndex.size(); 
+
+		for(int i=0; i< 6; i++)
+		{
+			if(current->ropes[i] != NULL)
+				gpuTree[index].ropes[i] = current->ropes[i]->kdIndex;
+			else
+				gpuTree[index].ropes[i] = -1;
+		}
+
+		for(int i=0; i< current->numberOfPrims; i++)
+		{
+			primIndex.push_back(current->primIndices[i]);
+		}
+		
+	}
+	else
+	{
+		if(current->first != NULL)
+		{
+			setGPUTreeData(current->first, gpuTree, primIndex);
+			gpuTree[index].first = current->first->kdIndex;
+		}
+		if(current->second!= NULL)
+		{
+			setGPUTreeData(current->second, gpuTree, primIndex);
+			gpuTree[index].second = current->second->kdIndex;
+		}
+
+		// set data
+		gpuTree[index].numPrims			= 0;
+		gpuTree[index].startPrimIndex	= -1;
+
+		for(int i=0; i< 6; i++)
+			gpuTree[index].ropes[i] = -1;
+	}
+}
+
+// traverse and build gpu kdtree
+int  KDTree::buildGPUKDTree(KDNodeGPU *gpuTree)
+{
+	int numElts = 0;
+	setIndices(tree, numElts);
+
+	gpuTree = new KDNodeGPU[numElts];
+
+	setGPUTreeData(tree, gpuTree, primIndex);
+
+	return numElts;
+}

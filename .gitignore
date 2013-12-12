@@ -24,6 +24,9 @@ sph/output/*
 *.sln.docstates
 *.vcxproj
 
+#CUDA dependencies
+PROJ1/WIN/src/raytraceKernel.cu.deps
+
 # Build results
 
 [Dd]ebug/

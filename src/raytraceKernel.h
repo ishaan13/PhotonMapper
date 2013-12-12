@@ -31,13 +31,18 @@ void cudaRaytraceCore(uchar4* pos, camera* renderCam, int frame, int iterations,
 //photon mapping
 void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBOPos, cameraData liveCamera);
 
+void initTexture(cudatexture* textures, float4* cputexturedata, int numberOfTextures, int widthcount, int maxheight);
 //for allocating and deallocating memory
 void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms,
-												glm::vec3* vertices, int numberOfVertices, glm::vec3* normals, int numberOfNormals, triangle* faces, int numberOfFaces);
+												glm::vec3* vertices, int numberOfVertices, glm::vec3* normals, int numberOfNormals, triangle* faces, int numberOfFaces,
+												glm::vec2* uvs, int numberOfUVs);
 void cudaFreeMemory();
+void cudaFreeTexture();
 
 int streamCompactPhotons (photon* inputPhotons, photon* outputPhotons, int size);
 
 __host__ __device__ glm::vec3 generateRandomNumberFromThread(glm::vec2 resolution, float time, int x, int y);
+
+
 
 #endif
