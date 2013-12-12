@@ -42,7 +42,7 @@
 #endif
 
 
-#define CPUTRACE 0
+#define CPUTRACE 1
 
 using namespace std;
 

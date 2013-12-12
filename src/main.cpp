@@ -76,9 +76,8 @@ int main(int argc, char** argv){
 	initVAO();
 	initTextures();
 
+#if CPUTRACE == 1
 	initKDTree();
-
-#if CPUTRACE
 	cpuImage = new glm::vec3[(int)renderCam->resolution.x * (int)renderCam->resolution.y];
 
 #endif
@@ -258,7 +257,7 @@ void display(){
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, pbo);
 	glBindTexture(GL_TEXTURE_2D, displayImage);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, 
-		GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 	glClear(GL_COLOR_BUFFER_BIT);   
 
@@ -271,30 +270,71 @@ void display(){
 
 
 ///////////////////////CPU STUFF///////////////////////////
+
+glm::vec3 multiplyMVOnHost(cudaMat4 m, glm::vec4 v){
+  glm::vec3 r(1,1,1);
+  r.x = (m.x.x*v.x)+(m.x.y*v.y)+(m.x.z*v.z)+(m.x.w*v.w);
+  r.y = (m.y.x*v.x)+(m.y.y*v.y)+(m.y.z*v.z)+(m.y.w*v.w);
+  r.z = (m.z.x*v.x)+(m.z.y*v.y)+(m.z.z*v.z)+(m.z.w*v.w);
+  return r;
+}
+
+cudaMat4 getNormalTransformOnHost(cudaMat4 a){
+	glm::mat4 m = utilityCore::cudaMat4ToGlmMat4(a);
+	m = glm::inverse(glm::transpose(m));
+	return utilityCore::glmMat4ToCudaMat4(m);
+}
+
 void initKDTree() {
+	int transVCount = 0; //number of vertices transformed
+	int transNCount = 0; //number of normals transformed
+
+	for(int i=0; i<numberOfGeoms; ++i){
+		if (geoms[i].type == MESH) {
+			// transform vertices
+			for (int j=transVCount; j<transVCount+geoms[i].vertexcount; ++j) {
+				vertices[j] = multiplyMVOnHost(geoms[i].transforms[targetFrame], glm::vec4(vertices[j], 1.0f));
+			}
+			transVCount += geoms[i].vertexcount;
+
+			// transform normals
+			for (int j=transNCount; j<transNCount+geoms[i].normalcount; ++j) {
+				normals[j] = glm::normalize(multiplyMVOnHost(getNormalTransformOnHost(geoms[i].transforms[0]), glm::vec4(normals[j], 0.0f)));
+			}
+			transNCount += geoms[i].normalcount;
+		}
+	}
+
 	kdTree = new KDTree();
 	kdTree -> buildKD();
-	std::cout<<"Built KD Tree\n";
 }
 
 
-
 void cpuRaytrace() {
-	return;
+
 	glm::vec3 view = renderCam->views[targetFrame];
 	glm::vec3 up = renderCam->ups[targetFrame];
 	glm::vec3 eye = renderCam->positions[targetFrame];
 	glm::vec2 fov = renderCam->fov;
 	glm::vec2 resolution = renderCam->resolution;
 
-	
+	//cout<<"lower bound ";
+	//utilityCore::printVec3(kdTree->tree->llb);
+
+	//cout<<"upper bound ";
+	//utilityCore::printVec3(kdTree->tree->urf);
+
 	//find rays
 	for (int x = 0; x < resolution.x; ++x) {
-		for (int y = 0; y < resolution.y; ++y) { 
-			
+		//cout<<x<<endl;
+		for (int y = 0; y < resolution.y; ++y) {
+
 			int index = y * resolution.x + x;
-			//cout<<"cpu raytrace"<<endl;
-			
+
+			if (x == 462 && y == 390) {
+				int debug = 1;
+			}
+
 			glm::vec3 axis_a = glm::cross(view, up);
 			glm::vec3 axis_b = glm::cross(axis_a, view);
 			glm::vec3 midPoint = eye + view;
@@ -306,25 +346,52 @@ void cpuRaytrace() {
 				(2.0f * (1.0f * x / (resolution.x-1)) - 1.0f) * viewPlaneX + 
 				(1.0f - 2.0f * (1.0f * y / (resolution.y-1))) * viewPlaneY;
 
-			r.origin = screenPoint;
+			r.origin = eye;
+			//r.origin = screenPoint;
 			r.direction = glm::normalize(screenPoint - eye);
-		
+			
+			//intersect testing using KD tree
+			
 			float f = kdTree ->traverse(r);
 			f = max(0.0f, f);
-			f /= 12.0f;
+			cpuImage[index] = glm::vec3(f/16.0f);
 
-			cpuImage[index] = glm::vec3(f);
 		}
 	}
 
-	uchar4 *dptr=NULL;
-	cudaGLMapBufferObject((void**)&dptr, pbo);
+		uchar4 *dptr=NULL;
+		cudaGLMapBufferObject((void**)&dptr, pbo);
+		cudaDrawCPUImage(dptr, renderCam, cpuImage);
 
-	cudaDrawCPUImage(dptr, renderCam, cpuImage);
+		// unmap buffer object
+		cudaGLUnmapBufferObject(pbo);
 
-	// unmap buffer object
-	cudaGLUnmapBufferObject(pbo);
+		cout<<"iteration finished"<<endl;
 
+		//output image file
+		image outputImage(renderCam->resolution.x, renderCam->resolution.y);
+
+		for(int x=0; x<renderCam->resolution.x; x++){
+			for(int y=0; y<renderCam->resolution.y; y++){
+				int index = x + (y * renderCam->resolution.x);
+				//outputImage.writePixelRGB(renderCam->resolution.x-1-x,y,cpuImage[index]);
+				outputImage.writePixelRGB(x, y, cpuImage[index]);
+			}
+		}
+
+		gammaSettings gamma;
+		gamma.applyGamma = true;
+		gamma.gamma = 1.0;//2.2;
+		gamma.divisor = renderCam->iterations;
+		outputImage.setGammaSettings(gamma);
+		string filename = renderCam->imageName;
+		string s;
+		stringstream out;
+		out << targetFrame;
+		s = out.str();
+		utilityCore::replaceString(filename, ".bmp", "."+s+".bmp");
+		utilityCore::replaceString(filename, ".png", "."+s+".png");
+		outputImage.saveImageRGB(filename);
 }
 
 
@@ -588,8 +655,6 @@ void copyDataFromScene(){
 
 void initCuda(){
 
-	cout<<"init cuda"<<endl;
-
 	// Use device with highest Gflops/s
 	cudaGLSetGLDevice( compat_getMaxGflopsDeviceId() );
 
@@ -602,7 +667,9 @@ void initCuda(){
 
 	copyDataFromScene();
 
-	//runCuda();
+#if CPUTRACE != 1
+	runCuda();
+#endif
 }
 
 void initTextures(){
