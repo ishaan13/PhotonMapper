@@ -124,7 +124,7 @@ FOVY        35
 ITERATIONS  1
 FILE        dragon.png
 frame 0
-EYE         0 5 8
+EYE         0 3 10
 VIEW        0 0 -1
 UP          0 1 0
 APERTURE    0
@@ -176,7 +176,7 @@ material 1
 frame 0
 TRANS       0 4 0
 ROTAT       0 0 0
-SCALE       5 5 5
+SCALE       6 6 6
 
 OBJECT 6
 cube
