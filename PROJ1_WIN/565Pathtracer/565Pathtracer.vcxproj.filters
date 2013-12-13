@@ -48,8 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="..\..\src\raytraceKernel.cu" />
-    <CudaCompile Include="..\..\src\KDTree.cu" />
     <CudaCompile Include="..\..\src\intersections.cu" />
+    <CudaCompile Include="..\..\src\KDTree.cu" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="stb_image">

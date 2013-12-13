@@ -1,5 +1,6 @@
 #include "KDTree.h"
-#define EPSILON 0.00001
+
+#define EPSILON 0.000001f
 
 // Helper funcitons
 
@@ -12,7 +13,7 @@ float surfaceArea(glm::vec3 llb, glm::vec3 urf)
 void calculateBoundingBoxes(glm::vec3 llb, glm::vec3 urf, Plane splitPlane, glm::vec3 &firstllb, glm::vec3 &firsturf,
 	glm::vec3 &secondllb, glm::vec3 &secondurf)
 {
-	//glm::vec3 epsilonVec(0.0001f);
+	//glm::vec3 epsilonVec(EPSILON);
 
 	////adding epsilon checks
 	//if(splitPlane.axis == X_AXIS)
@@ -406,10 +407,10 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 	{
 
 		// Split the tree
-		Plane splitPlane = findSplitPlane(llb,urf);
+		//Plane splitPlane = findSplitPlane(llb,urf);
 
 		//optimal split
-		//Plane splitPlane = findOptimalSplitPlane(llb, urf, primsList);
+		Plane splitPlane = findOptimalSplitPlane(llb, urf, primsList);
 
 		// Make two lists of primitives based on positive and negative side of this plane. if confused, put in both.
 		std::vector<prim> firstPrimsList;
@@ -690,7 +691,7 @@ void KDTree::processNode(KDNode* node, KDNode* ropes[])
 }
 
 float KDTree::traverse(ray& r) {
-
+	
 	float entry = -FLT_MAX; 
 	float exit = FLT_MAX;
 
@@ -705,15 +706,13 @@ float KDTree::traverse(ray& r) {
 
 	//save this value for going to neighbor nodes, since we update exit later
 	float rootExit = exit;
-	float prevEntry = -FLT_MAX;
+	float prevEntry = -FLT_MAX;			//make sure that entry point keeps increasing along ray
 
-	while (entry - exit < -EPSILON && entry > prevEntry) {
-		
+	while (entry < exit && entry > prevEntry) {
 		prevEntry = entry;
-
 		//downward traversal to find a leaf node
 		glm::vec3 pEntry = r.origin + entry * r.direction;
-
+		
 		while (!node->isLeaf()) {
 			//check which child to traverse down on
 			if (node->splitPlane.isPointInFirst(pEntry)) {
@@ -734,7 +733,7 @@ float KDTree::traverse(ray& r) {
 			glm::vec3 v1 = vertices[tri.v1];
 			glm::vec3 v2 = vertices[tri.v2];
 			glm::vec3 v3 = vertices[tri.v3];
-			float intersect = triangleIntersectionTest(r, v1, v2, v3);        
+			float intersect = triangleIntersectionTest(r, v1, v2, v3);	
 
 			//std::cout<<intersect<<std::endl;
 
@@ -743,7 +742,7 @@ float KDTree::traverse(ray& r) {
 				intersectionFound = true;
 				exit = intersect;
 			}
-		}        //exit leaf node
+		}	//exit leaf node
 
 		//if intersection found in this node, it is the closest one, so return
 		if (intersectionFound) {
@@ -753,7 +752,7 @@ float KDTree::traverse(ray& r) {
 		//update entry and reset exit
 		entry = exit;
 		exit = rootExit;
-
+		
 		//if no intersection, go to the next node using rope
 		//if no more neigbours, return -1
 		glm::vec3 newEntryPoint = r.origin + entry * r.direction;

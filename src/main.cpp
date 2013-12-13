@@ -362,7 +362,7 @@ void cpuRaytrace() {
 		// unmap buffer object
 		cudaGLUnmapBufferObject(pbo);
 
-		cout<<"iteration finished"<<endl;
+		//cout<<"iteration finished"<<endl;
 
 		//output image file
 		image outputImage(renderCam->resolution.x, renderCam->resolution.y);
