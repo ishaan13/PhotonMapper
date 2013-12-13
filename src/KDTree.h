@@ -63,13 +63,9 @@ public:
 
 	std::vector<int> primIndex;
 
-<<<<<<< HEAD
 	~KDTree();
 
-	void buildKD();
-=======
 	void buildKD(glm::vec3* vertices1, triangle* faces1, int numberOfVertices1, int numberOfFaces1);
->>>>>>> f9daf160a9152ccea59f007345f1171490581fc8
 	KDNode* buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList, int depth);
 
 	//helper functions for building kd tree

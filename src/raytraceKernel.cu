@@ -47,13 +47,7 @@ enum {
 	DISP_TOTAL
 };
 
-<<<<<<< HEAD
-KDTree tree;
-
-int numPhotons = 50000;
-=======
 int numPhotons = 10000;
->>>>>>> f9daf160a9152ccea59f007345f1171490581fc8
 int numPhotonsCompact = numPhotons;
 
 int numBounces = 5;						//hard limit of n bounces for now
@@ -74,7 +68,7 @@ photon* cudaPhotonPoolCompact;		//stores output photons after stream compaction
 int* cudaPhotonGridIndex;			//maps photonID to gridID
 int* cudaGridFirstPhotonIndex;
 
-#define RADIUS 2.0f
+#define RADIUS 0.150f
 
 //gridAttributes grid(-5.5, -0.5, -5.5, 5.5, 10.5, 5.5, RADIUS);
 gridAttributes grid(0, 0, 0, 0, 0, 0, RADIUS);		//for testing grid bounding box

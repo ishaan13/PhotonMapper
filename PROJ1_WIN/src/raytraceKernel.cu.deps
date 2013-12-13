@@ -949,35 +949,19 @@ C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/de
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\thrust/random/detail/normal_distribution.inl
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\math_constants.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda.h
-<<<<<<< HEAD
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\sceneStructs.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\KDTreeStructs.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
-C:/ProgramData/NVIDIA Corporation/CUDA Samples/v5.5/common/inc\helper_math.h
-C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\intersections.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\sceneStructs.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\KDTreeStructs.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\cudaMat4.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm/glm.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\glm\core/_fixes.hpp
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\utilities.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\interactions.h
-c:\users\ishaan\documents\penn\565 gpu progamming\photonmapper\src\intersections.h
-=======
 c:\users\hms\desktop\ziagpu\photonmapper\src\sceneStructs.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\KDTreeStructs.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
+c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
 C:/ProgramData/NVIDIA Corporation/CUDA Samples/v5.5/common/inc\helper_math.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v5.5\include\cuda_runtime.h
 c:\users\hms\desktop\ziagpu\photonmapper\src\intersections.h
 c:\users\hms\desktop\ziagpu\photonmapper\src\sceneStructs.h
+c:\users\hms\desktop\ziagpu\photonmapper\src\KDTreeStructs.h
 c:\users\hms\desktop\ziagpu\photonmapper\src\cudaMat4.h
 c:\users\hms\desktop\ziagpu\photonmapper\src\glm/glm.hpp
 c:\users\hms\desktop\ziagpu\photonmapper\src\glm\core/_fixes.hpp
 c:\users\hms\desktop\ziagpu\photonmapper\src\utilities.h
 c:\users\hms\desktop\ziagpu\photonmapper\src\interactions.h
 c:\users\hms\desktop\ziagpu\photonmapper\src\intersections.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\KDTree.h
-c:\users\hms\desktop\ziagpu\photonmapper\src\sceneStructs.h
->>>>>>> f2dda3ded8600e990e7e818627117bc1326e1faf
 C:/ProgramData/NVIDIA Corporation/CUDA Samples/v5.5/common/inc\helper_math.h

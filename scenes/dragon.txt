@@ -1,5 +1,5 @@
 TEXTURE 0
-textures/checkerboard.png
+textures/rainbow.jpeg
 
 MATERIAL 0				//white diffuse
 RGB         1 1 1       
@@ -151,7 +151,7 @@ cube
 material 8
 frame 0
 TRANS       0 10 0
-ROTAT       0 0 90
+ROTAT       0 90 90
 SCALE       .01 10 10
 
 OBJECT 3
@@ -176,7 +176,7 @@ material 5
 frame 0
 TRANS       0 4 0
 ROTAT       0 0 0
-SCALE       6 6 6
+SCALE       4 4 4
 
 OBJECT 6
 cube
