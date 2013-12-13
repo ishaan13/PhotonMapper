@@ -1,58 +1,65 @@
 #include "KDTree.h"
 #define EPSILON 0.0001f
 
+
 // Helper funcitons
-
-void splitPrimList(Plane p, std::vector<prim> primsList, std::vector<prim> &firstTempList,std::vector<prim> &secondTempList)
+Plane findSplitPlane(glm::vec3 llb, glm::vec3 urf)
 {
-	for(int i=0; i< primsList.size(); i++)
+	Plane p;
+	glm::vec3 diff = urf-llb;
+
+	//if (abs(urf.y-6.0f) < 0.00001f && abs(llb.y-2.0f) < 0.00001f) {
+	//	int debug = 1;
+	//}
+	
+	// find longest axis and split down the middle
+	if(diff.x >= diff.y && diff.x >= diff.z)
 	{
-		if(p.isFirst(primsList[i]))
-		{
-			firstTempList.push_back(primsList[i]);
-		}
-		if(p.isSecond(primsList[i]))
-		{
-			secondTempList.push_back(primsList[i]);
-		}
+		p.axis = X_AXIS;
+		p.splitPoint = llb.x + diff.x/2.0f;
 	}
-}
-
-float surfaceArea(glm::vec3 llb, glm::vec3 urf)
-{
-	glm::vec3 diff = urf - llb;
-	return 2.0f*(diff.x*diff.y + diff.y*diff.z + diff.z*diff.x);
+	else if(diff.y >= diff.x && diff.y >= diff.z)
+	{
+		p.axis = Y_AXIS;
+		p.splitPoint = llb.y + diff.y/2.0f;
+	}
+	else if(diff.z >= diff.y && diff.z >= diff.x)
+	{
+		p.axis = Z_AXIS;
+		p.splitPoint = llb.z + diff.z/2.0f;
+	}
+	return p;
 }
 
 void calculateBoundingBoxes(glm::vec3 llb, glm::vec3 urf, Plane splitPlane, glm::vec3 &firstllb, glm::vec3 &firsturf,
-	glm::vec3 &secondllb, glm::vec3 &secondurf)
+														glm::vec3 &secondllb, glm::vec3 &secondurf)
 {
 	//glm::vec3 epsilonVec(0.0001f);
 
 	////adding epsilon checks
 	//if(splitPlane.axis == X_AXIS)
 	//{
-	//        firstllb = llb - epsilonVec;
-	//        firsturf = glm::vec3(splitPlane.splitPoint, urf.y, urf.z) + epsilonVec;
+	//	firstllb = llb - epsilonVec;
+	//	firsturf = glm::vec3(splitPlane.splitPoint, urf.y, urf.z) + epsilonVec;
 
-	//        secondllb = glm::vec3(splitPlane.splitPoint, llb.y, llb.z) - epsilonVec;
-	//        secondurf = urf + epsilonVec;
+	//	secondllb = glm::vec3(splitPlane.splitPoint, llb.y, llb.z) - epsilonVec;
+	//	secondurf = urf + epsilonVec;
 	//}
 	//else if(splitPlane.axis == Y_AXIS)
 	//{
-	//        firstllb = llb - epsilonVec;
-	//        firsturf = glm::vec3(urf.x,splitPlane.splitPoint, urf.z) + epsilonVec;
+	//	firstllb = llb - epsilonVec;
+	//	firsturf = glm::vec3(urf.x,splitPlane.splitPoint, urf.z) + epsilonVec;
 
-	//        secondllb = glm::vec3(llb.x,splitPlane.splitPoint,llb.z) - epsilonVec;
-	//        secondurf = urf + epsilonVec;
+	//	secondllb = glm::vec3(llb.x,splitPlane.splitPoint,llb.z) - epsilonVec;
+	//	secondurf = urf + epsilonVec;
 	//}
 	//else
 	//{
-	//        firstllb = llb - epsilonVec;
-	//        firsturf = glm::vec3(urf.x,urf.y,splitPlane.splitPoint) + epsilonVec;
+	//	firstllb = llb - epsilonVec;
+	//	firsturf = glm::vec3(urf.x,urf.y,splitPlane.splitPoint) + epsilonVec;
 
-	//        secondllb = glm::vec3(llb.x,llb.y,splitPlane.splitPoint) - epsilonVec;
-	//        secondurf = urf + epsilonVec;
+	//	secondllb = glm::vec3(llb.x,llb.y,splitPlane.splitPoint) - epsilonVec;
+	//	secondurf = urf + epsilonVec;
 	//}
 
 	//adding epsilon checks
@@ -83,115 +90,30 @@ void calculateBoundingBoxes(glm::vec3 llb, glm::vec3 urf, Plane splitPlane, glm:
 
 	//if(splitPlane.axis == X_AXIS)
 	//{
-	//        firstllb = llb;
-	//        firsturf = glm::vec3(splitPlane.splitPoint,urf.y,urf.z);
+	//	firstllb = llb;
+	//	firsturf = glm::vec3(splitPlane.splitPoint,urf.y,urf.z);
 
-	//        secondllb = glm::vec3(splitPlane.splitPoint,llb.y,llb.z);
-	//        secondurf = urf;
+	//	secondllb = glm::vec3(splitPlane.splitPoint,llb.y,llb.z);
+	//	secondurf = urf;
 	//}
 	//else if(splitPlane.axis == Y_AXIS)
 	//{
-	//        firstllb = llb;
-	//        firsturf = glm::vec3(urf.x,splitPlane.splitPoint,urf.z);
+	//	firstllb = llb;
+	//	firsturf = glm::vec3(urf.x,splitPlane.splitPoint,urf.z);
 
-	//        secondllb = glm::vec3(llb.x,splitPlane.splitPoint,llb.z);
-	//        secondurf = urf;
+	//	secondllb = glm::vec3(llb.x,splitPlane.splitPoint,llb.z);
+	//	secondurf = urf;
 	//}
 	//else
 	//{
-	//        firstllb = llb;
-	//        firsturf = glm::vec3(urf.x,urf.y,splitPlane.splitPoint);
+	//	firstllb = llb;
+	//	firsturf = glm::vec3(urf.x,urf.y,splitPlane.splitPoint);
 
-	//        secondllb = glm::vec3(llb.x,llb.y,splitPlane.splitPoint);
-	//        secondurf = urf;
+	//	secondllb = glm::vec3(llb.x,llb.y,splitPlane.splitPoint);
+	//	secondurf = urf;
 	//}
 
 }
-// Helper funcitons
-Plane findSplitPlane(glm::vec3 llb, glm::vec3 urf)
-{
-	Plane p;
-	glm::vec3 diff = urf-llb;
-
-	//if (abs(urf.y-6.0f) < 0.00001f && abs(llb.y-2.0f) < 0.00001f) {
-	//        int debug = 1;
-	//}
-
-	// find longest axis and split down the middle
-	if(diff.x >= diff.y && diff.x >= diff.z)
-	{
-		p.axis = X_AXIS;
-		p.splitPoint = llb.x + diff.x/2.0f;
-	}
-	else if(diff.y >= diff.x && diff.y >= diff.z)
-	{
-		p.axis = Y_AXIS;
-		p.splitPoint = llb.y + diff.y/2.0f;
-	}
-	else if(diff.z >= diff.y && diff.z >= diff.x)
-	{
-		p.axis = Z_AXIS;
-		p.splitPoint = llb.z + diff.z/2.0f;
-	}
-	return p;
-}
-
-Plane findOptimalSplitPlane(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
-{
-	Plane p;
-	glm::vec3 diff = urf-llb;
-
-	// find longest axis and split down the middle
-	if(diff.x >= diff.y && diff.x >= diff.z)
-	{
-		p.axis = X_AXIS;
-		//p.splitPoint = llb.x + diff.x/2.0f;
-	}
-	else if(diff.y >= diff.x && diff.y >= diff.z)
-	{
-		p.axis = Y_AXIS;
-		//p.splitPoint = llb.y + diff.y/2.0f;
-	}
-	else
-	{
-		p.axis = Z_AXIS;
-		//p.splitPoint = llb.z + diff.z/2.0f;
-	}
-
-	float minCost = FLT_MAX;
-	Plane optimalPlane;
-	float cost;
-
-	std::vector<prim> firstTempList;
-	std::vector<prim> secondTempList;
-
-	for(int i=0; i < SPLIT_BINS-1; i++)
-	{
-
-		firstTempList.resize(0);
-		secondTempList.resize(0);
-
-		if(p.axis == X_AXIS)
-			p.splitPoint = llb.x + (i+1) * diff.x / (SPLIT_BINS) ;
-		else if(p.axis == Y_AXIS)
-			p.splitPoint = llb.y + (i+1) * diff.y / (SPLIT_BINS) ;
-		else
-			p.splitPoint = llb.z + (i+1) * diff.z / (SPLIT_BINS) ;
-
-		splitPrimList(p,primsList,firstTempList,secondTempList);
-		glm::vec3 fllb, furf;
-		glm::vec3 sllb, surf;
-		calculateBoundingBoxes(llb,urf,p,fllb,furf,sllb,surf);
-		cost = surfaceArea(fllb,furf)*firstTempList.size() + surfaceArea(sllb,surf)*secondTempList.size();
-		if(cost < minCost)
-		{
-			minCost = cost;
-			optimalPlane = p;
-		}
-	}
-	return optimalPlane;
-}
-
 
 // Plane direction checker
 bool Plane::isFirst(prim p)
@@ -228,9 +150,9 @@ bool Plane::isSecond(prim p)
 
 //return true if point is in left split, false if in right
 bool Plane::isPointInFirst(glm::vec3 p) {
-
+	
 	if (axis == X_AXIS) {
-		return p.x <= splitPoint;        
+		return p.x <= splitPoint;	
 	}
 
 	else if (axis == Y_AXIS) {
@@ -242,6 +164,7 @@ bool Plane::isPointInFirst(glm::vec3 p) {
 	}
 }
 
+
 bool KDNode::isLeaf()
 {
 	return (first == NULL && second == NULL);
@@ -249,7 +172,7 @@ bool KDNode::isLeaf()
 
 //box intersection test with bounding boxes
 bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& tNear, float& tFar) {
-
+	
 	tNear = -FLT_MAX;
 	tFar = FLT_MAX;
 	float t1, t2 = 0.0f;
@@ -264,7 +187,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 	else {
 		t1 = (low.x - r.origin.x)/r.direction.x;
 		t2 = (high.x - r.origin.x)/r.direction.x;
-		if (t1 > t2) {                
+		if (t1 > t2) {		
 			float temp = t2;
 			t2 = t1;
 			t1 = temp;
@@ -294,7 +217,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 	else {
 		t1 = (low.y - r.origin.y)/r.direction.y;
 		t2 = (high.y - r.origin.y)/r.direction.y;
-		if (t1 > t2) {                
+		if (t1 > t2) {		
 			float temp = t2;
 			t2 = t1;
 			t1 = temp;
@@ -307,7 +230,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 		if (t2 < tFar) {
 			tFar = t2;
 		} 
-
+		
 		if (tNear > tFar || tFar < 0) {
 			return false;
 		}
@@ -324,7 +247,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 	else {
 		t1 = (low.z - r.origin.z)/r.direction.z;
 		t2 = (high.z - r.origin.z)/r.direction.z;
-		if (t1 > t2) {                
+		if (t1 > t2) {		
 			float temp = t2;
 			t2 = t1;
 			t1 = temp;
@@ -337,7 +260,7 @@ bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& 
 		if (t2 < tFar) {
 			tFar = t2;
 		} 
-
+		
 		if (tNear > tFar || tFar < 0) {
 			return false;
 		}
@@ -377,7 +300,7 @@ float KDTree::triangleIntersectionTest(ray& r, glm::vec3 v1, glm::vec3 v2, glm::
 KDNode* KDTree:: findNeighbor (glm::vec3 p, KDNode* k) {
 
 	if (abs(p.x - k->llb.x) < EPSILON) {
-		return k->ropes[LEFT];                
+		return k->ropes[LEFT];		
 	}
 	else if (abs(p.x - k->urf.x) < EPSILON) {
 		return k->ropes[RIGHT];
@@ -400,7 +323,6 @@ KDNode* KDTree:: findNeighbor (glm::vec3 p, KDNode* k) {
 
 }
 
-
 // Wrapepr function which'll do magic
 void KDTree::buildKD()
 {
@@ -410,38 +332,38 @@ void KDTree::buildKD()
 	for(int i=0; i<numberOfFaces; i++)
 	{
 		// Update Min
-		if(vertices[faces[i].v1].x < llb.x)        llb.x = vertices[faces[i].v1].x;
-		if(vertices[faces[i].v2].x < llb.x)        llb.x = vertices[faces[i].v2].x;
-		if(vertices[faces[i].v3].x < llb.x)        llb.x = vertices[faces[i].v3].x;
+		if(vertices[faces[i].v1].x < llb.x)	llb.x = vertices[faces[i].v1].x;
+		if(vertices[faces[i].v2].x < llb.x)	llb.x = vertices[faces[i].v2].x;
+		if(vertices[faces[i].v3].x < llb.x)	llb.x = vertices[faces[i].v3].x;
 
-		if(vertices[faces[i].v1].y < llb.y)        llb.y = vertices[faces[i].v1].y;
-		if(vertices[faces[i].v2].y < llb.y)        llb.y = vertices[faces[i].v2].y;
-		if(vertices[faces[i].v3].y < llb.y)        llb.y = vertices[faces[i].v3].y;
+		if(vertices[faces[i].v1].y < llb.y)	llb.y = vertices[faces[i].v1].y;
+		if(vertices[faces[i].v2].y < llb.y)	llb.y = vertices[faces[i].v2].y;
+		if(vertices[faces[i].v3].y < llb.y)	llb.y = vertices[faces[i].v3].y;
 
-		if(vertices[faces[i].v1].z < llb.z)        llb.z = vertices[faces[i].v1].z;
-		if(vertices[faces[i].v2].z < llb.z)        llb.z = vertices[faces[i].v2].z;
-		if(vertices[faces[i].v3].z < llb.z)        llb.z = vertices[faces[i].v3].z;
+		if(vertices[faces[i].v1].z < llb.z)	llb.z = vertices[faces[i].v1].z;
+		if(vertices[faces[i].v2].z < llb.z)	llb.z = vertices[faces[i].v2].z;
+		if(vertices[faces[i].v3].z < llb.z)	llb.z = vertices[faces[i].v3].z;
 
 		//faster way?
 		//llb = glm::min(vertices[faces[i].v1], vertices[faces[i].v2]);
 		//llb = glm::min(llb, vertices[faces[i].v3]);
 
 		// Update Max
-		if(vertices[faces[i].v1].x > urf.x)        urf.x = vertices[faces[i].v1].x;
-		if(vertices[faces[i].v2].x > urf.x)        urf.x = vertices[faces[i].v2].x;
-		if(vertices[faces[i].v3].x > urf.x)        urf.x = vertices[faces[i].v3].x;
+		if(vertices[faces[i].v1].x > urf.x)	urf.x = vertices[faces[i].v1].x;
+		if(vertices[faces[i].v2].x > urf.x)	urf.x = vertices[faces[i].v2].x;
+		if(vertices[faces[i].v3].x > urf.x)	urf.x = vertices[faces[i].v3].x;
 
-		if(vertices[faces[i].v1].y > urf.y)        urf.y = vertices[faces[i].v1].y;
-		if(vertices[faces[i].v2].y > urf.y)        urf.y = vertices[faces[i].v2].y;
-		if(vertices[faces[i].v3].y > urf.y)        urf.y = vertices[faces[i].v3].y;
+		if(vertices[faces[i].v1].y > urf.y)	urf.y = vertices[faces[i].v1].y;
+		if(vertices[faces[i].v2].y > urf.y)	urf.y = vertices[faces[i].v2].y;
+		if(vertices[faces[i].v3].y > urf.y)	urf.y = vertices[faces[i].v3].y;
 
-		if(vertices[faces[i].v1].z > urf.z)        urf.z = vertices[faces[i].v1].z;
-		if(vertices[faces[i].v2].z > urf.z)        urf.z = vertices[faces[i].v2].z;
-		if(vertices[faces[i].v3].z > urf.z)        urf.z = vertices[faces[i].v3].z;
+		if(vertices[faces[i].v1].z > urf.z)	urf.z = vertices[faces[i].v1].z;
+		if(vertices[faces[i].v2].z > urf.z)	urf.z = vertices[faces[i].v2].z;
+		if(vertices[faces[i].v3].z > urf.z)	urf.z = vertices[faces[i].v3].z;
 
 		//urf = glm::max(vertices[faces[i].v1], vertices[faces[i].v2]);
 		//urf = glm::max(urf, vertices[faces[i].v3]);
-
+	
 	}
 
 	//add epsilon values for LLB and URF
@@ -501,9 +423,6 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 
 		// Split the tree
 		Plane splitPlane = findSplitPlane(llb,urf);
-
-		//optimal split
-		//Plane splitPlane = findOptimalSplitPlane(llb, urf, primsList);
 
 		// Make two lists of primitives based on positive and negative side of this plane. if confused, put in both.
 		std::vector<prim> firstPrimsList;
@@ -676,7 +595,7 @@ void KDTree::processNode(KDNode* node, KDNode* ropes[])
 }
 
 float KDTree::traverse(ray& r) {
-
+	
 	float entry = -FLT_MAX; 
 	float exit = FLT_MAX;
 
@@ -695,7 +614,7 @@ float KDTree::traverse(ray& r) {
 	while (entry - exit < -EPSILON) {
 		//downward traversal to find a leaf node
 		glm::vec3 pEntry = r.origin + entry * r.direction;
-
+		
 		while (!node->isLeaf()) {
 			//check which child to traverse down on
 			if (node->splitPlane.isPointInFirst(pEntry)) {
@@ -716,7 +635,7 @@ float KDTree::traverse(ray& r) {
 			glm::vec3 v1 = vertices[tri.v1];
 			glm::vec3 v2 = vertices[tri.v2];
 			glm::vec3 v3 = vertices[tri.v3];
-			float intersect = triangleIntersectionTest(r, v1, v2, v3);        
+			float intersect = triangleIntersectionTest(r, v1, v2, v3);	
 
 			//std::cout<<intersect<<std::endl;
 
@@ -725,7 +644,7 @@ float KDTree::traverse(ray& r) {
 				intersectionFound = true;
 				exit = intersect;
 			}
-		}        //exit leaf node
+		}	//exit leaf node
 
 		//if intersection found in this node, it is the closest one, so return
 		if (intersectionFound) {
@@ -735,7 +654,7 @@ float KDTree::traverse(ray& r) {
 		//update entry and reset exit
 		entry = exit;
 		exit = rootExit;
-
+		
 		//if no intersection, go to the next node using rope
 		//if no more neigbours, return -1
 		glm::vec3 newEntryPoint = r.origin + entry * r.direction;
@@ -750,90 +669,6 @@ float KDTree::traverse(ray& r) {
 	return -1;
 }
 
-// Traverse in breadth first order and  set indices
-void KDTree::setIndices(KDNode * current, int &index)
-{
-	if(current->isLeaf())
-	{
-		current->kdIndex = index;
-		index++;
-	}
-	else
-	{
-		if(current->first != NULL)
-		{
-			setIndices(current->first, index);
-		}
-		if(current->second != NULL)
-		{
-			setIndices(current->second, index);
-		}
-		current->kdIndex = index;
-		index++;
-	}
-}
 
-void KDTree::setGPUTreeData(KDNode * current, KDNodeGPU *gpuTree, std::vector<int> &primIndexList)
-{
-	int index = current->kdIndex;
-	gpuTree[index].llb					= current->llb;
-	gpuTree[index].urf					= current->urf;
-	gpuTree[index].splitPlane.axis		= current->splitPlane.axis;
-	gpuTree[index].splitPlane.splitPoint = current->splitPlane.splitPoint;
 
-	if(current->isLeaf())
-	{
-		gpuTree[index].first			= -1;
-		gpuTree[index].second			= -1;
-		gpuTree[index].numPrims			= current->numberOfPrims;
-		gpuTree[index].startPrimIndex	= primIndex.size();		
-		for(int i=0; i< 6; i++)
-		{
-			if(current->ropes[i] != NULL)
-				gpuTree[index].ropes[i] = current->ropes[i]->kdIndex;
-			else
-				gpuTree[index].ropes[i] = -1;
-		}
 
-		for(int i=0; i< current->numberOfPrims; i++)
-		{
-			primIndex.push_back(current->primIndices[i]);
-		}
-
-	}
-	else
-	{
-		if(current->first != NULL)
-		{
-			setGPUTreeData(current->first, gpuTree, primIndex);
-			gpuTree[index].first = current->first->kdIndex;
-		}
-		if(current->second!= NULL)
-		{
-			setGPUTreeData(current->second, gpuTree, primIndex);
-			gpuTree[index].second = current->second->kdIndex;
-		}
-
-		// set data
-		gpuTree[index].numPrims			= 0;
-		gpuTree[index].startPrimIndex	= -1;
-
-		for(int i=0; i< 6; i++)
-			gpuTree[index].ropes[i] = -1;
-	}
-}
-
-// traverse and build gpu kdtree
-int  KDTree::buildGPUKDTree(KDNodeGPU *gpuTree)
-{
-	int numElts = 0;
-	if(tree!=NULL)
-	{
-		setIndices(tree, numElts);
-
-		gpuTree = new KDNodeGPU[numElts];
-
-		setGPUTreeData(tree, gpuTree, primIndex);
-	}
-	return numElts;
-}

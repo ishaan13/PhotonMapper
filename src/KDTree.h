@@ -96,12 +96,12 @@ public:
 	//finds which neighbor node to use from an exit point
 	KDNode* findNeighbor (glm::vec3 p, KDNode* k);
 
-	// Set indices in dfs order
-	void setIndices(KDNode * current, int &index);
+	//// Set indices in dfs order
+	//void setIndices(KDNode * current, int &index);
 
-	// Put data into GPU friendly tree
-	void setGPUTreeData(KDNode * current, KDNodeGPU *gpuTree, std::vector<int> &primIndexList);
+	//// Put data into GPU friendly tree
+	//void setGPUTreeData(KDNode * current, KDNodeGPU *gpuTree, std::vector<int> &primIndexList);
 
-	// wrapper to build linear node structure
-	int buildGPUKDTree(KDNodeGPU *gpuTree);
+	//// wrapper to build linear node structure
+	//int buildGPUKDTree(KDNodeGPU *gpuTree);
 };
