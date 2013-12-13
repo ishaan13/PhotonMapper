@@ -52,7 +52,7 @@ extern int kdmode;
 int numPhotons = 10000;
 int numPhotonsCompact = numPhotons;
 
-int numBounces = 5;						//hard limit of n bounces for now
+int numBounces = 7;						//hard limit of n bounces for now
 float emitEnergyScale = 1.0;				//Empirically Verify this value
 
 //Lower Direct lighting by this contribution factor

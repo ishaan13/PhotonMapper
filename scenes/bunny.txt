@@ -176,7 +176,7 @@ material 5
 frame 0
 TRANS       0 2 0
 ROTAT       0 0 0
-SCALE       8 8 8
+SCALE       25 25 25
 
 OBJECT 6
 cube
