@@ -134,7 +134,13 @@ enum {
 	DISP_TOTAL
 };
 
+enum {
+	KD_ON,
+	KD_OFF
+};
+
 int mode = DISP_RAYTRACE;
+int kdmode = KD_ON;
 
 
 #ifdef __APPLE__

@@ -1,7 +1,10 @@
 #include "intersections.h"
 #include "KDTree.h"
 
-#define KDTREE 1
+enum {
+	KD_ON,
+	KD_OFF
+};
 
 //Handy dandy little hashing function that provides seeds for random number generation
 __host__ __device__ unsigned int hash(unsigned int a){
@@ -133,7 +136,7 @@ __host__ __device__ glm::vec2 getUVOfPointOnUnitCube(glm::vec3 point) {
 
 __device__ void getClosestIntersection(ray r, staticGeom* geoms, int numberOfGeoms, triangle* faces, int numberOfFaces, glm::vec3* vertices,
 	glm::vec3* normals, glm::vec2* uvs, glm::vec3& minIntersectionPoint, glm::vec3& minNormal,
-	int& intersectedGeom, int& intersectedMaterial, glm::vec2& minUV, KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex) {
+	int& intersectedGeom, int& intersectedMaterial, glm::vec2& minUV, KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex, int kdmode) {
 		float minDepth = FLT_MAX;
 
 		for (int iter=0; iter < numberOfGeoms; iter++)
@@ -165,52 +168,53 @@ __device__ void getClosestIntersection(ray r, staticGeom* geoms, int numberOfGeo
 			}
 		}
 
-#if KDTREE == 1
-		glm::vec3 intersection;
-		glm::vec3 normal;
-		glm::vec2 uv;
-		int geomid;
-		int mtlid;
-		float depth = traverse(r, cudakdtree, treeRootIndex, vertices, normals, uvs, faces, cudaPrimIndex, geoms, intersection, normal, geomid, mtlid, uv);
-
-		if (depth > 0.0001f && depth < minDepth) {
-			minDepth = depth;
-			minIntersectionPoint = intersection;
-			minNormal = normal;
-			intersectedGeom = geomid;
-			intersectedMaterial = mtlid;
-			minUV = uv;
-		}
-#else
-		// get closest intersection with triangles
-		for (int i=0; i<numberOfFaces; ++i) {
-			glm::vec3 v1 = vertices[faces[i].v1];
-			glm::vec3 v2 = vertices[faces[i].v2];
-			glm::vec3 v3 = vertices[faces[i].v3];
-			glm::vec3 n1 = normals[faces[i].n1];
-			glm::vec3 n2 = normals[faces[i].n2];
-			glm::vec3 n3 = normals[faces[i].n3];
-			glm::vec2 t1 = uvs[faces[i].t1];
-			glm::vec2 t2 = uvs[faces[i].t2];
-			glm::vec2 t3 = uvs[faces[i].t3];
+		if (kdmode == KD_ON) {
 			glm::vec3 intersection;
 			glm::vec3 normal;
 			glm::vec2 uv;
-			float depth = triangleIntersectionTest(v1, v2, v3, n1, n2, n3, t1, t2, t3, r, intersection, normal, uv);
-			if (depth > 0 && depth < minDepth) {
+			int geomid;
+			int mtlid;
+			float depth = traverse(r, cudakdtree, treeRootIndex, vertices, normals, uvs, faces, cudaPrimIndex, geoms, intersection, normal, geomid, mtlid, uv);
+
+			if (depth > 0.0001f && depth < minDepth) {
 				minDepth = depth;
 				minIntersectionPoint = intersection;
 				minNormal = normal;
-				intersectedGeom = faces[i].geomid;
-				intersectedMaterial = geoms[intersectedGeom].materialid;
+				intersectedGeom = geomid;
+				intersectedMaterial = mtlid;
 				minUV = uv;
 			}
 		}
-#endif
+		else {
+			// get closest intersection with triangles
+			for (int i=0; i<numberOfFaces; ++i) {
+				glm::vec3 v1 = vertices[faces[i].v1];
+				glm::vec3 v2 = vertices[faces[i].v2];
+				glm::vec3 v3 = vertices[faces[i].v3];
+				glm::vec3 n1 = normals[faces[i].n1];
+				glm::vec3 n2 = normals[faces[i].n2];
+				glm::vec3 n3 = normals[faces[i].n3];
+				glm::vec2 t1 = uvs[faces[i].t1];
+				glm::vec2 t2 = uvs[faces[i].t2];
+				glm::vec2 t3 = uvs[faces[i].t3];
+				glm::vec3 intersection;
+				glm::vec3 normal;
+				glm::vec2 uv;
+				float depth = triangleIntersectionTest(v1, v2, v3, n1, n2, n3, t1, t2, t3, r, intersection, normal, uv);
+				if (depth > 0 && depth < minDepth) {
+					minDepth = depth;
+					minIntersectionPoint = intersection;
+					minNormal = normal;
+					intersectedGeom = faces[i].geomid;
+					intersectedMaterial = geoms[intersectedGeom].materialid;
+					minUV = uv;
+				}
+			}
+		}
 }
 
 __device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, triangle* faces, int numberOfFaces, glm::vec3* vertices,
-	glm::vec3* normals, glm::vec2* uvs, glm::vec3 pointToCheck, int lightSourceIndex, KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex)
+	glm::vec3* normals, glm::vec2* uvs, glm::vec3 pointToCheck, int lightSourceIndex, KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex, int kdmode)
 {
 	bool visible = true;
 	float distance = glm::length(r.origin - pointToCheck);
@@ -245,40 +249,41 @@ __device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, tri
 	}
 
 	// get closest intersection with triangles
-#if KDTREE == 1
-	glm::vec3 intersection;
-	glm::vec3 normal;
-	glm::vec2 uv;
-	int geomid;
-	int mtlid;
-	float depth = traverse(r, cudakdtree, treeRootIndex, vertices, normals, uvs, faces, cudaPrimIndex, geoms, intersection, normal, geomid, mtlid, uv);
-
-	if (depth > 0 && (depth + NUDGE) < distance) {
-		return false;
-	}
-#else
-	for (int i=0; i<numberOfFaces; ++i) {
-		glm::vec3 v1 = vertices[faces[i].v1];
-		glm::vec3 v2 = vertices[faces[i].v2];
-		glm::vec3 v3 = vertices[faces[i].v3];
-		glm::vec3 n1 = normals[faces[i].n1];
-		glm::vec3 n2 = normals[faces[i].n2];
-		glm::vec3 n3 = normals[faces[i].n3];
-		glm::vec2 t1 = uvs[faces[i].t1];
-		glm::vec2 t2 = uvs[faces[i].t2];
-		glm::vec2 t3 = uvs[faces[i].t3];
+	if (kdmode == KD_ON) {
 		glm::vec3 intersection;
 		glm::vec3 normal;
 		glm::vec2 uv;
-		float depth = triangleIntersectionTest(v1, v2, v3, n1, n2, n3, t1, t2, t3, r, intersection, normal, uv);
+		int geomid;
+		int mtlid;
+		float depth = traverse(r, cudakdtree, treeRootIndex, vertices, normals, uvs, faces, cudaPrimIndex, geoms, intersection, normal, geomid, mtlid, uv);
 
-		if(depth > 0 && (depth + NUDGE) < distance)
-		{
-			//printf("Depth: %f\n", depth);
+		if (depth > 0 && (depth + NUDGE) < distance) {
 			return false;
 		}
 	}
-#endif
+	else {
+		for (int i=0; i<numberOfFaces; ++i) {
+			glm::vec3 v1 = vertices[faces[i].v1];
+			glm::vec3 v2 = vertices[faces[i].v2];
+			glm::vec3 v3 = vertices[faces[i].v3];
+			glm::vec3 n1 = normals[faces[i].n1];
+			glm::vec3 n2 = normals[faces[i].n2];
+			glm::vec3 n3 = normals[faces[i].n3];
+			glm::vec2 t1 = uvs[faces[i].t1];
+			glm::vec2 t2 = uvs[faces[i].t2];
+			glm::vec2 t3 = uvs[faces[i].t3];
+			glm::vec3 intersection;
+			glm::vec3 normal;
+			glm::vec2 uv;
+			float depth = triangleIntersectionTest(v1, v2, v3, n1, n2, n3, t1, t2, t3, r, intersection, normal, uv);
+
+			if(depth > 0 && (depth + NUDGE) < distance)
+			{
+				//printf("Depth: %f\n", depth);
+				return false;
+			}
+		}
+	}
 	return true;
 }
 

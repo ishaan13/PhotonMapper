@@ -47,6 +47,8 @@ enum {
 	DISP_TOTAL
 };
 
+extern int kdmode;
+
 int numPhotons = 10000;
 int numPhotonsCompact = numPhotons;
 
@@ -770,8 +772,8 @@ __global__ void displayPhotons(photon* photonPool, int numTotalPhotons, glm::vec
 }
 
 __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBounces, staticGeom* geoms, int numberOfGeoms, triangle* cudafaces,
-															int numFaces, glm::vec3* cudavertices, glm::vec3* cudanormals, glm::vec2* cudauvs, material* materials,
-															cudatexture* cudatextures, float time, KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex)
+								int numFaces, glm::vec3* cudavertices, glm::vec3* cudanormals, glm::vec2* cudauvs, material* materials,
+								cudatexture* cudatextures, float time, KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex, int kdmode)
 {
 	//bounce photons around
 	int index = blockIdx.x * blockDim.x + threadIdx.x; 
@@ -804,7 +806,7 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 			glm::vec2 minUV = glm::vec2(0.0f);
 
 			getClosestIntersection(r, geoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
-				minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial,minUV,cudakdtree,treeRootIndex,cudaPrimIndex);
+				minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial,minUV,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
 
 			p.geomid = intersectedGeom;
 			//if intersection occurs, accumulate color and keep bouncing
@@ -1042,7 +1044,7 @@ __global__ void renderIndirectLighting(glm::vec2 resolution, float time, cameraD
 										int numberOfGeoms, triangle* cudafaces, int numFaces, glm::vec3* cudavertices,
 										glm::vec3* cudanormals, glm::vec2* cudauvs, ray* rayPool, photon* photons, int numTotalPhotons, 
 										int* gridFirstPhotonIndices, int* gridIndices, gridAttributes grid, float flux,
-										KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex)
+										KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex, int kdmode)
 {
 
 	int x = (blockIdx.x * blockDim.x) + threadIdx.x;
@@ -1059,7 +1061,7 @@ __global__ void renderIndirectLighting(glm::vec2 resolution, float time, cameraD
 		glm::vec2 minUV = glm::vec2(0.0f);
 
 		getClosestIntersection(r, geoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
-			minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial, minUV,cudakdtree,treeRootIndex,cudaPrimIndex);
+			minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial, minUV,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
 
 		//Calculate radiance if any geometry is intersected
 		if(intersectedGeom > -1)
@@ -1078,7 +1080,7 @@ void tracePhotons(int photonThreadsPerBlock, int photonBlocksPerGrid, photon* cu
 	{
 		// Bounce Photons Around
 		bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, i,	cudageoms, numGeoms,
-			cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudamaterials, cudatextures, time,cudakdtree,treeRootIndex,cudaPrimIndex);
+			cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudamaterials, cudatextures, time,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
 
 #if COMPACTION
 		// Do some compaction
@@ -1401,7 +1403,7 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 														glm::vec3* cudanormals, glm::vec2* cudauvs, material* materials, cudatexture* cudatextures,
 														photon* photons, int numTotalPhotons, int* gridFirstPhotonIndices, int* gridIndices,
 														KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex,
-														int mode, gridAttributes grid, float flux, ray* rayPool
+														int mode, int kdmode, gridAttributes grid, float flux, ray* rayPool
 #if COMPACTION
 														, int numberOfRays
 #endif
@@ -1436,7 +1438,7 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 		glm::vec2 minUV = glm::vec2(0.0f);
 
 		getClosestIntersection(r, geoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
-			minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial, minUV,cudakdtree,treeRootIndex,cudaPrimIndex);
+			minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial, minUV,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
 
 		// Depth render - test
 		//float maxDepth = 15.0f;
@@ -1488,7 +1490,7 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 						shadowRay.direction = L;
 
 						bool visible = visibilityCheck(shadowRay,geoms,numberOfGeoms,cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
-							lightSourceSample,iter,cudakdtree,treeRootIndex,cudaPrimIndex);
+							lightSourceSample,iter,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
 
 						if(visible)
 						{
@@ -1695,11 +1697,11 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
 #if PHOTONCOMPACT 
 			renderIndirectLighting<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaimage, cudageoms, numGeoms,
 				cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudarays, cudaPhotonPoolCompact, numPhotonsCompact,
-				cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux,cudakdtree,treeRootIndex,cudaPrimIndex);
+				cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
 #else
 			renderIndirectLighting<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaimage, cudageoms, numGeoms,
 				cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudarays, cudaPhotonPool, numPhotons * numBounces,
-				cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux,cudakdtree,treeRootIndex,cudaPrimIndex);
+				cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
 #endif
 
 			cudaThreadSynchronize();
@@ -1715,14 +1717,14 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
 				raytraceRay<<<linearGridSize, dim3(linearTileSize,1,1)>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i,
 					cudaimage, cudageoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
 					cudamaterials, cudatextures, cudaPhotonPoolCompact, numPhotonsCompact,
-					cudaGridFirstPhotonIndex, cudaPhotonGridIndex, cudakdtree, treeRootIndex, cudaPrimIndex, mode, grid, flux,
+					cudaGridFirstPhotonIndex, cudaPhotonGridIndex, cudakdtree, treeRootIndex, cudaPrimIndex, mode, kdmode, grid, flux,
 					i%2==0?cudarays : cudarays2,
 					numberOfRays);
 #else
 				raytraceRay<<<linearGridSize, dim3(linearTileSize,1,1)>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i,
 					cudaimage, cudageoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
 					cudamaterials, cudatextures, cudaPhotonPool, numPhotons * numBounces,
-					cudaGridFirstPhotonIndex, cudaPhotonGridIndex, cudakdtree, treeRootIndex, cudaPrimIndex, mode, grid, flux,
+					cudaGridFirstPhotonIndex, cudaPhotonGridIndex, cudakdtree, treeRootIndex, cudaPrimIndex, mode, kdmode, grid, flux,
 					i%2==0?cudarays : cudarays2,
 					numberOfRays);
 #endif
