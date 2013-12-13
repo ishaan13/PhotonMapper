@@ -33,7 +33,7 @@ __host__ __device__ void getRandomPointAndNormalOnSphere(staticGeom cube, float 
 
 __host__ __device__ glm::vec3 getNormalOfPointOnUnitCube(glm::vec3 point);
 __host__ __device__ glm::vec2 getUVOfPointOnUnitCube(glm::vec3 point);
-__device__ void getClosestIntersection(ray r, staticGeom* geoms, int numberOfGeoms, triangle* faces, int numberOfFaces, glm::vec3* vertices,
+__device__ float getClosestIntersection(ray r, staticGeom* geoms, int numberOfGeoms, triangle* faces, int numberOfFaces, glm::vec3* vertices,
 												glm::vec3* normals, glm::vec2* uvs, glm::vec3& minIntersectionPoint, glm::vec3& minNormal,
 												int& intersectedGeom, int& intersectedMaterial, glm::vec2& minUV, KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex,
 												int kdmode);

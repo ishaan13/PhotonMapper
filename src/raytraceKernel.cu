@@ -44,6 +44,7 @@ enum {
 	DISP_GATHER,
 	DISP_COMBINED,
 	DISP_PATHTRACE,
+	DISP_KDHEAT,
 	DISP_TOTAL
 };
 
@@ -991,11 +992,14 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
   int px, py, pz; //photon's grid cell index
   getCellIndex(intersection, grid, px, py, pz);
 	if (px>=0 && px<grid.xdim && py>=0 && py<grid.ydim && pz>=0 && pz<grid.zdim) { //if intersection is within the grid
+
+		float maxRadius = -1.0f; 
+
 		// Find photons in neighboring cells
 		photon neighborPhotons[K];
 		int neighborPhotonCount = 0;
 		for (int i=max(0, px-1); i<min(grid.xdim, px+2); ++i) {
-      for (int j=max(0, py-1); j<min(grid.ydim, py+2); ++j) {
+			for (int j=max(0, py-1); j<min(grid.ydim, py+2); ++j) {
 				for (int k=max(0, pz-1); k<min(grid.zdim, pz+2); ++k) {
 					int gridIndex = gridPhotonHash(i, j, k, grid);
 					int firstPhotonIndex = gridFirstPhotonIndices[gridIndex]; //find the index of the first photon in the cell
@@ -1009,6 +1013,9 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 								if (neighborPhotonCount < K) {
 									neighborPhotons[neighborPhotonCount] = p;
 									neighborPhotonCount++;
+									float dist = glm::distance(p.position, intersection);
+									if(dist > maxRadius)
+										maxRadius = dist;
 								}
 								// If the array is full, find the photon with the largest distance to the intersection. If current photon's distance
 								// to the intersection is smaller, replace the photon with the largest distance with the current photon
@@ -1019,6 +1026,8 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 									float dist = glm::distance(p.position, intersection);
 									if (dist < maxDist) {
 										neighborPhotons[maxIndex] = p;
+										if(dist > maxRadius)
+											maxRadius = dist;
 									}
 								}
 							}
@@ -1033,6 +1042,9 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 		for (int i=0; i<neighborPhotonCount; ++i) {
 			photon p = neighborPhotons[i];
 			float photonDistance = glm::distance(intersection, p.position);
+			// Confirm cosine weighting
+			// Use k neighbors radius or grid radius as smoothing distance?
+			//accumColor += gaussianWeight(photonDistance, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 			accumColor += gaussianWeight(photonDistance, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 		}
 	}
@@ -1627,6 +1639,34 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 	}
 }
 
+// Caculate indirect illumination from photons
+__global__ void renderKDHeatMap(glm::vec2 resolution, float time, cameraData cam, glm::vec3* colors, staticGeom* geoms,
+										int numberOfGeoms, triangle* cudafaces, int numFaces, glm::vec3* cudavertices,
+										glm::vec3* cudanormals, glm::vec2* cudauvs, ray* rayPool, photon* photons, int numTotalPhotons, 
+										int* gridFirstPhotonIndices, int* gridIndices, gridAttributes grid, float flux,
+										KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex, int kdmode)
+{
+
+	int x = (blockIdx.x * blockDim.x) + threadIdx.x;
+	int y = (blockIdx.y * blockDim.y) + threadIdx.y;
+	int index = x + (y * resolution.x);
+	if((x<=resolution.x && y<=resolution.y) && glm::length(rayPool[index].transmission) > FLOAT_EPSILON){
+		ray r = rayPool[index];        
+
+		//intersection testing
+		int intersectedGeom = -1;
+		int intersectedMaterial = -1;
+		glm::vec3 minIntersectionPoint;
+		glm::vec3 minNormal = glm::vec3(0.0f);
+		glm::vec2 minUV = glm::vec2(0.0f);
+
+		float heatValue = getClosestIntersection(r, geoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
+			minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial, minUV,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
+
+		colors[index] += heatValue * glm::vec3(0.25f,0.65f,0.85f);
+	}
+}
+
 void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iterations, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms, cameraData liveCamera){
 
   cudaAllocateIterationMemory(renderCam);
@@ -1706,6 +1746,14 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
 
 			cudaThreadSynchronize();
 			checkCUDAError("gather photons kernel failed!");
+		}
+		else if(mode == DISP_KDHEAT)
+		{
+			renderKDHeatMap<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaimage, cudageoms, numGeoms,
+				cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudarays, cudaPhotonPoolCompact, numPhotonsCompact,
+				cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
+			cudaThreadSynchronize();
+			checkCUDAError("display photons kernel failed!");
 		}
 		else {
 			int linearTileSize = tileSize*tileSize;

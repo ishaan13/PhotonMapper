@@ -247,6 +247,8 @@ void display(){
 		break;
 	case DISP_COMBINED:	sprintf(modeName, "Photon Mapping: Direct Lighting + Indirect Lighting");
 		break;
+	case DISP_KDHEAT : sprintf(modeName, "KD Tree Heat Map");
+		break;
 	}
 
 
@@ -483,6 +485,11 @@ void keyboard(unsigned char key, int x, int y)
 		iterations = 1;
 		cudaClearAccumulatorImage(renderCam);
 		mode = DISP_COMBINED;
+		break;
+	case('6'):
+		iterations = 1;
+		cudaClearAccumulatorImage(renderCam);
+		mode = DISP_KDHEAT;
 		break;
 	case('k'):
 		iterations = 1;

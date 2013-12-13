@@ -155,7 +155,7 @@ __device__ int findNeighbor(glm::vec3 p, KDNodeGPU node)
 
 __device__ float traverse(ray &r, KDNodeGPU *nodes, int entryIndex, 
 							glm::vec3 * cudaVertices, glm::vec3 * cudaNormals, glm::vec2 * cudaUV, triangle *cudaFaces, int * kdFaceIndexList, staticGeom * geoms,
-							glm::vec3 &minIntersectionPoint, glm::vec3 &minNormal, int &intersectedGeom, int &intersectedMaterial, glm::vec2 &minUV)
+							glm::vec3 &minIntersectionPoint, glm::vec3 &minNormal, int &intersectedGeom, int &intersectedMaterial, glm::vec2 &minUV, float &kdHeat)
 {
 	float entry = -1;
 	float exit = flt_max;
@@ -177,6 +177,7 @@ __device__ float traverse(ray &r, KDNodeGPU *nodes, int entryIndex,
 
 	while(entry < exit && entry > prevEntry)
 	{
+		kdHeat += 1.0f/MAX_TREE_DEPTH;
 		prevEntry = entry;
 		// Downward traversal to find a leaf node
 		glm::vec3 pEntry = r.origin + entry * r.direction;

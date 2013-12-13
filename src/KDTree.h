@@ -4,7 +4,7 @@
 #include <vector>
 
 #define SPLIT_BINS 10
-#define MAX_PRIMS_PER_LEAF 10
+#define MAX_PRIMS_PER_LEAF 5
 #define MAX_TREE_DEPTH 20
 
 enum {X_AXIS, Y_AXIS, Z_AXIS};
@@ -101,4 +101,4 @@ public:
 
 __device__ float traverse(ray &r, KDNodeGPU *nodes, int entryIndex, 
 							glm::vec3 * cudaVertices, glm::vec3 * cudaNormals, glm::vec2 * cudaUV, triangle *cudaFaces, int * kdFaceIndexList, staticGeom * geoms,
-							glm::vec3 &minIntersectionPoint, glm::vec3 &minNormal, int &intersectedGeom, int &intersectedMaterial, glm::vec2 &minUV);
+							glm::vec3 &minIntersectionPoint, glm::vec3 &minNormal, int &intersectedGeom, int &intersectedMaterial, glm::vec2 &minUV, float &kdHeat);

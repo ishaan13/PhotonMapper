@@ -134,10 +134,12 @@ __host__ __device__ glm::vec2 getUVOfPointOnUnitCube(glm::vec3 point) {
 	return uv;
 }
 
-__device__ void getClosestIntersection(ray r, staticGeom* geoms, int numberOfGeoms, triangle* faces, int numberOfFaces, glm::vec3* vertices,
+__device__ float getClosestIntersection(ray r, staticGeom* geoms, int numberOfGeoms, triangle* faces, int numberOfFaces, glm::vec3* vertices,
 	glm::vec3* normals, glm::vec2* uvs, glm::vec3& minIntersectionPoint, glm::vec3& minNormal,
 	int& intersectedGeom, int& intersectedMaterial, glm::vec2& minUV, KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex, int kdmode) {
 		float minDepth = FLT_MAX;
+
+		float heatValue = 0.0f;
 
 		for (int iter=0; iter < numberOfGeoms; iter++)
 		{
@@ -174,7 +176,7 @@ __device__ void getClosestIntersection(ray r, staticGeom* geoms, int numberOfGeo
 			glm::vec2 uv;
 			int geomid;
 			int mtlid;
-			float depth = traverse(r, cudakdtree, treeRootIndex, vertices, normals, uvs, faces, cudaPrimIndex, geoms, intersection, normal, geomid, mtlid, uv);
+			float depth = traverse(r, cudakdtree, treeRootIndex, vertices, normals, uvs, faces, cudaPrimIndex, geoms, intersection, normal, geomid, mtlid, uv, heatValue);
 
 			if (depth > 0.0001f && depth < minDepth) {
 				minDepth = depth;
@@ -211,6 +213,8 @@ __device__ void getClosestIntersection(ray r, staticGeom* geoms, int numberOfGeo
 				}
 			}
 		}
+
+		return heatValue;
 }
 
 __device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, triangle* faces, int numberOfFaces, glm::vec3* vertices,
@@ -255,7 +259,9 @@ __device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, tri
 		glm::vec2 uv;
 		int geomid;
 		int mtlid;
-		float depth = traverse(r, cudakdtree, treeRootIndex, vertices, normals, uvs, faces, cudaPrimIndex, geoms, intersection, normal, geomid, mtlid, uv);
+
+		float temp;
+		float depth = traverse(r, cudakdtree, treeRootIndex, vertices, normals, uvs, faces, cudaPrimIndex, geoms, intersection, normal, geomid, mtlid, uv, temp);
 
 		if (depth > 0 && (depth + NUDGE) < distance) {
 			return false;
