@@ -484,6 +484,12 @@ void keyboard(unsigned char key, int x, int y)
 		cudaClearAccumulatorImage(renderCam);
 		mode = DISP_COMBINED;
 		break;
+	case('k'):
+		iterations = 1;
+		cudaClearAccumulatorImage(renderCam);
+		if (kdmode == KD_ON) kdmode = KD_OFF;
+		else if (kdmode == KD_OFF) kdmode = KD_ON;
+		break;
 	}
 }
 
