@@ -705,8 +705,12 @@ float KDTree::traverse(ray& r) {
 
 	//save this value for going to neighbor nodes, since we update exit later
 	float rootExit = exit;
+	float prevEntry = -FLT_MAX;
 
-	while (entry - exit < -EPSILON) {
+	while (entry - exit < -EPSILON && entry > prevEntry) {
+		
+		prevEntry = entry;
+
 		//downward traversal to find a leaf node
 		glm::vec3 pEntry = r.origin + entry * r.direction;
 
