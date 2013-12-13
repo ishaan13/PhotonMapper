@@ -41,7 +41,7 @@ EMITTANCE   0
 TEXTURE		-1
 
 MATERIAL 3 				//blue glass
-RGB         0 0.75 1    
+RGB         0.375 0.65 0.85    
 SPECEX      0      
 SPECRGB     1 1 1          
 REFL        1       
@@ -119,12 +119,12 @@ EMITTANCE   0
 TEXTURE		0
 
 CAMERA
-RES         800 800
-FOVY        35
+RES         1280 720
+FOVY        20
 ITERATIONS  3000
-FILE        tetrahedron.png
+FILE        final.png
 frame 0
-EYE         0 5 12
+EYE         0 6 12
 VIEW        0 0 -1
 UP          0 1 0
 APERTURE    0.125
@@ -172,7 +172,7 @@ SCALE       .01 10 10
 
 OBJECT 5
 obj/bunny.obj
-material 4
+material 3
 frame 0
 TRANS       4 2 0
 ROTAT       0 -30 37
@@ -182,7 +182,7 @@ OBJECT 6
 obj/dragon.obj
 material 5
 frame 0
-TRANS       -2.5 4 0
+TRANS       -2.2 4 0
 ROTAT       0 150 0
 SCALE       3.5 3.5 3.5
 

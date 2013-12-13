@@ -28,7 +28,7 @@
 #define NUDGE						0.00001f
 #define FLOAT_EPSILON				0.0005f
 #define MAX_RECURSION_DEPTH			15
-#define STRAFE_AMOUNT				0.5f
+#define STRAFE_AMOUNT				0.25f
 
 namespace utilityCore {
     extern float clamp(float f, float min, float max);
