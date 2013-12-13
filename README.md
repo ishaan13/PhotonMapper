@@ -82,18 +82,20 @@ Performance Analysis:
 
 K-nearest photon search: brute force vs. hash grid:
 
-![alt tag](https://raw.github.com/ishaan13/PhotonMapper/performance_chart/chart_2.png)
+![alt tag](https://raw.github.com/ishaan13/PhotonMapper/master/performance_chart/chart_2.png)
 
 Speed up with KD tree:
 
-![alt tag](https://raw.github.com/ishaan13/PhotonMapper/performance_chart/chart_3.png)
+![alt tag](https://raw.github.com/ishaan13/PhotonMapper/master/performance_chart/chart_3.png)
 
 KD tree construction:
 
-![alt tag](https://raw.github.com/ishaan13/PhotonMapper/performance_chart/chart_1.png)
+![alt tag](https://raw.github.com/ishaan13/PhotonMapper/master/performance_chart/chart_1.png)
 
 Different technique comparison:
 
-![alt tag](https://raw.github.com/ishaan13/PhotonMapper/performance_chart/chart_4.png)
+![alt tag](https://raw.github.com/ishaan13/PhotonMapper/master/performance_chart/chart_4.png)
+
+===
 
 Follow us on [Twitter](https://twitter.com/MMFAPhoMap). 
