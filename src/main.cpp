@@ -268,7 +268,6 @@ void display(){
 	glutSwapBuffers();
 }
 
-
 ///////////////////////CPU STUFF///////////////////////////
 
 glm::vec3 multiplyMVOnHost(cudaMat4 m, glm::vec4 v){
@@ -325,13 +324,17 @@ void cpuRaytrace() {
 	//cout<<"upper bound ";
 	//utilityCore::printVec3(kdTree->tree->urf);
 
+	//performance start
+	clock_t start;
+	float elapsedTime;
+	start = clock();
+
 	//find rays
 	for (int x = 0; x < resolution.x; ++x) {
 		//cout<<x<<endl;
 		for (int y = 0; y < resolution.y; ++y) {
 
 			int index = y * resolution.x + x;
-
 			glm::vec3 axis_a = glm::cross(view, up);
 			glm::vec3 axis_b = glm::cross(axis_a, view);
 			glm::vec3 midPoint = eye + view;
@@ -348,47 +351,48 @@ void cpuRaytrace() {
 			r.direction = glm::normalize(screenPoint - eye);
 			
 			//intersect testing using KD tree
-			
 			float f = kdTree ->traverse(r);
 			f = max(0.0f, f);
 			cpuImage[index] = glm::vec3(f/16.0f);
-
 		}
 	}
 
-		uchar4 *dptr=NULL;
-		cudaGLMapBufferObject((void**)&dptr, pbo);
-		cudaDrawCPUImage(dptr, renderCam, cpuImage);
+	elapsedTime = (clock() - start) / (float) CLOCKS_PER_SEC;
+	printf("Execution Time: %fs \n", elapsedTime); // Print Elapsed time
 
-		// unmap buffer object
-		cudaGLUnmapBufferObject(pbo);
+	uchar4 *dptr=NULL;
+	cudaGLMapBufferObject((void**)&dptr, pbo);
+	cudaDrawCPUImage(dptr, renderCam, cpuImage);
 
-		//cout<<"iteration finished"<<endl;
+	// unmap buffer object
+	cudaGLUnmapBufferObject(pbo);
 
-		//output image file
-		image outputImage(renderCam->resolution.x, renderCam->resolution.y);
+	//cout<<"iteration finished"<<endl;
 
-		for(int x=0; x<renderCam->resolution.x; x++){
-			for(int y=0; y<renderCam->resolution.y; y++){
-				int index = x + (y * renderCam->resolution.x);
-				//outputImage.writePixelRGB(renderCam->resolution.x-1-x,y,cpuImage[index]);
-				outputImage.writePixelRGB(x, y, cpuImage[index]);
-			}
+	//output image file
+	image outputImage(renderCam->resolution.x, renderCam->resolution.y);
+
+	for(int x=0; x<renderCam->resolution.x; x++){
+		for(int y=0; y<renderCam->resolution.y; y++){
+			int index = x + (y * renderCam->resolution.x);
+			//outputImage.writePixelRGB(renderCam->resolution.x-1-x,y,cpuImage[index]);
+			outputImage.writePixelRGB(x, y, cpuImage[index]);
 		}
+	}
 
-		gammaSettings gamma;
-		gamma.applyGamma = true;
-		gamma.gamma = 1.0;//2.2;
-		gamma.divisor = renderCam->iterations;
-		outputImage.setGammaSettings(gamma);
-		string filename = renderCam->imageName;
-		string s;
-		stringstream out;
-		out << targetFrame;
-		s = out.str();
-		utilityCore::replaceString(filename, ".bmp", "."+s+".bmp");
-		utilityCore::replaceString(filename, ".png", "."+s+".png");
-		outputImage.saveImageRGB(filename);
+	gammaSettings gamma;
+	gamma.applyGamma = true;
+	gamma.gamma = 1.0;//2.2;
+	gamma.divisor = renderCam->iterations;
+	outputImage.setGammaSettings(gamma);
+	string filename = renderCam->imageName;
+	string s;
+	stringstream out;
+	out << targetFrame;
+	s = out.str();
+	utilityCore::replaceString(filename, ".bmp", "."+s+".bmp");
+	utilityCore::replaceString(filename, ".png", "."+s+".png");
+	outputImage.saveImageRGB(filename);
 }
 
 

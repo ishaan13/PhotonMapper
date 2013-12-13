@@ -77,6 +77,8 @@ public:
 
 	std::vector<int> primIndex;
 
+	~KDTree();
+
 	void buildKD();
 	KDNode* buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList, int depth);
 

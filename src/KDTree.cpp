@@ -1,6 +1,8 @@
 #include "KDTree.h"
 #define EPSILON 0.000001f
 
+#define OPTIMAL_SPLIT 1
+
 // Helper funcitons
 
 void splitPrimList(Plane p, std::vector<prim> primsList, std::vector<prim> &firstTempList,std::vector<prim> &secondTempList)
@@ -80,33 +82,8 @@ void calculateBoundingBoxes(glm::vec3 llb, glm::vec3 urf, Plane splitPlane, glm:
 		secondllb = glm::vec3(llb.x,llb.y,splitPlane.splitPoint - EPSILON);
 		secondurf = urf + glm::vec3(0.0f, 0.0, EPSILON);
 	}
-
-	//if(splitPlane.axis == X_AXIS)
-	//{
-	//        firstllb = llb;
-	//        firsturf = glm::vec3(splitPlane.splitPoint,urf.y,urf.z);
-
-	//        secondllb = glm::vec3(splitPlane.splitPoint,llb.y,llb.z);
-	//        secondurf = urf;
-	//}
-	//else if(splitPlane.axis == Y_AXIS)
-	//{
-	//        firstllb = llb;
-	//        firsturf = glm::vec3(urf.x,splitPlane.splitPoint,urf.z);
-
-	//        secondllb = glm::vec3(llb.x,splitPlane.splitPoint,llb.z);
-	//        secondurf = urf;
-	//}
-	//else
-	//{
-	//        firstllb = llb;
-	//        firsturf = glm::vec3(urf.x,urf.y,splitPlane.splitPoint);
-
-	//        secondllb = glm::vec3(llb.x,llb.y,splitPlane.splitPoint);
-	//        secondurf = urf;
-	//}
-
 }
+
 // Helper funcitons
 Plane findSplitPlane(glm::vec3 llb, glm::vec3 urf)
 {
@@ -135,7 +112,6 @@ Plane findSplitPlane(glm::vec3 llb, glm::vec3 urf)
 	}
 	return p;
 }
-
 Plane findOptimalSplitPlane(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList)
 {
 	Plane p;
@@ -192,7 +168,6 @@ Plane findOptimalSplitPlane(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prim
 	return optimalPlane;
 }
 
-
 // Plane direction checker
 bool Plane::isFirst(prim p)
 {
@@ -242,10 +217,20 @@ bool Plane::isPointInFirst(glm::vec3 p) {
 	}
 }
 
+
+///////////////////////////////////////////KD TREEE/////////////////////////////////////////////////////
+
+KDTree::~KDTree() {
+	
+	//IMPLEMENT DESTRUCTOR!!!!!!!!!!!!!!!
+
+}
+
 bool KDNode::isLeaf()
 {
 	return (first == NULL && second == NULL);
 }
+
 
 //box intersection test with bounding boxes
 bool KDTree::aabbIntersectionTest(glm::vec3 high, glm::vec3 low, ray& r, float& tNear, float& tFar) {
@@ -500,11 +485,12 @@ KDNode * KDTree::buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> prims
 	{
 
 		// Split the tree
-		//Plane splitPlane = findSplitPlane(llb,urf);
-
+#if OPTIMAL_SPLIT != 1	
+		Plane splitPlane = findSplitPlane(llb,urf);
+#else
 		//optimal split
 		Plane splitPlane = findOptimalSplitPlane(llb, urf, primsList);
-
+#endif
 		// Make two lists of primitives based on positive and negative side of this plane. if confused, put in both.
 		std::vector<prim> firstPrimsList;
 		std::vector<prim> secondPrimsList;

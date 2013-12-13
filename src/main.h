@@ -22,6 +22,9 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+
+#include <ctime>
+
 #include "glslUtility.h"
 #include "sceneStructs.h"
 #include "glm/glm.hpp"

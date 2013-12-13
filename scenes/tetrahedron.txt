@@ -1,5 +1,5 @@
 TEXTURE 0
-textures/checkerboard.png
+textures/rainbow.jpeg
 
 MATERIAL 0				//white diffuse
 RGB         1 1 1       
@@ -121,7 +121,7 @@ TEXTURE		0
 CAMERA
 RES         800 800
 FOVY        35
-ITERATIONS  3000
+ITERATIONS  500
 FILE        tetrahedron.png
 frame 0
 EYE         0 5 12
@@ -151,7 +151,7 @@ cube
 material 8
 frame 0
 TRANS       0 10 0
-ROTAT       0 0 90
+ROTAT       0 90 90
 SCALE       .01 10 10
 
 OBJECT 3

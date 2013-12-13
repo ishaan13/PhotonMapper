@@ -50,10 +50,10 @@ enum {
 
 KDTree tree;
 
-int numPhotons = 10000;
+int numPhotons = 50000;
 int numPhotonsCompact = numPhotons;
 
-int numBounces = 10;						//hard limit of n bounces for now
+int numBounces = 5;						//hard limit of n bounces for now
 float emitEnergyScale = 1.0;				//Empirically Verify this value
 
 //Lower Direct lighting by this contribution factor
@@ -71,7 +71,7 @@ photon* cudaPhotonPoolCompact;		//stores output photons after stream compaction
 int* cudaPhotonGridIndex;			//maps photonID to gridID
 int* cudaGridFirstPhotonIndex;
 
-#define RADIUS 0.25f
+#define RADIUS 2.0f
 
 //gridAttributes grid(-5.5, -0.5, -5.5, 5.5, 10.5, 5.5, RADIUS);
 gridAttributes grid(0, 0, 0, 0, 0, 0, RADIUS);		//for testing grid bounding box
