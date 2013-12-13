@@ -5,9 +5,107 @@
 
 __device__ float flt_max = FLT_MAX;
 
-__device__ int aabbIntersectionTestGPU(glm::vec3, glm::vec3, ray r, float &entry, float &exit)
+__device__ bool aabbIntersectionTestGPU(glm::vec3 low, glm::vec3 high, ray r, float &tNear, float &tFar)
 {
-	return -1;
+
+	tNear = -FLT_MAX;
+	tFar = FLT_MAX;
+	float t1, t2 = 0.0f;
+
+	//x planes
+	//check if parallel to x plane
+	if (abs(r.direction.x) < EPSILON) {
+		if (r.origin.x < low.x || r.origin.x > high.x) {
+			return false;
+		}
+	}
+	else {
+		t1 = (low.x - r.origin.x)/r.direction.x;
+		t2 = (high.x - r.origin.x)/r.direction.x;
+		if (t1 > t2) {                
+			float temp = t2;
+			t2 = t1;
+			t1 = temp;
+		}
+
+		if (t1 > tNear) {
+			tNear = t1;
+		}
+
+		if (t2 < tFar) {
+			tFar = t2;
+		} 
+
+		if (tNear > tFar || tFar < 0) {
+			return false;
+		}
+	}
+
+	//y planes
+	//check if parallel to y slabs
+	if (abs(r.direction.y) < EPSILON) {
+		//if within slabs
+		if (r.origin.y < low.y || r.origin.y > high.y) {
+			return false;
+		}
+	}
+	else {
+		t1 = (low.y - r.origin.y)/r.direction.y;
+		t2 = (high.y - r.origin.y)/r.direction.y;
+		if (t1 > t2) {                
+			float temp = t2;
+			t2 = t1;
+			t1 = temp;
+		}
+
+		if (t1 > tNear) {
+			tNear = t1;
+		}
+
+		if (t2 < tFar) {
+			tFar = t2;
+		} 
+
+		if (tNear > tFar || tFar < 0) {
+			return false;
+		}
+	}
+
+	//z planes
+	//check if parallel to z planes
+	if (abs(r.direction.z) < EPSILON) {
+		//if within slabs
+		if (r.origin.z < low.z || r.origin.z > high.z) {
+			return false;
+		}
+	}
+	else {
+		t1 = (low.z - r.origin.z)/r.direction.z;
+		t2 = (high.z - r.origin.z)/r.direction.z;
+		if (t1 > t2) {                
+			float temp = t2;
+			t2 = t1;
+			t1 = temp;
+		}
+
+		if (t1 > tNear) {
+			tNear = t1;
+		}
+
+		if (t2 < tFar) {
+			tFar = t2;
+		} 
+
+		if (tNear > tFar || tFar < 0) {
+			return false;
+		}
+	}
+
+	//to take care of the case of ray bouncing in scene
+	tNear = glm::max(tNear, 0.0f);
+
+	return true;
+
 }
 
 __device__ bool isLeaf(KDNodeGPU node)
@@ -51,7 +149,7 @@ __device__ int findNeighbor(glm::vec3 p, KDNodeGPU node)
 		return node.ropes[FRONT];
 	}
 	else {
-		return NULL;
+		return -1;
 	}
 }
 
@@ -75,9 +173,11 @@ __device__ float traverse(ray &r, KDNodeGPU *nodes, int entryIndex,
 
 	// Save the kd-tree exit
 	float rootExit = exit;
+	float prevEntry = -FLT_MAX;
 
-	while(entry < exit)
+	while(entry < exit && entry > prevEntry)
 	{
+		prevEntry = entry;
 		// Downward traversal to find a leaf node
 		glm::vec3 pEntry = r.origin + entry * r.direction;
 
@@ -94,7 +194,7 @@ __device__ float traverse(ray &r, KDNodeGPU *nodes, int entryIndex,
 			}
 			node = nodes[currentIndex];
 		}
-
+		aabbIntersectionTestGPU(node.llb, node.urf, r, entry, exit);
 		bool intersectionFound = false;
 
 		// Now at a leaf, check intersection with primitives in the leaf
@@ -122,12 +222,8 @@ __device__ float traverse(ray &r, KDNodeGPU *nodes, int entryIndex,
 			
 			intersect = triangleIntersectionTest(v1, v2, v3, n1, n2, n3, t1, t2, t3, r, intersection, normal, uv);
 
-
-			//float triangleIntersectionTest(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 n1, glm::vec3 n2, glm::vec3 n3,
-			//								glm::vec2 t1, glm::vec2 t2, glm::vec2 t3, ray r, glm::vec3& intersection, glm::vec3& normal, glm::vec2& uv);
-
 			// update exit point if new intersection point is closer to us
-			if(intersect >= entry && intersect <exit)
+			if(intersect >= entry && intersect <= exit)
 			{
 				intersectionFound = true;
 				exit = intersect;
@@ -154,7 +250,7 @@ __device__ float traverse(ray &r, KDNodeGPU *nodes, int entryIndex,
 		// if no intersection, go to next node using ropess
 		// if no neighbors, return -1;
 
-		glm::vec3 newEntry = r.origin + exit * r.direction;
+		glm::vec3 newEntry = r.origin + entry * r.direction;
 		currentIndex = findNeighbor(newEntry, node);
 
 		if(currentIndex == -1)

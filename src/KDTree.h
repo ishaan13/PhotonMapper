@@ -1,4 +1,5 @@
 #include "sceneStructs.h"
+#include "KDTreeStructs.h"
 //#include "intersections.h"
 #include <vector>
 
@@ -9,10 +10,6 @@
 enum {X_AXIS, Y_AXIS, Z_AXIS};
 enum {LEFT, RIGHT, BOTTOM, TOP, BACK, FRONT};
 
-extern glm::vec3* vertices;
-extern triangle* faces;
-extern int numberOfVertices;
-extern int numberOfFaces;
 class prim
 {
 public:
@@ -25,17 +22,11 @@ class Plane
 public:
 	int axis;
 	float splitPoint;
-	bool isFirst(prim p);
-	bool isSecond(prim p);
+	bool isFirst(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3);
+	bool isSecond(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3);
 
 	//for checking if a point is in left or right of split
 	bool isPointInFirst(glm::vec3 p);
-};
-
-struct PlaneGPU
-{
-	int axis;
-	float splitPoint;
 };
 
 class KDNode
@@ -58,29 +49,33 @@ public:
 	bool isLeaf();
 };
 
-struct KDNodeGPU
-{
-	int first, second;
-	int ropes[6];
-	int startPrimIndex;
-	int numPrims;
-	glm::vec3 llb;
-	glm::vec3 urf;
-	PlaneGPU splitPlane;
-
-};
-
 class KDTree
 {
 public:
+	glm::vec3* vertices;
+	triangle* faces;
+	int numberOfVertices;
+	int numberOfFaces;
+
 	KDNode* tree;
+	KDNodeGPU *gpuTree;
+	int rootIndex;
 
 	std::vector<int> primIndex;
 
+<<<<<<< HEAD
 	~KDTree();
 
 	void buildKD();
+=======
+	void buildKD(glm::vec3* vertices1, triangle* faces1, int numberOfVertices1, int numberOfFaces1);
+>>>>>>> f9daf160a9152ccea59f007345f1171490581fc8
 	KDNode* buildTree(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList, int depth);
+
+	//helper functions for building kd tree
+	void splitPrimList(Plane p, std::vector<prim> primsList, std::vector<prim> &firstTempList,std::vector<prim> &secondTempList);
+	Plane findSplitPlane(glm::vec3 llb, glm::vec3 urf);
+	Plane findOptimalSplitPlane(glm::vec3 llb, glm::vec3 urf, std::vector<prim> primsList);
 
 	KDNode* optimize(KDNode* rope, int side, glm::vec3 llb, glm::vec3 urf);
 	void processNode(KDNode* node, KDNode* ropes[]);
@@ -105,5 +100,9 @@ public:
 	void setGPUTreeData(KDNode * current, KDNodeGPU *gpuTree, std::vector<int> &primIndexList);
 
 	// wrapper to build linear node structure
-	int buildGPUKDTree(KDNodeGPU *gpuTree);
+	int buildGPUKDTree();
 };
+
+__device__ float traverse(ray &r, KDNodeGPU *nodes, int entryIndex, 
+							glm::vec3 * cudaVertices, glm::vec3 * cudaNormals, glm::vec2 * cudaUV, triangle *cudaFaces, int * kdFaceIndexList, staticGeom * geoms,
+							glm::vec3 &minIntersectionPoint, glm::vec3 &minNormal, int &intersectedGeom, int &intersectedMaterial, glm::vec2 &minUV);

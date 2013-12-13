@@ -45,7 +45,7 @@
 #endif
 
 
-#define CPUTRACE 1
+#define CPUTRACE 0
 
 using namespace std;
 
@@ -82,6 +82,8 @@ int numberOfUVs;
 //------------KD TREE -----------
 //-------------------------------
 KDTree* kdTree;
+
+// for cpu
 glm::vec3* cpuImage;
 
 //-------------------------------
@@ -153,6 +155,7 @@ GLuint initShader(const char *vertexShaderPath, const char *fragmentShaderPath);
 void initKDTree();
 
 void copyDataFromScene();
+void sendCurrentFrameDataToGPU();
 
 //-------------------------------
 //---------CLEANUP STUFF---------

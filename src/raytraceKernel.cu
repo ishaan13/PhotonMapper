@@ -20,7 +20,6 @@
 #include "intersections.h"
 #include "interactions.h"
 #include <vector>
-#include "KDTree.h"
 
 // Optimizations and add ons
 #define JITTER 1
@@ -48,9 +47,13 @@ enum {
 	DISP_TOTAL
 };
 
+<<<<<<< HEAD
 KDTree tree;
 
 int numPhotons = 50000;
+=======
+int numPhotons = 10000;
+>>>>>>> f9daf160a9152ccea59f007345f1171490581fc8
 int numPhotonsCompact = numPhotons;
 
 int numBounces = 5;						//hard limit of n bounces for now
@@ -99,6 +102,11 @@ int numUVs;
 cudatexture* cudatextures; //textures' width, height and x index
 float4* cudatexturedata; //data we bind tex to
 texture<float4, 2, cudaReadModeElementType> tex; //textures of all objects in the scene
+
+// KD tree stuff
+KDNodeGPU* cudakdtree;
+int treeRootIndex;
+int* cudaPrimIndex;
 
 // per frame variables
 ray* cudarays = NULL;
@@ -769,7 +777,7 @@ __global__ void displayPhotons(photon* photonPool, int numTotalPhotons, glm::vec
 
 __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBounces, staticGeom* geoms, int numberOfGeoms, triangle* cudafaces,
 															int numFaces, glm::vec3* cudavertices, glm::vec3* cudanormals, glm::vec2* cudauvs, material* materials,
-															cudatexture* cudatextures, float time)
+															cudatexture* cudatextures, float time, KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex)
 {
 	//bounce photons around
 	int index = blockIdx.x * blockDim.x + threadIdx.x; 
@@ -802,7 +810,7 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 			glm::vec2 minUV = glm::vec2(0.0f);
 
 			getClosestIntersection(r, geoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
-				minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial,minUV);
+				minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial,minUV,cudakdtree,treeRootIndex,cudaPrimIndex);
 
 			p.geomid = intersectedGeom;
 			//if intersection occurs, accumulate color and keep bouncing
@@ -1037,9 +1045,10 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 
 // Caculate indirect illumination from photons
 __global__ void renderIndirectLighting(glm::vec2 resolution, float time, cameraData cam, glm::vec3* colors, staticGeom* geoms,
-																			int numberOfGeoms, triangle* cudafaces, int numFaces, glm::vec3* cudavertices,
-																			glm::vec3* cudanormals, glm::vec2* cudauvs, ray* rayPool, photon* photons, int numTotalPhotons, 
-																			int* gridFirstPhotonIndices, int* gridIndices, gridAttributes grid, float flux)
+										int numberOfGeoms, triangle* cudafaces, int numFaces, glm::vec3* cudavertices,
+										glm::vec3* cudanormals, glm::vec2* cudauvs, ray* rayPool, photon* photons, int numTotalPhotons, 
+										int* gridFirstPhotonIndices, int* gridIndices, gridAttributes grid, float flux,
+										KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex)
 {
 
 	int x = (blockIdx.x * blockDim.x) + threadIdx.x;
@@ -1056,7 +1065,7 @@ __global__ void renderIndirectLighting(glm::vec2 resolution, float time, cameraD
 		glm::vec2 minUV = glm::vec2(0.0f);
 
 		getClosestIntersection(r, geoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
-			minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial, minUV);
+			minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial, minUV,cudakdtree,treeRootIndex,cudaPrimIndex);
 
 		//Calculate radiance if any geometry is intersected
 		if(intersectedGeom > -1)
@@ -1075,7 +1084,7 @@ void tracePhotons(int photonThreadsPerBlock, int photonBlocksPerGrid, photon* cu
 	{
 		// Bounce Photons Around
 		bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, i,	cudageoms, numGeoms,
-			cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudamaterials, cudatextures, time);
+			cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudamaterials, cudatextures, time,cudakdtree,treeRootIndex,cudaPrimIndex);
 
 #if COMPACTION
 		// Do some compaction
@@ -1120,8 +1129,8 @@ void initTexture(cudatexture* textures, float4* cputexturedata, int numberOfText
 
 //allocate memory for geometry data
 void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms,
-												glm::vec3* vertices, int numberOfVertices, glm::vec3* normals, int numberOfNormals, triangle* faces, int numberOfFaces,
-												glm::vec2* uvs, int numberOfUVs) {
+						glm::vec3* vertices, int numberOfVertices, glm::vec3* normals, int numberOfNormals, triangle* faces, int numberOfFaces,
+						glm::vec2* uvs, int numberOfUVs, KDNodeGPU* kdTree, int numberOfNodes, int rootIndex, int* primIndex, int numberOfPrimIndices) {
 
 	int size = (int)renderCam->resolution.x*(int)renderCam->resolution.y;
 	
@@ -1142,13 +1151,6 @@ void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials,
 	numNormals = numberOfNormals;
 	numUVs = numberOfUVs;
 
-	//create arrays for transformed vertices, normals
-	glm::vec3* transVertices = new glm::vec3[numberOfVertices];
-	glm::vec3* transNormals = new glm::vec3[numberOfNormals];
-
-	int transVCount = 0; //number of vertices transformed
-	int transNCount = 0; //number of normals transformed
-
 	//for finding the grid data
 	glm::vec3 gridMin(100000);
 	glm::vec3 gridMax(-100000);
@@ -1168,20 +1170,6 @@ void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials,
 		//find the corners of biggest bounding box
 		gridMin = glm::min(gridMin, newStaticGeom.boundingBox.xyzMin);
 		gridMax = glm::max(gridMax, newStaticGeom.boundingBox.xyzMax);
-
-		if (geoms[i].type == MESH) {
-			// transform vertices
-			for (int j=transVCount; j<transVCount+geoms[i].vertexcount; ++j) {
-				transVertices[j] = multiplyMV(geoms[i].transforms[targetFrame], glm::vec4(vertices[j], 1.0f));
-			}
-			transVCount += geoms[i].vertexcount;
-
-			// transform normals
-			for (int j=transNCount; j<transNCount+geoms[i].normalcount; ++j) {
-				transNormals[j] = glm::normalize(multiplyMV(getNormalTransform(geomList[i].transform), glm::vec4(normals[j], 0.0f)));
-			}
-			transNCount += geoms[i].normalcount;
-		}
 
 		//store which objects are lights
 		if(materials[geoms[i].materialid].emittance > 0)
@@ -1205,10 +1193,10 @@ void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials,
 	//copy mesh data to memory
 	cudavertices = NULL;
 	cudaMalloc((void**)&cudavertices, numberOfVertices*sizeof(glm::vec3));
-	cudaMemcpy(cudavertices, transVertices, numberOfVertices*sizeof(glm::vec3), cudaMemcpyHostToDevice);
+	cudaMemcpy(cudavertices, vertices, numberOfVertices*sizeof(glm::vec3), cudaMemcpyHostToDevice);
 	cudanormals = NULL;
 	cudaMalloc((void**)&cudanormals, numberOfNormals*sizeof(glm::vec3));
-	cudaMemcpy(cudanormals, transNormals, numberOfNormals*sizeof(glm::vec3), cudaMemcpyHostToDevice);
+	cudaMemcpy(cudanormals, normals, numberOfNormals*sizeof(glm::vec3), cudaMemcpyHostToDevice);
 	cudafaces = NULL;
 	cudaMalloc((void**)&cudafaces, numberOfFaces*sizeof(triangle));
 	cudaMemcpy(cudafaces, faces, numberOfFaces*sizeof(triangle), cudaMemcpyHostToDevice);
@@ -1231,6 +1219,15 @@ void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials,
 	cudaLights = NULL;
 	cudaMalloc((void**)&cudaLights, numLights*sizeof(int));
 	cudaMemcpy( cudaLights, lightID, numLights*sizeof(int), cudaMemcpyHostToDevice);
+
+	//copy kd tree data to memory
+	cudakdtree = NULL;
+	cudaMalloc((void**)&cudakdtree, numberOfNodes*sizeof(KDNodeGPU));
+	cudaMemcpy(cudakdtree, kdTree, numberOfNodes*sizeof(KDNodeGPU), cudaMemcpyHostToDevice);
+	treeRootIndex = rootIndex;
+	cudaPrimIndex = NULL;
+	cudaMalloc((void**)&cudaPrimIndex, numberOfPrimIndices*sizeof(int));
+	cudaMemcpy(cudaPrimIndex, primIndex, numberOfPrimIndices*sizeof(int), cudaMemcpyHostToDevice);
 
 	//Create Memory for RayPool
 	cudaMalloc((void**)&cudarays, (renderCam->resolution.x * renderCam->resolution.y) * sizeof(ray));
@@ -1302,8 +1299,6 @@ void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials,
 
 	delete[] geomList;
 	delete[] lightID;
-	delete[] transVertices;
-	delete[] transNormals;
 }
 
 void cudaFreeTexture() {
@@ -1322,6 +1317,9 @@ void cudaFreeMemory() {
 	cudaFree( cudanormals );
 	cudaFree( cudamaterials);
 	cudaFree( cudaLights);
+
+	cudaFree(cudakdtree);
+	cudaFree(cudaPrimIndex);
 
 	cudaFree(cudarays);
 #if COMPACTION
@@ -1408,6 +1406,7 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 														staticGeom* geoms, int numberOfGeoms, triangle* cudafaces, int numFaces, glm::vec3* cudavertices,
 														glm::vec3* cudanormals, glm::vec2* cudauvs, material* materials, cudatexture* cudatextures,
 														photon* photons, int numTotalPhotons, int* gridFirstPhotonIndices, int* gridIndices,
+														KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex,
 														int mode, gridAttributes grid, float flux, ray* rayPool
 #if COMPACTION
 														, int numberOfRays
@@ -1428,6 +1427,11 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 	if((x<=resolution.x && y<=resolution.y) && glm::length(rayPool[index].transmission) > FLOAT_EPSILON){
 #endif
 
+		if (x == 450 && y == 520) {
+			int debug = 1;
+			x = debug * x;
+		}
+
 		ray r = rayPool[index];	
 
 		//intersection testing
@@ -1438,7 +1442,7 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 		glm::vec2 minUV = glm::vec2(0.0f);
 
 		getClosestIntersection(r, geoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
-			minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial, minUV);
+			minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial, minUV,cudakdtree,treeRootIndex,cudaPrimIndex);
 
 		// Depth render - test
 		//float maxDepth = 15.0f;
@@ -1490,7 +1494,7 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 						shadowRay.direction = L;
 
 						bool visible = visibilityCheck(shadowRay,geoms,numberOfGeoms,cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
-							lightSourceSample,iter);
+							lightSourceSample,iter,cudakdtree,treeRootIndex,cudaPrimIndex);
 
 						if(visible)
 						{
@@ -1697,11 +1701,11 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
 #if PHOTONCOMPACT 
 			renderIndirectLighting<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaimage, cudageoms, numGeoms,
 				cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudarays, cudaPhotonPoolCompact, numPhotonsCompact,
-				cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux);
+				cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux,cudakdtree,treeRootIndex,cudaPrimIndex);
 #else
 			renderIndirectLighting<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaimage, cudageoms, numGeoms,
 				cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudarays, cudaPhotonPool, numPhotons * numBounces,
-				cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux);
+				cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux,cudakdtree,treeRootIndex,cudaPrimIndex);
 #endif
 
 			cudaThreadSynchronize();
@@ -1717,14 +1721,14 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
 				raytraceRay<<<linearGridSize, dim3(linearTileSize,1,1)>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i,
 					cudaimage, cudageoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
 					cudamaterials, cudatextures, cudaPhotonPoolCompact, numPhotonsCompact,
-					cudaGridFirstPhotonIndex, cudaPhotonGridIndex, mode, grid, flux,
+					cudaGridFirstPhotonIndex, cudaPhotonGridIndex, cudakdtree, treeRootIndex, cudaPrimIndex, mode, grid, flux,
 					i%2==0?cudarays : cudarays2,
 					numberOfRays);
 #else
 				raytraceRay<<<linearGridSize, dim3(linearTileSize,1,1)>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i,
 					cudaimage, cudageoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
 					cudamaterials, cudatextures, cudaPhotonPool, numPhotons * numBounces,
-					cudaGridFirstPhotonIndex, cudaPhotonGridIndex, mode, grid, flux,
+					cudaGridFirstPhotonIndex, cudaPhotonGridIndex, cudakdtree, treeRootIndex, cudaPrimIndex, mode, grid, flux,
 					i%2==0?cudarays : cudarays2,
 					numberOfRays);
 #endif
@@ -1738,12 +1742,12 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
 				raytraceRay<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i, cudaimage,
 					cudageoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
 					cudamaterials, cudatextures, cudaPhotonPoolCompact, numPhotonsCompact, cudaGridFirstPhotonIndex,
-					cudaPhotonGridIndex, mode, grid, flux, cudarays);
+					cudaPhotonGridIndex, cudakdtree, treeRootIndex, cudaPrimIndex, mode, grid, flux, cudarays);
 #else
 				raytraceRay<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, traceDepth+i, cudaimage,
 					cudageoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
 					cudamaterials, cudatextures, cudaPhotonPool, numPhotons * numBounces, cudaGridFirstPhotonIndex,
-					cudaPhotonGridIndex, mode, grid, flux, cudarays);
+					cudaPhotonGridIndex, cudakdtree, treeRootIndex, cudaPrimIndex, mode, grid, flux, cudarays);
 #endif
 #endif
 			}
