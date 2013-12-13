@@ -135,8 +135,7 @@ void runCuda(){
 			cudaFreeMemory();
 			//copy stuff to the gpu at the beginning of every frame
 			//copy stuff to the gpu
-			cudaAllocateMemory(targetFrame, renderCam, materials, numberOfMaterials, geoms, numberOfGeoms, vertices, numberOfVertices,
-				normals, numberOfNormals, faces, numberOfFaces, uvs, numberOfUVs);
+			sendCurrentFrameDataToGPU();
 		}
 		uchar4 *dptr=NULL;
 		iterations++;
@@ -306,7 +305,7 @@ void initKDTree() {
 	}
 
 	kdTree = new KDTree();
-	kdTree -> buildKD();
+	kdTree -> buildKD(vertices, faces, numberOfVertices, numberOfFaces);
 	printf("KD Tree constructed\n");
 }
 
@@ -327,7 +326,7 @@ void cpuRaytrace() {
 
 	//find rays
 	for (int x = 0; x < resolution.x; ++x) {
-		cout<<x<<endl;
+		//cout<<x<<endl;
 		for (int y = 0; y < resolution.y; ++y) {
 
 			int index = y * resolution.x + x;
@@ -343,8 +342,8 @@ void cpuRaytrace() {
 				(2.0f * (1.0f * x / (resolution.x-1)) - 1.0f) * viewPlaneX + 
 				(1.0f - 2.0f * (1.0f * y / (resolution.y-1))) * viewPlaneY;
 
-			r.origin = eye;
-			//r.origin = screenPoint;
+			//r.origin = eye;
+			r.origin = screenPoint;
 			r.direction = glm::normalize(screenPoint - eye);
 			
 			//intersect testing using KD tree
@@ -650,6 +649,52 @@ void copyDataFromScene(){
 	}
 }
 
+//transfrom vertices and normals, contruct KD tree, and send all the data to cudaAllocateMemory
+void sendCurrentFrameDataToGPU(){
+	//transform vertices and normals
+	glm::vec3* transVertices = new glm::vec3[numberOfVertices];
+	glm::vec3* transNormals = new glm::vec3[numberOfNormals];
+	int transVCount = 0; //number of vertices transformed
+	int transNCount = 0; //number of normals transformed
+
+	for(int i=0; i<numberOfGeoms; ++i){
+		if (geoms[i].type == MESH) {
+			// transform vertices
+			for (int j=transVCount; j<transVCount+geoms[i].vertexcount; ++j) {
+				transVertices[j] = multiplyMVOnHost(geoms[i].transforms[targetFrame], glm::vec4(vertices[j], 1.0f));
+			}
+			transVCount += geoms[i].vertexcount;
+
+			// transform normals
+			for (int j=transNCount; j<transNCount+geoms[i].normalcount; ++j) {
+				transNormals[j] = glm::normalize(multiplyMVOnHost(getNormalTransformOnHost(geoms[i].transforms[0]), glm::vec4(normals[j], 0.0f)));
+			}
+			transNCount += geoms[i].normalcount;
+		}
+	}
+
+	delete kdTree;
+	kdTree = 0;
+	kdTree = new KDTree();
+	kdTree -> buildKD(transVertices, faces, numberOfVertices, numberOfFaces);
+	printf("KD Tree constructed\n");
+
+	int numberOfNodes = kdTree -> buildGPUKDTree();
+	int numberOfPrimIndices = kdTree->primIndex.size();
+	int* primIndex = new int[numberOfPrimIndices];
+	for (int i=0; i<numberOfPrimIndices; ++i) {
+		primIndex[i] = kdTree->primIndex[i];
+	}
+	printf("Converted KD Tree to GPU KD Tree\n");
+
+	cudaAllocateMemory(targetFrame, renderCam, materials, numberOfMaterials, geoms, numberOfGeoms, transVertices, numberOfVertices,
+		transNormals, numberOfNormals, faces, numberOfFaces, uvs, numberOfUVs, kdTree->gpuTree, numberOfNodes, kdTree->rootIndex,
+		primIndex, numberOfPrimIndices);
+
+	delete [] transVertices;
+	delete [] transNormals;
+}
+
 void initCuda(){
 
 	// Use device with highest Gflops/s
@@ -744,6 +789,8 @@ void freeCPUMemory(){
 	delete[] faces;
 	delete[] vertices;
 	delete[] normals;
+	delete kdTree;
+	kdTree = 0;
 }
 
 void deletePBO(GLuint* pbo){

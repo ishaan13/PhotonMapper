@@ -44,6 +44,7 @@
       <Filter>ObjCore</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\KDTree.h" />
+    <ClInclude Include="..\..\src\KDTreeStructs.h" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="..\..\src\raytraceKernel.cu" />

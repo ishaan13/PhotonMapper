@@ -1,4 +1,4 @@
-﻿TEXTURE 0
+TEXTURE 0
 textures/checkerboard.png
 
 MATERIAL 0				//white diffuse
@@ -121,10 +121,10 @@ TEXTURE		0
 CAMERA
 RES         800 800
 FOVY        35
-ITERATIONS  1
-FILE        cow.png
+ITERATIONS  3000
+FILE        dragon.png
 frame 0
-EYE         0 5 8
+EYE         0 5 12
 VIEW        0 0 -1
 UP          0 1 0
 APERTURE    0
@@ -148,7 +148,7 @@ SCALE       .01 10 10
 
 OBJECT 2
 cube
-material 0
+material 8
 frame 0
 TRANS       0 10 0
 ROTAT       0 0 90
@@ -172,15 +172,15 @@ SCALE       .01 10 10
 
 OBJECT 5
 obj/cow.obj
-material 8
+material 5
 frame 0
-TRANS       0 5 0
+TRANS       0 4 0
 ROTAT       0 0 0
-SCALE       4 4 4
+SCALE       5 5 5
 
 OBJECT 6
 cube
-material 7
+material 6
 frame 0
 TRANS       0 10 0
 ROTAT       0 0 90

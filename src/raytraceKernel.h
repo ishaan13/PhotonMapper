@@ -13,6 +13,7 @@
 #include <cuda.h>
 #include <cmath>
 #include "sceneStructs.h"
+#include "KDTreeStructs.h"
 
 #if CUDA_VERSION >= 5000
     #include <helper_math.h>
@@ -34,8 +35,8 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 void initTexture(cudatexture* textures, float4* cputexturedata, int numberOfTextures, int widthcount, int maxheight);
 //for allocating and deallocating memory
 void cudaAllocateMemory(int targetFrame, camera* renderCam, material* materials, int numberOfMaterials, geom* geoms, int numberOfGeoms,
-												glm::vec3* vertices, int numberOfVertices, glm::vec3* normals, int numberOfNormals, triangle* faces, int numberOfFaces,
-												glm::vec2* uvs, int numberOfUVs);
+						glm::vec3* vertices, int numberOfVertices, glm::vec3* normals, int numberOfNormals, triangle* faces, int numberOfFaces,
+						glm::vec2* uvs, int numberOfUVs, KDNodeGPU* kdTree, int numberOfNodes, int rootIndex, int* primIndex, int numberOfPrimIndices);
 void cudaFreeMemory();
 void cudaFreeTexture();
 
