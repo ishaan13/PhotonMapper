@@ -963,30 +963,31 @@ void buildSpatialHash()
 }
 
 
+// Both these functions take distance squared as input
 #define oneOverSqrtTwoPi 0.3989422804f
-__device__ float gaussianWeight( float dx, float radius)
+__device__ float gaussianWeight( float dxSqd, float radius)
 {
 	float sigma = radius/3.0;
-	return (oneOverSqrtTwoPi / sigma) * exp( - (dx*dx) / (2.0 * sigma * sigma) );
+	return (oneOverSqrtTwoPi / sigma) * exp( - (dxSqd) / (2.0 * sigma * sigma) );
 }
 
-__device__ float gaussianWeightJensen(float dx, float radius)
+__device__ float gaussianWeightJensen(float dxSqd, float radius)
 {
 	float alpha = 0.918f;
 	float beta  = 1.953f;
 
-	return alpha * (1.0f - (1.0f - exp(-beta * dx*dx / (2.0f * radius * radius))) / (1.0f - exp(-beta))) ;
+	return alpha * (1.0f - (1.0f - exp(-beta * dxSqd / (2.0f * radius * radius))) / (1.0f - exp(-beta))) ;
 }
 
 // Find the index of the photon with the largest distance to the intersection
-__device__ int findMaxDistancePhotonIndex(photon* photons, int photonCount, glm::vec3 intersection, int& maxIndex, float& maxDist) {
+__device__ int findMaxDistancePhotonIndex(photon* photons, int photonCount, glm::vec3 intersection, int& maxIndex, float& maxDistSqd) {
 	maxIndex = -1;
-	maxDist = -1;
+	maxDistSqd = -1;
 	for (int i=0; i<photonCount; ++i) {
 		photon p = photons[i];
-		float dist = glm::distance(p.position, intersection);
-		if (dist > maxDist) {
-			maxDist = dist;
+		float distSqd = glm::dot(p.position - intersection, p.position - intersection);
+		if (distSqd > maxDistSqd) {
+			maxDistSqd = distSqd;
 			maxIndex =  i;
 		}
 	}
@@ -1001,7 +1002,7 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
   getCellIndex(intersection, grid, px, py, pz);
 	if (px>=0 && px<grid.xdim && py>=0 && py<grid.ydim && pz>=0 && pz<grid.zdim) { //if intersection is within the grid
 
-		float maxRadius = -1.0f; 
+		float maxRadiusSqd = -1.0f; 
 
 		// Find photons in neighboring cells
 		photon neighborPhotons[K];
@@ -1021,21 +1022,21 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 								if (neighborPhotonCount < K) {
 									neighborPhotons[neighborPhotonCount] = p;
 									neighborPhotonCount++;
-									float dist = glm::distance(p.position, intersection);
-									if(dist > maxRadius)
-										maxRadius = dist;
+									float distSqd = glm::dot(p.position - intersection, p.position - intersection);
+									if(distSqd > maxRadiusSqd)
+										maxRadiusSqd = distSqd;
 								}
 								// If the array is full, find the photon with the largest distance to the intersection. If current photon's distance
 								// to the intersection is smaller, replace the photon with the largest distance with the current photon
 								else {
 									int maxIndex;
-									float maxDist;
-									findMaxDistancePhotonIndex(neighborPhotons, K, intersection, maxIndex, maxDist);
-									float dist = glm::distance(p.position, intersection);
-									if (dist < maxDist) {
+									float maxDistSqd;
+									findMaxDistancePhotonIndex(neighborPhotons, K, intersection, maxIndex, maxDistSqd);
+									float distSqd = glm::dot(p.position - intersection, p.position - intersection);
+									if (distSqd < maxDistSqd) {
 										neighborPhotons[maxIndex] = p;
-										if(dist > maxRadius)
-											maxRadius = dist;
+										if(distSqd > maxRadiusSqd)
+											maxRadiusSqd = distSqd;
 									}
 								}
 							}
@@ -1046,15 +1047,16 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 			}
 		}
 
+		float maxRadius = sqrt(maxRadiusSqd);
 		// Accumulate radiance of the K nearest photons
 		for (int i=0; i<neighborPhotonCount; ++i) {
 			photon p = neighborPhotons[i];
-			float photonDistance = glm::distance(intersection, p.position);
+			float photonDistanceSqd = glm::dot(intersection - p.position, intersection - p.position);
 			// Confirm cosine weighting
 			// Use k neighbors radius or grid radius as smoothing distance?
-			//accumColor += gaussianWeight(photonDistance, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
-			//accumColor += gaussianWeightJensen(photonDistance, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
-			accumColor += gaussianWeight(photonDistance, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+			//accumColor += gaussianWeight(photonDistanceSqd, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+			//accumColor += gaussianWeightJensen(photonDistanceSqd, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+			accumColor += gaussianWeight(photonDistanceSqd, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 		}
 	}
 	return accumColor * flux;
