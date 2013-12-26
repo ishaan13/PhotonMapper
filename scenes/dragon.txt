@@ -80,7 +80,7 @@ EMITTANCE   0
 TEXTURE		-1
 
 MATERIAL 6				//light
-RGB         1 1 1       
+RGB         0.25 0.65 0.85       
 SPECEX      0      
 SPECRGB     0 0 0       
 REFL        0       
@@ -102,7 +102,7 @@ REFRIOR     0
 SCATTER     0        
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
-EMITTANCE   1
+EMITTANCE   10
 TEXTURE	   -1
 
 MATERIAL 8				//texture
@@ -180,7 +180,7 @@ SCALE       4 4 4
 
 OBJECT 6
 cube
-material 6
+material 7
 frame 0
 TRANS       0 10 0
 ROTAT       0 0 90

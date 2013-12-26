@@ -30,7 +30,7 @@
 #define SCHLICK 0
 #define PAINTERLY 0
 #define PHOTONCOMPACT 1
-#define K 25
+#define K 45
 
 #if CUDA_VERSION >= 5000
     #include <helper_math.h>
@@ -50,10 +50,10 @@ enum {
 
 extern int kdmode;
 
-int numPhotons = 10000;
+int numPhotons = 50000;
 int numPhotonsCompact = numPhotons;
 
-int numBounces = 7;						//hard limit of n bounces for now
+int numBounces = 10;						//hard limit of n bounces for now
 float emitEnergyScale = 1.0;				//Empirically Verify this value
 
 //Lower Direct lighting by this contribution factor
@@ -970,6 +970,14 @@ __device__ float gaussianWeight( float dx, float radius)
 	return (oneOverSqrtTwoPi / sigma) * exp( - (dx*dx) / (2.0 * sigma * sigma) );
 }
 
+__device__ float gaussianWeightJensen(float dx, float radius)
+{
+	float alpha = 0.918f;
+	float beta  = 1.953f;
+
+	return alpha * (1.0f - (1.0f - exp(-beta * dx*dx / (2.0f * radius * radius))) / (1.0f - exp(-beta))) ;
+}
+
 // Find the index of the photon with the largest distance to the intersection
 __device__ int findMaxDistancePhotonIndex(photon* photons, int photonCount, glm::vec3 intersection, int& maxIndex, float& maxDist) {
 	maxIndex = -1;
@@ -1045,6 +1053,7 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 			// Confirm cosine weighting
 			// Use k neighbors radius or grid radius as smoothing distance?
 			//accumColor += gaussianWeight(photonDistance, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+			//accumColor += gaussianWeightJensen(photonDistance, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 			accumColor += gaussianWeight(photonDistance, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 		}
 	}

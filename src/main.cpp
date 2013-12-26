@@ -524,7 +524,7 @@ void specialKeyboard(int key, int x, int y)
 		cudaClearAccumulatorImage(renderCam);
 		liveCamera.aperture -= 0.5*STRAFE_AMOUNT;
 		if(liveCamera.aperture < NUDGE)
-			liveCamera.aperture = NUDGE;
+			liveCamera.aperture = 0.5*STRAFE_AMOUNT;
 		break;
 	}
 }
