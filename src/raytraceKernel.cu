@@ -22,15 +22,25 @@
 #include <vector>
 
 // Optimizations and add ons
+
+// Camera Defines
 #define JITTER 1
+#define DOF 1
+
+// Implementation Defines
 #define COMPACTION 1
 #define ACCUMULATION 1
-#define DOF 1
+
+
+// Effects Defines
 #define FRESNEL 1
 #define SCHLICK 0
 #define PAINTERLY 0
+
+// Photon Map Defines
 #define PHOTONCOMPACT 1
 #define K 45
+#define GRID_DELTA 1
 
 #if CUDA_VERSION >= 5000
     #include <helper_math.h>
@@ -1007,9 +1017,9 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 		// Find photons in neighboring cells
 		photon neighborPhotons[K];
 		int neighborPhotonCount = 0;
-		for (int i=max(0, px-1); i<min(grid.xdim, px+2); ++i) {
-			for (int j=max(0, py-1); j<min(grid.ydim, py+2); ++j) {
-				for (int k=max(0, pz-1); k<min(grid.zdim, pz+2); ++k) {
+		for (int i=max(0, px-GRID_DELTA); i<min(grid.xdim, px+GRID_DELTA+1); ++i) {
+			for (int j=max(0, py-GRID_DELTA); j<min(grid.ydim, py+GRID_DELTA+1); ++j) {
+				for (int k=max(0, pz-GRID_DELTA); k<min(grid.zdim, pz+GRID_DELTA+1); ++k) {
 					int gridIndex = gridPhotonHash(i, j, k, grid);
 					int firstPhotonIndex = gridFirstPhotonIndices[gridIndex]; //find the index of the first photon in the cell
 					if (firstPhotonIndex != -1) {
@@ -1047,17 +1057,40 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 			}
 		}
 
-		float maxRadius = sqrt(maxRadiusSqd);
+
+		/*
+		// if there are more than 0 photons in the neighborhood, find sqr of maxDistanceSquared
+		float maxRadius = maxRadiusSqd> 0.0 ? sqrt(maxRadiusSqd) : -1.0f;
 		// Accumulate radiance of the K nearest photons
 		for (int i=0; i<neighborPhotonCount; ++i) {
 			photon p = neighborPhotons[i];
 			float photonDistanceSqd = glm::dot(intersection - p.position, intersection - p.position);
 			// Confirm cosine weighting
 			// Use k neighbors radius or grid radius as smoothing distance?
+			// -------------> why is the k neighbor radius resulting in a grided illumination!?? you can see it like voxelsations! 
 			//accumColor += gaussianWeight(photonDistanceSqd, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
-			//accumColor += gaussianWeightJensen(photonDistanceSqd, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+			//accumColor += gaussianWeightJensen(photonDistanceSqd, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 			accumColor += gaussianWeight(photonDistanceSqd, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 		}
+		*/
+
+		// testing
+		// It seems constant for everything. figure out why!
+		/**************************************************/
+		if( maxRadiusSqd > 0.0)
+		{
+			// Display radius in blue
+			accumColor = glm::vec3(0.0f,0.0f,10.0f * (sqrt(maxRadiusSqd)-RADIUS));
+
+			// Display number of Photons as a scale in blue
+			// accumColor = glm::vec3(0.0f,0.0f,neighborPhotonCount * 1.0f / K);
+		}
+		else
+		{
+			accumColor = glm::vec3(1.0f,0.0f,0.0f);
+		}
+		flux = 1.0f;
+		/**************************************************/
 	}
 	return accumColor * flux;
 }

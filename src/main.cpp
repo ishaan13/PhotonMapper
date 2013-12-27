@@ -51,7 +51,7 @@ int main(int argc, char** argv){
 	}
 
 	// Set up camera stuff from loaded pathtracer settings
-	iterations = 0;
+	iterations = 1;
 	renderCam = &renderScene->renderCam;
 	width = renderCam->resolution[0];
 	height = renderCam->resolution[1];
@@ -131,14 +131,13 @@ void runCuda(){
 	// No data is moved (Win & Linux). When mapped to CUDA, OpenGL should not use this buffer
 
 	if(iterations<renderCam->iterations){
-		if (iterations == 0) {
+		if (iterations == 1) {
 			cudaFreeMemory();
 			//copy stuff to the gpu at the beginning of every frame
 			//copy stuff to the gpu
 			sendCurrentFrameDataToGPU();
 		}
 		uchar4 *dptr=NULL;
-		iterations++;
 		cudaGLMapBufferObject((void**)&dptr, pbo);
 
 		// Construct photon map
@@ -186,7 +185,7 @@ void runCuda(){
 
 			//clear image buffer and move onto next frame
 			targetFrame++;
-			iterations = 0;
+			iterations = 1;
 			for(int i=0; i<renderCam->resolution.x*renderCam->resolution.y; i++){
 				renderCam->image[i] = glm::vec3(0,0,0);
 			}
@@ -201,6 +200,8 @@ void runCuda(){
 	cudaEventElapsedTime(&elapsedTime, start, stop); // Calculate runtime, write to elapsedTime -- cudaEventElapsedTime returns value in milliseconds. Resolution ~0.5ms
 
 	printf("Execution Time: %fms for iteration: %d\n", elapsedTime, iterations); // Print Elapsed time
+
+	iterations++;
 }
 
 #ifdef __APPLE__
@@ -252,7 +253,7 @@ void display(){
 	}
 
 
-	string title = "MMFAPhoMap | " + string(modeName) + " | " + utilityCore::convertIntToString(iterations) + " Iterations";
+	string title = "MMFAPhoMap | " + string(modeName) + " | " + utilityCore::convertIntToString(iterations-1) + " Iterations";
 	glutSetWindowTitle(title.c_str());
 
 	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, pbo);
