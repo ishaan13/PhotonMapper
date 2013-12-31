@@ -60,7 +60,7 @@ enum {
 
 extern int kdmode;
 
-int numPhotons = 50000;
+int numPhotons = 50;
 int numPhotonsCompact = numPhotons;
 
 int numBounces = 10;						//hard limit of n bounces for now
@@ -1058,7 +1058,7 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 		}
 
 
-		/*
+		
 		// if there are more than 0 photons in the neighborhood, find sqr of maxDistanceSquared
 		float maxRadius = maxRadiusSqd> 0.0 ? sqrt(maxRadiusSqd) : -1.0f;
 		// Accumulate radiance of the K nearest photons
@@ -1068,19 +1068,19 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 			// Confirm cosine weighting
 			// Use k neighbors radius or grid radius as smoothing distance?
 			// -------------> why is the k neighbor radius resulting in a grided illumination!?? you can see it like voxelsations! 
-			//accumColor += gaussianWeight(photonDistanceSqd, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+			accumColor += gaussianWeight(photonDistanceSqd, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 			//accumColor += gaussianWeightJensen(photonDistanceSqd, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
-			accumColor += gaussianWeight(photonDistanceSqd, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+			//accumColor += gaussianWeight(photonDistanceSqd, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 		}
-		*/
-
+		
 		// testing
 		// It seems constant for everything. figure out why!
 		/**************************************************/
-		if( maxRadiusSqd > 0.0)
+		
+		if( maxRadiusSqd > -1.0)
 		{
 			// Display radius in blue
-			accumColor = glm::vec3(0.0f,0.0f,10.0f * (sqrt(maxRadiusSqd)-RADIUS));
+			accumColor = glm::vec3(0.0f,0.0f,(sqrt(maxRadiusSqd)/RADIUS)/3.0f);
 
 			// Display number of Photons as a scale in blue
 			// accumColor = glm::vec3(0.0f,0.0f,neighborPhotonCount * 1.0f / K);
@@ -1090,7 +1090,9 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 			accumColor = glm::vec3(1.0f,0.0f,0.0f);
 		}
 		flux = 1.0f;
+		
 		/**************************************************/
+		
 	}
 	return accumColor * flux;
 }
