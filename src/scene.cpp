@@ -13,8 +13,8 @@ scene::scene(string filename){
 	vertexcount = 0;
 	normalcount = 0;
 	uvcount = 0;
-	widthcount = 0;
-	maxheight = 0;
+	heightsum = 0;
+	maxwidth = 0;
 	cout << "Reading scene from " << filename << " ..." << endl;
 	cout << " " << endl;
 	char* fname = (char*)filename.c_str();
@@ -283,8 +283,8 @@ int scene::loadTexture(string textureid){
 		newTexture.height = height;
 		newTexture.colors = colors;
 		textures.push_back(newTexture);
-		widthcount += width;
-		maxheight = max(height, maxheight);
+		heightsum += height;
+		maxwidth = max(width, maxwidth);
 		return 1;
 	}
 }

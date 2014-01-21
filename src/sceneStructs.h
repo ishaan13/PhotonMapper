@@ -159,7 +159,7 @@ struct cputexture {
 struct cudatexture {
 	int width;
 	int height;
-	int xindex; // the x index of the first pixel in the texture object with all textures
+	int yindex; // the y index of the first pixel in the texture object with all textures
 };
 
 #endif //CUDASTRUCTS_H

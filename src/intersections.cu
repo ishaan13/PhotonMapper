@@ -108,27 +108,27 @@ __host__ __device__ glm::vec2 getUVOfPointOnUnitCube(glm::vec3 point) {
 
 	if(fabs(point.x - -halfWidth) < FLOAT_EPSILON)
 	{
-		uv = glm::vec2(point.z+0.5, point.y+0.5);
+		uv = glm::vec2(-point.z+0.5, -point.y+0.5);
 	}
 	else if( fabs(point.x - halfWidth) < FLOAT_EPSILON)
 	{
-		uv = glm::vec2(point.z+0.5, point.y+0.5);
+		uv = glm::vec2(point.z+0.5, -point.y+0.5);
 	}
 	else if(fabs(point.y - -halfWidth) < FLOAT_EPSILON)
 	{
-		uv = glm::vec2(point.z+0.5, point.x+0.5);
+		uv = glm::vec2(point.x+0.5, point.z+0.5);
 	}
 	else if( fabs(point.y - halfWidth) < FLOAT_EPSILON)
 	{
-		uv = glm::vec2(point.z+0.5, point.x+0.5);
+		uv = glm::vec2(point.x+0.5, -point.z+0.5);
 	}
 	else if(fabs(point.z - -halfWidth) < FLOAT_EPSILON)
 	{
-		uv = glm::vec2(point.x+0.5, point.y+0.5);
+		uv = glm::vec2(-point.x+0.5, -point.y+0.5);
 	}
 	else if( fabs(point.z - halfWidth) < FLOAT_EPSILON)
 	{
-		uv = glm::vec2(point.x+0.5, point.y+0.5);
+		uv = glm::vec2(-point.x+0.5, -point.y+0.5);
 	}
 
 	return uv;
@@ -405,14 +405,15 @@ __host__ __device__ float sphereIntersectionTest(staticGeom sphere, ray r, glm::
 		t = max(t1, t2);
 	}
 
-	glm::vec3 realIntersectionPoint = multiplyMV(sphere.transform, glm::vec4(getPointOnRay(rt, t), 1.0));
+	glm::vec3 localPoint = getPointOnRay(rt, t);
+
+	glm::vec3 realIntersectionPoint = multiplyMV(sphere.transform, glm::vec4(localPoint, 1.0));
 	glm::vec3 realOrigin = multiplyMV(sphere.transform, glm::vec4(0,0,0,1));
 
 	intersectionPoint = realIntersectionPoint;
 	normal = glm::normalize(realIntersectionPoint - realOrigin);
 
-	//TODO: assign the correct uv
-	uv = glm::vec2(0.0f);
+	uv = glm::vec2(0.5 + atan2(localPoint.z, localPoint.x) / (2.0f * PI), 0.5 - asin(localPoint.y) / PI);
 
 	return glm::length(r.origin - realIntersectionPoint);
 }
@@ -475,7 +476,7 @@ __host__ __device__ glm::vec3 getRadiuses(staticGeom geom){
 
 //LOOK: Example for generating a random point on an object using thrust.
 //Generates a random point on a given cube
-__host__ __device__ void getRandomPointAndNormalOnCube(staticGeom cube, float randomSeed, glm::vec3& point, glm::vec3& normal){
+__host__ __device__ void getRandomPointNormalUVOnCube(staticGeom cube, float randomSeed, glm::vec3& point, glm::vec3& normal, glm::vec2& uv){
 
 	thrust::default_random_engine rng(hash(randomSeed));
 	thrust::uniform_real_distribution<float> u01(0,1);
@@ -512,6 +513,7 @@ __host__ __device__ void getRandomPointAndNormalOnCube(staticGeom cube, float ra
 	}
 
 	normal = getNormalOfPointOnUnitCube(point);
+	uv = getUVOfPointOnUnitCube(point);
 
 	glm::vec3 extendedPoint = point + normal;
 
@@ -525,30 +527,7 @@ __host__ __device__ void getRandomPointAndNormalOnCube(staticGeom cube, float ra
 //Generates a random point on a given sphere
 // Marsaglia (1972)
 // http://mathworld.wolfram.com/SpherePointPicking.html
-__host__ __device__ void getRandomPointAndNormalOnSphere(staticGeom sphere, float randomSeed, glm::vec3& point, glm::vec3& normal){
-
-	/*
-	thrust::default_random_engine rng(hash(randomSeed));
-	thrust::uniform_real_distribution<float> uniformDistribution(-1,1);
-	float x1, x2;
-	int flag = 0;
-	while(flag == 0)
-	{
-	x1 = (float) uniformDistribution(rng);
-	x2 = (float) uniformDistribution(rng);
-
-	if( (x1*x1 + x2*x2) < 1.0f)
-	flag = 1;
-	}
-
-	float term1 = x1*x1 + x2*x2;
-	float term2 = sqrt(1 - term1);
-
-	glm::vec3 unitSphere = glm::vec3( 2 * x1 * term2,
-	2 * x2 * term2,
-	1 - 2 * term1	);
-
-	*/
+__host__ __device__ void getRandomPointNormalUVOnSphere(staticGeom sphere, float randomSeed, glm::vec3& point, glm::vec3& normal, glm::vec2& uv){
 
 	thrust::default_random_engine rng(hash(randomSeed));
 	thrust::uniform_real_distribution<float> uniformDistribution(0,1);
@@ -561,12 +540,13 @@ __host__ __device__ void getRandomPointAndNormalOnSphere(staticGeom sphere, floa
 
 	float radius = 0.5f;
 
-	point = glm::vec3( radius * cos(theta) * sin(phi), radius * sin(theta) * sin(phi), radius * cos(phi));
+	glm::vec3 localPoint = glm::vec3( radius * cos(theta) * sin(phi), radius * sin(theta) * sin(phi), radius * cos(phi));
 
-	point = multiplyMV(sphere.transform, glm::vec4(point,1.0f));
+	point = multiplyMV(sphere.transform, glm::vec4(localPoint,1.0f));
 	glm::vec3 centerViewSpace = multiplyMV(sphere.transform, glm::vec4(0.0f,0.0f,0.0f,1.0f));
 
 	normal = glm::normalize(point - centerViewSpace);
+	uv = glm::vec2(0.5 + atan2(localPoint.z, localPoint.x) / (2.0f * PI), 0.5 - asin(localPoint.y) / PI);
 }
 
 

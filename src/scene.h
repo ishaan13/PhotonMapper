@@ -39,8 +39,8 @@ public:
 		int vertexcount;
 		int normalcount;
 		int uvcount;
-		int widthcount; // the sum of all textures' width
-		int maxheight; // the largest height of all textures
+		int heightsum; // the sum of all textures' height
+		int maxwidth; // the largest width of all textures
     camera renderCam;
 };
 

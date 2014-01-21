@@ -633,10 +633,10 @@ void copyDataFromScene(){
 	cout<<"Copied geometry data from scene"<<endl;
 
 	if (numberOfTextures > 0) {
-		// pack textures into a long cuda 2d array
-		float4* cputexturedata = new float4[renderScene->widthcount * renderScene->maxheight];
+		// pack textures into a tall cuda 2d array
+		float4* cputexturedata = new float4[renderScene->heightsum * renderScene->maxwidth];
 		int storedPixelCount = 0;
-		int accumWidth = 0; // accumulated width
+		int accumHeight = 0; // accumulated height
 		cudatexture* textures = new cudatexture[numberOfTextures];
 		for(int i=0; i<numberOfTextures; i++) {
 			int width = renderScene->textures[i].width;
@@ -644,23 +644,24 @@ void copyDataFromScene(){
 
 			textures[i].width = width;
 			textures[i].height = height;
-			textures[i].xindex = accumWidth;
-			for (int j=0; j<width; j++) {
-				for (int k=0; k<height; k++) {
-					int index = j * height + k + storedPixelCount; // assume textures are stored in column-major order in cuda
-					glm::vec3 pixelcolor = renderScene->textures[i].colors[index];
-					cputexturedata[index].x = pixelcolor.x;
-					cputexturedata[index].y = pixelcolor.y;
-					cputexturedata[index].z = pixelcolor.z;
+			textures[i].yindex = accumHeight;
+			for (int j=0; j<height; j++) {
+				for (int k=0; k<width; k++) {
+					int textureIndex = j * width + k;
+					int dataIndex = j * width + k + storedPixelCount; // assume textures are stored in column-major order in cuda
+					glm::vec3 pixelcolor = renderScene->textures[i].colors[textureIndex];
+					cputexturedata[dataIndex].x = pixelcolor.x;
+					cputexturedata[dataIndex].y = pixelcolor.y;
+					cputexturedata[dataIndex].z = pixelcolor.z;
 				}
 			}
-			storedPixelCount += width * renderScene->maxheight;
-			accumWidth += width;
+			storedPixelCount += height * renderScene-> maxwidth;
+			accumHeight += height;
 		}
 
 		cout<<"Copied texture data from scene"<<endl;
 
-		initTexture(textures, cputexturedata, numberOfTextures, renderScene->widthcount, renderScene->maxheight);
+		initTexture(textures, cputexturedata, numberOfTextures, renderScene->heightsum, renderScene->maxwidth);
 
 		delete[] textures;
 		delete[] cputexturedata;

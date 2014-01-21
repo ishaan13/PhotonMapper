@@ -39,7 +39,7 @@
 
 // Photon Map Defines
 #define PHOTONCOMPACT 1
-#define K 45
+#define K 25
 #define GRID_DELTA 1
 
 #if CUDA_VERSION >= 5000
@@ -60,7 +60,7 @@ enum {
 
 extern int kdmode;
 
-int numPhotons = 50;
+int numPhotons = 10000;
 int numPhotonsCompact = numPhotons;
 
 int numBounces = 10;						//hard limit of n bounces for now
@@ -81,7 +81,7 @@ photon* cudaPhotonPoolCompact;		//stores output photons after stream compaction
 int* cudaPhotonGridIndex;			//maps photonID to gridID
 int* cudaGridFirstPhotonIndex;
 
-#define RADIUS 0.150f
+#define RADIUS 0.25f
 
 //gridAttributes grid(-5.5, -0.5, -5.5, 5.5, 10.5, 5.5, RADIUS);
 gridAttributes grid(0, 0, 0, 0, 0, 0, RADIUS);		//for testing grid bounding box
@@ -239,8 +239,8 @@ __device__ glm::vec3 getMaterialColor(material mtl, cudatexture* textures, glm::
 	}
 	else {
 		cudatexture texture = textures[mtl.textureid];
-		float x = texture.xindex + uv.x * texture.width;
-		float y = uv.y * texture.height;
+		float x = uv.x * texture.width;
+		float y = texture.yindex + uv.y * texture.height;
 		float4 colorData = tex2D(tex, x, y);
 		return glm::vec3(colorData.x, colorData.y, colorData.z);
 	}
@@ -664,7 +664,7 @@ __global__ void mapPhotonToGrid(photon* photonPool, int numPhotons, int* gridInd
 
 //function for emitting photons from a sphere light
 __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, staticGeom* geoms, int* lights, int numberOfLights,
-	float* cudaAccumLightProbabilities, material* materials, float time)
+							float* cudaAccumLightProbabilities, material* materials, cudatexture* cudatextures, float time)
 {
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 	if(index < numPhotons)
@@ -694,14 +694,15 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 		
 		// for now only supports sphere and cube lights
 		glm::vec3 position, normal;
+		glm::vec2 uv;
 		if(lightChosen.type == SPHERE)
 		{
-			getRandomPointAndNormalOnSphere(lightChosen,index, position, normal);
+			getRandomPointNormalUVOnSphere(lightChosen,index, position, normal, uv);
 
 		}
 		else if (lightChosen.type == CUBE)
 		{
-			getRandomPointAndNormalOnCube(lightChosen,index, position, normal);
+			getRandomPointNormalUVOnCube(lightChosen,index, position, normal, uv);
 		}
 		p.position = position;
 
@@ -713,7 +714,7 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 		
 		// Set color of photon
 		material lightMaterial = materials[lightChosen.materialid];
-		p.color = lightMaterial.emittance * lightMaterial.color;
+		p.color = lightMaterial.emittance * getMaterialColor(lightMaterial, cudatextures, uv);
 
 		// Set whether photon has been stored/absorbed (dead)
 		p.stored = false;
@@ -1161,15 +1162,15 @@ void cleanPhotonMap()
 	cudaFree(cudaPhotonPool);
 }
 
-void initTexture(cudatexture* textures, float4* cputexturedata, int numberOfTextures, int widthcount, int maxheight) {
+void initTexture(cudatexture* textures, float4* cputexturedata, int numberOfTextures, int heightsum, int maxwidth) {
 	cudaMalloc((void**)&cudatextures, numberOfTextures*sizeof(cudatexture));
 	cudaMemcpy(cudatextures, textures, numberOfTextures*sizeof(cudatexture), cudaMemcpyHostToDevice);
 
 	cudaArray* cudatexturedata;
 	cudaChannelFormatDesc desc = cudaCreateChannelDesc<float4>();
-	cudaMallocArray(&cudatexturedata, &desc, widthcount, maxheight);
+	cudaMallocArray(&cudatexturedata, &desc, maxwidth, heightsum);
 	checkCUDAError("initTexture 1 failed!");
-	cudaMemcpyToArray(cudatexturedata, 0, 0, cputexturedata, widthcount * maxheight * sizeof(float4), cudaMemcpyHostToDevice);
+	cudaMemcpyToArray(cudatexturedata, 0, 0, cputexturedata, maxwidth * heightsum * sizeof(float4), cudaMemcpyHostToDevice);
 	checkCUDAError("initTexture 2 failed!");
 
 	cudaBindTextureToArray(tex, (cudaArray*)cudatexturedata, desc);
@@ -1438,7 +1439,7 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	int photonBlocksPerGrid = ceil(numPhotons * 1.0f/photonThreadsPerBlock);
 
 	emitPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, cudageoms, 
-		cudaLights, numLights, cudaAccumLightProbabilities, cudamaterials, iterations);
+		cudaLights, numLights, cudaAccumLightProbabilities, cudamaterials, cudatextures, iterations);
 	cudaThreadSynchronize();
 	checkCUDAError("emit photons kernel failed!");
 
@@ -1517,7 +1518,7 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 
 			specularColor = m.specularColor;
 			// Emmited color is the same as material color
-			emittance = m.color * m.emittance;
+			emittance = diffuseColor * m.emittance;
 
 			if (mode != DISP_PATHTRACE) {
 				// Stochastic Diffused Lighting with "area" lights
@@ -1528,19 +1529,23 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 					if(lightMaterial.emittance > 0.0001f)
 					{
 						glm::vec3 lightSourceSample, normal;
+						glm::vec2 uv; // for environment maps
 
 						// Get a random point on the light source
 						if(geoms[iter].type == SPHERE)
 						{
-							getRandomPointAndNormalOnSphere(geoms[iter],time*index, lightSourceSample, normal);
+							getRandomPointNormalUVOnSphere(geoms[iter],time*index, lightSourceSample, normal, uv);
 						}
 						else if(geoms[iter].type == CUBE)
 						{
-							getRandomPointAndNormalOnCube(geoms[iter],time*index, lightSourceSample, normal);
+							getRandomPointNormalUVOnCube(geoms[iter],time*index, lightSourceSample, normal, uv);
 						}
 
 						// Diffuse Lighting Calculation
 						glm::vec3 L = glm::normalize(lightSourceSample - minIntersectionPoint);
+
+						// Light color (with texture in consideration)
+						glm::vec3 lightColor = getMaterialColor(lightMaterial, cudatextures, uv);
 
 						//Shadow Ray check
 						ray shadowRay;
@@ -1552,14 +1557,14 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 
 						if(visible)
 						{
-							diffuseLight += lightMaterial.color * lightMaterial.emittance * glm::max(glm::dot(L,minNormal),0.0f);
+							diffuseLight += lightColor * lightMaterial.emittance * glm::max(glm::dot(L,minNormal),0.0f);
 
 
 							// Calculate Phong Specular Part only if exponent is greater than 0
 							if(m.specularExponent > FLOAT_EPSILON)
 							{
 								glm::vec3 reflectedLight = 2.0f * minNormal * glm::dot(minNormal, L) - L;
-								phongLight += lightMaterial.color * lightMaterial.emittance * pow(glm::max(glm::dot(reflectedLight,minNormal),0.0f),m.specularExponent);
+								phongLight += lightColor * lightMaterial.emittance * pow(glm::max(glm::dot(reflectedLight,minNormal),0.0f),m.specularExponent);
 							}
 
 						}
@@ -1648,11 +1653,12 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 #endif
 				}
 				returnRay.transmission = r.transmission * diffuseColor * m.hasRefractive;
+
 				rayPool[index] = returnRay;
 			}
 		}
 		// No intersection, mark rays as dead
-		// Ambeint term 
+		// Ambient term 
 		else
 		{
 			glm::vec3 ambient = glm::vec3(0,0,0);

@@ -28,8 +28,8 @@ __host__ __device__ float boxIntersectionTest(staticGeom sphere, ray r, glm::vec
 __host__ __device__ float sphereIntersectionTest(staticGeom sphere, ray r, glm::vec3& intersectionPoint, glm::vec3& normal, glm::vec2& uv);
 __host__ __device__ float triangleIntersectionTest(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, glm::vec3 n1, glm::vec3 n2, glm::vec3 n3,
 													glm::vec2 t1, glm::vec2 t2, glm::vec2 t3, ray r, glm::vec3& intersection, glm::vec3& normal, glm::vec2& uv);
-__host__ __device__ void getRandomPointAndNormalOnCube(staticGeom cube, float randomSeed, glm::vec3& point, glm::vec3& normal);
-__host__ __device__ void getRandomPointAndNormalOnSphere(staticGeom cube, float randomSeed, glm::vec3& point, glm::vec3& normal);
+__host__ __device__ void getRandomPointNormalUVOnCube(staticGeom cube, float randomSeed, glm::vec3& point, glm::vec3& normal, glm::vec2& uv);
+__host__ __device__ void getRandomPointNormalUVOnSphere(staticGeom cube, float randomSeed, glm::vec3& point, glm::vec3& normal, glm::vec2& uv);
 
 __host__ __device__ glm::vec3 getNormalOfPointOnUnitCube(glm::vec3 point);
 __host__ __device__ glm::vec2 getUVOfPointOnUnitCube(glm::vec3 point);

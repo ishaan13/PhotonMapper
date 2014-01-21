@@ -12,13 +12,13 @@
     <ClCompile Include="..\..\src\stb_image\stb_image_write.c">
       <Filter>stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\KDTree.cpp" />
     <ClCompile Include="..\..\src\ObjCore\obj.cpp">
       <Filter>ObjCore</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ObjCore\objloader.cpp">
       <Filter>ObjCore</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\KDTree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\cudaMat4.h" />
@@ -37,14 +37,14 @@
     <ClInclude Include="..\..\src\stb_image\stb_image.h">
       <Filter>stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\ObjCore\objloader.h">
-      <Filter>ObjCore</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\src\KDTreeStructs.h" />
+    <ClInclude Include="..\..\src\KDTree.h" />
     <ClInclude Include="..\..\src\ObjCore\obj.h">
       <Filter>ObjCore</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\KDTree.h" />
-    <ClInclude Include="..\..\src\KDTreeStructs.h" />
+    <ClInclude Include="..\..\src\ObjCore\objloader.h">
+      <Filter>ObjCore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="..\..\src\raytraceKernel.cu" />

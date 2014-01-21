@@ -6,6 +6,9 @@
 #ifndef INTERACTIONS_H
 #define INTERACTIONS_H
 
+#define FRESNEL 1
+#define SCHLICK 0
+
 #include "intersections.h"
 
 struct Fresnel {
@@ -146,16 +149,16 @@ __host__ __device__ int calculateBSDF(ray& r, glm::vec3 intersect, glm::vec3 nor
 		}
 
 		refracted.direction = glm::normalize(r.direction * IOR + normal * (IOR * cosValue - sqrt(k)));
-		refracted.origin = intersect + 0.001f * refracted.direction;
+		refracted.origin = intersect + 0.01f * refracted.direction;
 
-#if 0
+#if FRESNEL
 		// Fresnel Calculation
 
 		// Fabs because the angle is always between 0 and 90, direction not-withstanding
-		float nd = fabs(glm::dot(r.direction, normal));
-		float nt = fabs(glm::dot(refracted.direction, normal));
-		float n_a = nd < 0 ? 1.0f : m.indexOfRefraction;
-		float n_b = nd < 0 ? m.indexOfRefraction : 1.0f;
+		float nd = glm::dot(r.direction, normal);
+		float nt = glm::dot(refracted.direction, normal);
+		float n_a = 1.0f;
+		float n_b = 1.0f/IOR;
 		float amountReflected;
 
 #if SCHLICK
@@ -171,7 +174,7 @@ __host__ __device__ int calculateBSDF(ray& r, glm::vec3 intersect, glm::vec3 nor
 		amountReflected = RO + (1-RO) * c * c * c * c * c;
 
 #else
-		// Fresnels equations
+		// Fresnel equations
 		float reflectedParallel = (n_b * nd - n_a * nt) * (n_b * nd - n_a * nt) / ((n_b * nd + n_a * nt) * (n_b * nd + n_a * nt));
 		float reflectedPerpendicular = (n_a * nd - n_b * nt) * (n_a * nd - n_b * nt) / ((n_a * nd + n_b * nt) * (n_a * nd + n_b * nt));
 		amountReflected = 0.5 * (reflectedParallel + reflectedPerpendicular);
@@ -192,7 +195,7 @@ __host__ __device__ int calculateBSDF(ray& r, glm::vec3 intersect, glm::vec3 nor
 	}
 	else // Diffuse
 	{
-			return 0;
+		return 0;
 	}
 };
 
