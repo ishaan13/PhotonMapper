@@ -1482,11 +1482,6 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 	if((x<=resolution.x && y<=resolution.y) && glm::length(rayPool[index].transmission) > FLOAT_EPSILON){
 #endif
 
-		if (x == 450 && y == 520) {
-			int debug = 1;
-			x = debug * x;
-		}
-
 		ray r = rayPool[index];	
 
 		//intersection testing
@@ -1498,6 +1493,15 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 
 		getClosestIntersection(r, geoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
 			minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial, minUV,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
+
+		/*
+		// debugging
+#if COMPACTION
+		colors[r.pixelIndex] = minNormal;
+#else
+		colors[index] = minNormal;
+#endif
+		*/
 
 		// Depth render - test
 		//float maxDepth = 15.0f;

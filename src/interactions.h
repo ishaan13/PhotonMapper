@@ -6,7 +6,7 @@
 #ifndef INTERACTIONS_H
 #define INTERACTIONS_H
 
-#define FRESNEL 1
+#define FRESNEL 0
 #define SCHLICK 0
 
 #include "intersections.h"
@@ -153,12 +153,12 @@ __host__ __device__ int calculateBSDF(ray& r, glm::vec3 intersect, glm::vec3 nor
 
 #if FRESNEL
 		// Fresnel Calculation
-
-		// Fabs because the angle is always between 0 and 90, direction not-withstanding
+		// Lucy's equations
 		float nd = glm::dot(r.direction, normal);
 		float nt = glm::dot(refracted.direction, normal);
 		float n_a = 1.0f;
 		float n_b = 1.0f/IOR;
+		
 		float amountReflected;
 
 #if SCHLICK
