@@ -446,14 +446,14 @@ __host__ __device__ float triangleIntersectionTest(glm::vec3 v1, glm::vec3 v2, g
 		glm::vec3 x = r.origin + t * r.direction;
 
 		// point in triangle
-		float s1 = glm::dot(glm::cross(v2 - v1, x - v1), n);
-		float s2 = glm::dot(glm::cross(v3 - v2, x - v2), n);
-		float s3 = glm::dot(glm::cross(v1 - v3, x - v3), n);
-		float s = glm::dot(glm::cross(v2 - v1, v3 - v1), n);
-		if (s1 >= 0 && s2 >= 0 && s3 >= 0) {
+		float s1 = glm::length(glm::cross(x - v1, x - v2));
+		float s2 = glm::length(glm::cross(x - v2, x - v3));
+		float s3 = glm::length(glm::cross(x - v3, x - v1));
+		float s = glm::length(glm::cross(v1 - v2, v3 - v2));
+		if (s1 >= 0 && s2 >= 0 && s3 >= 0 && s1 <= s && s2 <= s && s3 <= s && abs(s1 + s2 + s3 - s) <= 0.0001f) {
 			intersection = x;
-			normal = glm::normalize(s1/s * n1 + s2/s * n2 + s3/s * n3);
-			uv = s1/s * t1 + s2/s * t2 + s3/s * t3;
+			normal = glm::normalize(s1/s * n3 + s2/s * n1 + s3/s * n2);
+			uv = s1/s * t3 + s2/s * t1 + s3/s * t2;
 
 			return glm::length(r.origin - x);
 		}

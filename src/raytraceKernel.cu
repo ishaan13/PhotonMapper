@@ -67,7 +67,7 @@ int numBounces = 10;						//hard limit of n bounces for now
 float emitEnergyScale = 1.0;				//Empirically Verify this value
 
 //Lower Direct lighting by this contribution factor
-__device__ float lowerDirectScale = (2.0f*PI_F);
+__device__ float lowerDirectScale = (4.0f*PI_F);
 
 float totalEnergy;	//total amount of energy in the scene, used for calculating flux per photon
 float flux;
@@ -81,7 +81,7 @@ photon* cudaPhotonPoolCompact;		//stores output photons after stream compaction
 int* cudaPhotonGridIndex;			//maps photonID to gridID
 int* cudaGridFirstPhotonIndex;
 
-#define RADIUS 0.25f
+#define RADIUS 0.3f
 
 //gridAttributes grid(-5.5, -0.5, -5.5, 5.5, 10.5, 5.5, RADIUS);
 gridAttributes grid(0, 0, 0, 0, 0, 0, RADIUS);		//for testing grid bounding box
@@ -664,7 +664,7 @@ __global__ void mapPhotonToGrid(photon* photonPool, int numPhotons, int* gridInd
 
 //function for emitting photons from a sphere light
 __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, staticGeom* geoms, int* lights, int numberOfLights,
-							float* cudaAccumLightProbabilities, material* materials, cudatexture* cudatextures, float time)
+							float* cudaAccumLightProbabilities, material* materials, cudatexture* cudatextures, float time, glm::vec2 resolution)
 {
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 	if(index < numPhotons)
@@ -673,7 +673,7 @@ __global__ void emitPhotons(photon* photonPool, int numPhotons, int numBounces, 
 		
 		// Do a random-check to choose a certain light: take into consideration area of lights
 		// Do a better random generation
-		glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),time,index,numberOfLights);
+		glm::vec3 randoms = generateRandomNumberFromThread(resolution,time,index,numberOfLights);
 		
 		// Pick light based on cudaAccumLightProbabilities
 		int lightIndex;
@@ -785,7 +785,7 @@ __global__ void displayPhotons(photon* photonPool, int numTotalPhotons, glm::vec
 
 __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBounces, staticGeom* geoms, int numberOfGeoms, triangle* cudafaces,
 								int numFaces, glm::vec3* cudavertices, glm::vec3* cudanormals, glm::vec2* cudauvs, material* materials,
-								cudatexture* cudatextures, float time, KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex, int kdmode)
+								cudatexture* cudatextures, float time, KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex, int kdmode, glm::vec2 resolution)
 {
 	//bounce photons around
 	int index = blockIdx.x * blockDim.x + threadIdx.x; 
@@ -836,16 +836,17 @@ __global__ void bouncePhotons(photon* photonPool, int numPhotons, int currentBou
 				p.color *= getMaterialColor(m, cudatextures, minUV);
 
 				//assume diffuse surfaces only for now, so bounce in random direction
-				glm::vec3 randoms = generateRandomNumberFromThread(glm::vec2(800,800),time,index,currentBounces+3);
+				glm::vec3 randoms = generateRandomNumberFromThread(resolution,time,index,currentBounces+3);
 				p.din = p.dout;
 				p.dout = calculateRandomDirectionInHemisphere(minNormal,randoms.y,randoms.z);
 
 				AbsorptionAndScatteringProperties absScatProps;
 				glm::vec3 colorSend, unabsorbedColor;
+
 				ray returnRay = r;
 
 				int rayPropogation = calculateBSDF(returnRay,minIntersectionPoint,minNormal,p.color,absScatProps,colorSend,unabsorbedColor,m,
-													glm::vec2(800,800), time, currentBounces, threadIdx.x, blockIdx.x);
+													resolution, time, currentBounces, threadIdx.x, blockIdx.x);
 
 				// Reflection; calculate transmission coeffiecient
 				if(rayPropogation == 1)
@@ -1069,7 +1070,7 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 			// Confirm cosine weighting
 			// Use k neighbors radius or grid radius as smoothing distance?
 			// -------------> why is the k neighbor radius resulting in a grided illumination!?? you can see it like voxelsations! 
-			accumColor += gaussianWeight(photonDistanceSqd, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+			accumColor += gaussianWeight(photonDistanceSqd, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 			//accumColor += gaussianWeightJensen(photonDistanceSqd, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 			//accumColor += gaussianWeight(photonDistanceSqd, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 		}
@@ -1078,19 +1079,19 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 		// It seems constant for everything. figure out why!
 		/**************************************************/
 		
-		if( maxRadiusSqd > -1.0)
-		{
-			// Display radius in blue
-			accumColor = glm::vec3(0.0f,0.0f,(sqrt(maxRadiusSqd)/RADIUS)/3.0f);
+		//if( maxRadiusSqd > -1.0)
+		//{
+		//	// Display radius in blue
+		//	accumColor = glm::vec3(0.0f,0.0f,(sqrt(maxRadiusSqd)/RADIUS)/3.0f);
 
-			// Display number of Photons as a scale in blue
-			// accumColor = glm::vec3(0.0f,0.0f,neighborPhotonCount * 1.0f / K);
-		}
-		else
-		{
-			accumColor = glm::vec3(1.0f,0.0f,0.0f);
-		}
-		flux = 1.0f;
+		//	// Display number of Photons as a scale in blue
+		//	// accumColor = glm::vec3(0.0f,0.0f,neighborPhotonCount * 1.0f / K);
+		//}
+		//else
+		//{
+		//	accumColor = glm::vec3(1.0f,0.0f,0.0f);
+		//}
+		//flux = 1.0f;
 		
 		/**************************************************/
 		
@@ -1133,13 +1134,13 @@ __global__ void renderIndirectLighting(glm::vec2 resolution, float time, cameraD
 
 void tracePhotons(int photonThreadsPerBlock, int photonBlocksPerGrid, photon* cudaPhotonPool,
 									int numPhotons, staticGeom* cudaGeoms, int numberOfGeoms, material* cudaMaterials,
-									cudatexture* cudatextures, float time)
+									cudatexture* cudatextures, float time, glm::vec2 resolution)
 {
 	for(int i=0; i <= numBounces; i++)
 	{
 		// Bounce Photons Around
 		bouncePhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, i,	cudageoms, numGeoms,
-			cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudamaterials, cudatextures, time,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
+			cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudamaterials, cudatextures, time,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode, resolution);
 
 #if COMPACTION
 		// Do some compaction
@@ -1439,12 +1440,12 @@ void cudaPhotonMapCore(camera* renderCam, int frame, int iterations, uchar4* PBO
 	int photonBlocksPerGrid = ceil(numPhotons * 1.0f/photonThreadsPerBlock);
 
 	emitPhotons<<<dim3(photonBlocksPerGrid),dim3(photonThreadsPerBlock)>>>(cudaPhotonPool, numPhotons, numBounces, cudageoms, 
-		cudaLights, numLights, cudaAccumLightProbabilities, cudamaterials, cudatextures, iterations);
+		cudaLights, numLights, cudaAccumLightProbabilities, cudamaterials, cudatextures, iterations, cam.resolution);
 	cudaThreadSynchronize();
 	checkCUDAError("emit photons kernel failed!");
 
 	// Trace all photons with all bounces
-	tracePhotons(photonThreadsPerBlock, photonBlocksPerGrid, cudaPhotonPool, numPhotons, cudageoms, numGeoms, cudamaterials, cudatextures, iterations);
+	tracePhotons(photonThreadsPerBlock, photonBlocksPerGrid, cudaPhotonPool, numPhotons, cudageoms, numGeoms, cudamaterials, cudatextures, iterations, cam.resolution);
 	cudaThreadSynchronize();
 	checkCUDAError("tracePhotons kernel failed!");
 

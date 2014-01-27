@@ -171,7 +171,7 @@ ROTAT       0 0 0
 SCALE       .01 10 10
 
 OBJECT 5
-obj/dragon.obj
+obj/smootheddragon.obj
 material 5
 frame 0
 TRANS       0 4 0

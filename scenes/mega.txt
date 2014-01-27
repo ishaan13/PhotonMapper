@@ -124,7 +124,7 @@ FOVY        20
 ITERATIONS  3000
 FILE        final.png
 frame 0
-EYE         0 6 12
+EYE         0 3.5 12
 VIEW        0 0 -1
 UP          0 1 0
 APERTURE    0.125

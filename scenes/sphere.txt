@@ -174,9 +174,9 @@ OBJECT 5
 sphere
 material 5
 frame 0
-TRANS       0 4 0
+TRANS       0 2 0
 ROTAT       0 0 0
-SCALE       4 4 4
+SCALE       3 3 3
 
 OBJECT 6
 cube

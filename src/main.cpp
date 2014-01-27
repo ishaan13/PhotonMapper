@@ -282,7 +282,7 @@ glm::vec3 multiplyMVOnHost(cudaMat4 m, glm::vec4 v){
 
 cudaMat4 getNormalTransformOnHost(cudaMat4 a){
 	glm::mat4 m = utilityCore::cudaMat4ToGlmMat4(a);
-	m = glm::inverse(glm::transpose(m));
+	m = glm::transpose(glm::inverse(m));
 	return utilityCore::glmMat4ToCudaMat4(m);
 }
 
@@ -686,7 +686,7 @@ void sendCurrentFrameDataToGPU(){
 
 			// transform normals
 			for (int j=transNCount; j<transNCount+geoms[i].normalcount; ++j) {
-				transNormals[j] = glm::normalize(multiplyMVOnHost(getNormalTransformOnHost(geoms[i].transforms[0]), glm::vec4(normals[j], 0.0f)));
+				transNormals[j] = glm::normalize(multiplyMVOnHost(getNormalTransformOnHost(geoms[i].transforms[targetFrame]), glm::vec4(normals[j], 0.0f)));
 			}
 			transNCount += geoms[i].normalcount;
 		}

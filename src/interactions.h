@@ -6,7 +6,7 @@
 #ifndef INTERACTIONS_H
 #define INTERACTIONS_H
 
-#define FRESNEL 0
+#define FRESNEL 1
 #define SCHLICK 0
 
 #include "intersections.h"
