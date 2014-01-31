@@ -121,7 +121,7 @@ TEXTURE		0
 CAMERA
 RES         800 800
 FOVY        35
-ITERATIONS  3000
+ITERATIONS  100
 FILE        dragon.png
 frame 0
 EYE         0 5 12

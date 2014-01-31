@@ -121,10 +121,10 @@ TEXTURE		0
 CAMERA
 RES         1280 720
 FOVY        20
-ITERATIONS  3000
-FILE        final.png
+ITERATIONS  5000
+FILE        mega.png
 frame 0
-EYE         0 3.5 12
+EYE         0 3.2 12
 VIEW        0 0 -1
 UP          0 1 0
 APERTURE    0.125
@@ -179,7 +179,7 @@ ROTAT       0 -30 37
 SCALE       20 20 20
 
 OBJECT 6
-obj/dragon.obj
+obj/smootheddragon.obj
 material 5
 frame 0
 TRANS       -2.2 4 0

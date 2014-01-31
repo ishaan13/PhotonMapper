@@ -137,6 +137,32 @@ void runCuda(){
 			//copy stuff to the gpu
 			sendCurrentFrameDataToGPU();
 		}
+		if (iterations == 10 || iterations % 100 == 0) {
+			//output image file
+			image outputImage(renderCam->resolution.x, renderCam->resolution.y);
+
+			for(int x=0; x<renderCam->resolution.x; x++){
+				for(int y=0; y<renderCam->resolution.y; y++){
+					int index = x + (y * renderCam->resolution.x);
+					outputImage.writePixelRGB(renderCam->resolution.x-1-x,y,renderCam->image[index]);
+				}
+			}
+
+			gammaSettings gamma;
+			gamma.applyGamma = true;
+			gamma.gamma = 1.0;//2.2;
+			gamma.divisor = iterations;
+			outputImage.setGammaSettings(gamma);
+			string filename = renderCam->imageName;
+			string s;
+			stringstream out;
+			out << iterations;
+			s = out.str();
+			utilityCore::replaceString(filename, ".bmp", "."+s+".bmp");
+			utilityCore::replaceString(filename, ".png", "."+s+".png");
+			outputImage.saveImageRGB(filename);
+			cout << "Saved iteration " << s << " to " << filename << endl;
+		}
 		uchar4 *dptr=NULL;
 		cudaGLMapBufferObject((void**)&dptr, pbo);
 
@@ -169,7 +195,7 @@ void runCuda(){
 			string filename = renderCam->imageName;
 			string s;
 			stringstream out;
-			out << targetFrame;
+			out << iterations;
 			s = out.str();
 			utilityCore::replaceString(filename, ".bmp", "."+s+".bmp");
 			utilityCore::replaceString(filename, ".png", "."+s+".png");

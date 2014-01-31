@@ -1,0 +1,5 @@
+dragon.txt
+raytrace 2.1s/f
+pathtrace 9.2s/f
+photon 2.6s/f
+GPU: NVIDIA GeForce GT 650M

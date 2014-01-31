@@ -60,7 +60,7 @@ enum {
 
 extern int kdmode;
 
-int numPhotons = 10000;
+int numPhotons = 20000;
 int numPhotonsCompact = numPhotons;
 
 int numBounces = 10;						//hard limit of n bounces for now
