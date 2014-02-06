@@ -143,6 +143,7 @@ void runCuda(){
 			//copy stuff to the gpu
 			sendCurrentFrameDataToGPU();
 		}
+#if OUTPUT_DATA
 		if (iterations == 10 || iterations % 100 == 0) {
 			//output image file
 			image outputImage(renderCam->resolution.x, renderCam->resolution.y);
@@ -169,6 +170,8 @@ void runCuda(){
 			outputImage.saveImageRGB(filename);
 			cout << "Saved iteration " << s << " to " << filename << endl;
 		}
+
+#endif
 		uchar4 *dptr=NULL;
 		cudaGLMapBufferObject((void**)&dptr, pbo);
 

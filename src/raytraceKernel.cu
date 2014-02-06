@@ -1662,8 +1662,17 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 
 						// cosine of largest circle inscribed in the sphere, perpendicular to the intersection point.
 						// Look up slide 62 of smallpt explanation
-						float cos_alpha = sqrt(1.0f - ((radius*radius)/(glm::dot(center - minIntersectionPoint, center - minIntersectionPoint))));
-						float solidAngle = TWO_PI * (1 - cos_alpha);
+						float sin_alpha = ((radius*radius)/(glm::dot(center - minIntersectionPoint, center - minIntersectionPoint)));
+						float solidAngle;
+						if(sin_alpha > 1.0f)
+							solidAngle = TWO_PI;
+						else
+						{
+							float cos_alpha = sqrt(1.0f - sin_alpha);
+							solidAngle = TWO_PI * (1 - cos_alpha);
+						}
+						// somthing is zero above?? : possibly center - minIntersectionPoinnt is really small?
+						// That makes sense, if the radius is larger than the hypotenuse, the equation ought to be reversed. draw and confirm.
 
 						/*
 						// Get a random point on the light source
@@ -1694,7 +1703,7 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 						if(visible)
 						{
 							float brdfTerm = ONE_OVER_PI;
-							diffuseLight += lightColor * lightMaterial.emittance * glm::max(glm::dot(L,minNormal),0.0f) * solidAngle*brdfTerm ;
+							diffuseLight += lightColor * lightMaterial.emittance * glm::max(glm::dot(L,minNormal),0.0f) * (solidAngle)*brdfTerm ;
 
 							/*
 							// Calculate Phong Specular Part only if exponent is greater than 0

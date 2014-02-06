@@ -46,6 +46,7 @@
 
 
 #define CPUTRACE 0
+#define OUTPUT_DATA 0
 
 using namespace std;
 
