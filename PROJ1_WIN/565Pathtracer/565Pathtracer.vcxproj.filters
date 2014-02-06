@@ -5,7 +5,6 @@
     <ClCompile Include="..\..\src\image.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\scene.cpp" />
-    <ClCompile Include="..\..\src\utilities.cpp" />
     <ClCompile Include="..\..\src\stb_image\stb_image.c">
       <Filter>stb_image</Filter>
     </ClCompile>
@@ -19,6 +18,7 @@
     <ClCompile Include="..\..\src\ObjCore\objloader.cpp">
       <Filter>ObjCore</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\cudaMat4.h" />

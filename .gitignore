@@ -25,8 +25,7 @@ sph/output/*
 *.vcxproj
 
 #CUDA dependencies
-PROJ1/WIN/src/raytraceKernel.cu.deps
-PROJ1/WIN/src/intersection.cu.deps
+PROJ1/WIN/src/
 
 # Build results
 

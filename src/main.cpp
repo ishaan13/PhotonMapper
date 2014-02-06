@@ -28,6 +28,7 @@ int main(int argc, char** argv){
 	bool loadedScene = false;
 	finishedRender = false;
 
+	previousFrame = 0;
 	targetFrame = 0;
 	singleFrameMode = true;
 
@@ -58,6 +59,7 @@ int main(int argc, char** argv){
 
 	if(targetFrame>=renderCam->frames){
 		cout << "Warning: Specified target frame is out of range, defaulting to frame 0." << endl;
+		previousFrame = 0;
 		targetFrame = 0;
 	}
 
@@ -131,9 +133,13 @@ void runCuda(){
 	// No data is moved (Win & Linux). When mapped to CUDA, OpenGL should not use this buffer
 
 	if(iterations<renderCam->iterations){
-		if (iterations == 1) {
+		if ((iterations == 1 && (previousFrame != targetFrame)) || firstEverExecution) {
+
+			firstEverExecution = false;
+
 			cudaFreeMemory();
 			//copy stuff to the gpu at the beginning of every frame
+			// but not if only camera data is changed or mode is changed. only copy data if data is changed.
 			//copy stuff to the gpu
 			sendCurrentFrameDataToGPU();
 		}
@@ -209,6 +215,7 @@ void runCuda(){
 		}
 		if(targetFrame<renderCam->frames-1){
 
+			previousFrame = targetFrame;
 			//clear image buffer and move onto next frame
 			targetFrame++;
 			iterations = 1;
@@ -523,6 +530,11 @@ void keyboard(unsigned char key, int x, int y)
 		cudaClearAccumulatorImage(renderCam);
 		if (kdmode == KD_ON) kdmode = KD_OFF;
 		else if (kdmode == KD_OFF) kdmode = KD_ON;
+		break;
+	case('v'):
+		iterations = 1;
+		cudaClearAccumulatorImage(renderCam);
+		visMode = (visMode + 1) % VIS_NUM;
 		break;
 	}
 }

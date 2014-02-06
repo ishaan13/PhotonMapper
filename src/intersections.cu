@@ -1,5 +1,6 @@
 #include "intersections.h"
 #include "KDTree.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 enum {
 	KD_ON,
@@ -222,13 +223,17 @@ __device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, tri
 {
 	bool visible = true;
 	float distance = glm::length(r.origin - pointToCheck);
+	float minDepth = FLT_MAX;
+	int nearestGeom = -1;
 
 	// Check whether any object occludes point to check from ray's origin
 	for(int iter=0; iter < numberOfGeoms; iter++)
 	{
+		/*
 		// Avoid calculating self intersections
 		if(iter==lightSourceIndex)
 			continue;
+		*/
 
 		float depth=-1;
 		glm::vec3 intersection;
@@ -245,7 +250,12 @@ __device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, tri
 			depth = sphereIntersectionTest(geoms[iter],r,intersection,normal,uv);
 		}
 
-		if(depth > 0 && (depth + NUDGE) < distance)
+		if(depth > 0 && depth < minDepth)
+		{
+			minDepth = depth;
+			nearestGeom = iter;
+		}
+		if(iter != lightSourceIndex && (depth > 0 && (depth + NUDGE) < distance))
 		{
 			//printf("Depth: %f\n", depth);
 			return false;
@@ -262,35 +272,55 @@ __device__ bool visibilityCheck(ray r, staticGeom* geoms, int numberOfGeoms, tri
 
 		float temp;
 		float depth = traverse(r, cudakdtree, treeRootIndex, vertices, normals, uvs, faces, cudaPrimIndex, geoms, intersection, normal, geomid, mtlid, uv, temp);
-
-		if (depth > 0 && (depth + NUDGE) < distance) {
+		
+		if(depth > 0 && depth < minDepth)
+		{
+			minDepth = depth;
+			nearestGeom = geomid;
+		}
+		if (geomid!= lightSourceIndex && (depth > 0 && (depth + NUDGE) < distance)) {
 			return false;
 		}
+
 	}
 	else {
 		for (int i=0; i<numberOfFaces; ++i) {
-			glm::vec3 v1 = vertices[faces[i].v1];
-			glm::vec3 v2 = vertices[faces[i].v2];
-			glm::vec3 v3 = vertices[faces[i].v3];
-			glm::vec3 n1 = normals[faces[i].n1];
-			glm::vec3 n2 = normals[faces[i].n2];
-			glm::vec3 n3 = normals[faces[i].n3];
-			glm::vec2 t1 = uvs[faces[i].t1];
-			glm::vec2 t2 = uvs[faces[i].t2];
-			glm::vec2 t3 = uvs[faces[i].t3];
+
+			// Reduce global memory lookups
+			triangle tri = faces[i];
+
+			glm::vec3 v1 = vertices[tri.v1];
+			glm::vec3 v2 = vertices[tri.v2];
+			glm::vec3 v3 = vertices[tri.v3];
+			glm::vec3 n1 = normals[tri.n1];
+			glm::vec3 n2 = normals[tri.n2];
+			glm::vec3 n3 = normals[tri.n3];
+			glm::vec2 t1 = uvs[tri.t1];
+			glm::vec2 t2 = uvs[tri.t2];
+			glm::vec2 t3 = uvs[tri.t3];
 			glm::vec3 intersection;
 			glm::vec3 normal;
 			glm::vec2 uv;
 			float depth = triangleIntersectionTest(v1, v2, v3, n1, n2, n3, t1, t2, t3, r, intersection, normal, uv);
-
-			if(depth > 0 && (depth + NUDGE) < distance)
+		
+			if(depth > 0 && depth < minDepth)
+			{
+				minDepth = depth;
+				nearestGeom = tri.geomid;
+			}
+			if(tri.geomid != lightSourceIndex && (depth > 0 && (depth + NUDGE) < distance))
 			{
 				//printf("Depth: %f\n", depth);
 				return false;
 			}
+
 		}
 	}
-	return true;
+
+	if(nearestGeom != lightSourceIndex)
+		return false;
+	else
+		return true;
 }
 
 //TODO: IMPLEMENT THIS FUNCTION
@@ -566,4 +596,23 @@ __host__ __device__ void buildAABB(staticGeom& geom) {
 	geom.boundingBox.xyzMax = glm::max(unitXYZmin, unitXYZmax);
 	geom.boundingBox.dimension = glm::abs(geom.boundingBox.xyzMax - geom.boundingBox.xyzMin);
 
+}
+
+
+__host__ __device__ glm::mat4 buildTransformationMatrix(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale){
+  glm::mat4 translationMat = glm::translate(glm::mat4(), translation);
+  glm::mat4 rotationMat = glm::rotate(glm::mat4(), rotation.x, glm::vec3(1,0,0));
+  rotationMat = rotationMat*glm::rotate(glm::mat4(), rotation.y, glm::vec3(0,1,0));
+  rotationMat = rotationMat*glm::rotate(glm::mat4(), rotation.z, glm::vec3(0,0,1));
+  glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
+  return translationMat*rotationMat*scaleMat;
+}
+
+__host__ __device__ cudaMat4 glmMat4ToCudaMat4(glm::mat4 a){
+    cudaMat4 m; a = glm::transpose(a);
+    m.x = a[0];
+    m.y = a[1];
+    m.z = a[2];
+    m.w = a[3];
+    return m;
 }

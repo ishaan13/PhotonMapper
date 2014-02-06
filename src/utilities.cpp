@@ -4,8 +4,8 @@
 //  File: utilities.cpp
 //  A collection/kitchen sink of generally useful functions
 
-#include <iostream>
 #include "utilities.h"
+#include <iostream>
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/matrix_inverse.hpp"
 

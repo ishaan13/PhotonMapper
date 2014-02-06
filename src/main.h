@@ -56,9 +56,11 @@ using namespace std;
 scene* renderScene;
 camera* renderCam;
 int targetFrame;
+int previousFrame;
 int iterations;
 bool finishedRender;
 bool singleFrameMode;
+bool firstEverExecution = true;
 
 //-------------------------------
 //--------PHOTON MAPPER----------
@@ -143,8 +145,15 @@ enum {
 	KD_OFF
 };
 
+enum {
+	VIS_LIN,
+	VIS_HSV,
+	VIS_NUM
+};
+
 int mode = DISP_RAYTRACE;
 int kdmode = KD_ON;
+int visMode = VIS_LIN;
 
 
 #ifdef __APPLE__

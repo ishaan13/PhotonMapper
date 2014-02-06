@@ -39,8 +39,11 @@
 
 // Photon Map Defines
 #define PHOTONCOMPACT 1
-#define K 25
+#define PHOTON_K 45
 #define GRID_DELTA 1
+
+// Switch Debug Compilation
+#define DEBUG 0
 
 #if CUDA_VERSION >= 5000
     #include <helper_math.h>
@@ -58,16 +61,24 @@ enum {
 	DISP_TOTAL
 };
 
+enum {
+	VIS_LIN,
+	VIS_HSV,
+	VIS_NUM
+};
+
 extern int kdmode;
 
-int numPhotons = 20000;
+extern int visMode;
+
+int numPhotons = 50000;
 int numPhotonsCompact = numPhotons;
 
 int numBounces = 10;						//hard limit of n bounces for now
 float emitEnergyScale = 1.0;				//Empirically Verify this value
 
 //Lower Direct lighting by this contribution factor
-__device__ float lowerDirectScale = (4.0f*PI_F);
+__device__ float lowerDirectScale = 1.0f;//(4.0f*PI_F);
 
 float totalEnergy;	//total amount of energy in the scene, used for calculating flux per photon
 float flux;
@@ -140,6 +151,45 @@ __host__ __device__ glm::vec3 generateRandomNumberFromThread(glm::vec2 resolutio
 
   return glm::vec3((float) u01(rng), (float) u01(rng), (float) u01(rng));
 }
+
+// visualize a variable between a min and max as a hue from red to blue
+__device__ glm::vec3 visualizeHue(float var, float min, float max)
+{
+	glm::vec3 color;
+	float saturation=1.0;
+	float value=0.66;
+	float hue;// = 360 - ( (detail - min_detail )/(max_detail-min_detail)) * 360;
+
+	float avg = (min+max)/2.0f;
+
+	if(var>avg)
+		hue = 120 * (max-var)/(max-avg);
+	else
+		hue= 120 + 120*(avg-var)/(avg-min);
+
+	if (hue>=240)
+		hue=240;
+	if (hue<0)
+		hue=0;
+	hue=hue/60;
+	
+	int I = (int) hue;   /* should be in the range 0..5 */
+	float F = hue - I;     /* fractional part */
+
+	float M = value * (1 - saturation);
+	float N = value * (1 - saturation * F);
+	float K = value * (1 - saturation * (1 - F));
+	
+	if (I == 0) { color.x = value; color.y = K; color.z = M; }
+	if (I == 1) { color.x = N; color.y = value; color.z = M; }
+	if (I == 2) { color.x = M; color.y = value; color.z = K; }
+	if (I == 3) { color.x = M; color.y = N; color.z = value; }
+	if (I == 4) { color.x = K; color.y = M; color.z = value; }
+	if (I == 5) { color.x = value; color.y = M; color.z = N; }
+
+	return color;
+}
+
 
 //TODO: IMPLEMENT THIS FUNCTION
 //Function that does the initial raycast from the camera
@@ -1005,6 +1055,53 @@ __device__ int findMaxDistancePhotonIndex(photon* photons, int photonCount, glm:
 	}
 }
 
+__device__ glm::vec3 gatherPhotonsNaive(int intersectedGeom, glm::vec3 intersection, glm::vec3 normal, photon* photons, int numTotalPhotons,
+															int* gridFirstPhotonIndices, int* gridIndices, gridAttributes grid, float flux) {
+	glm::vec3 accumColor(0);
+	
+	float maxRadiusSqd = 1000000.0f; 
+	int neighborPhotonCount = 0;
+	photon neighborPhotons[PHOTON_K];
+	for(int pi=0; pi<numTotalPhotons; pi++)
+	{
+		photon p = photons[pi];
+		if (p.geomid == intersectedGeom) {
+			// We only store K photons. If there are less than K photons stored in the array, add the current photon to the array
+			if (neighborPhotonCount < PHOTON_K) {
+				neighborPhotons[neighborPhotonCount] = p;
+				neighborPhotonCount++;
+				float distSqd = glm::dot(p.position - intersection, p.position - intersection);
+				if(distSqd > maxRadiusSqd)
+					maxRadiusSqd = distSqd;
+			}
+			// If the array is full, find the photon with the largest distance to the intersection. If current photon's distance
+			// to the intersection is smaller, replace the photon with the largest distance with the current photon
+			else {
+				int maxIndex;
+				float maxDistSqd;
+				findMaxDistancePhotonIndex(neighborPhotons, PHOTON_K, intersection, maxIndex, maxDistSqd);
+				float distSqd = glm::dot(p.position - intersection, p.position - intersection);
+				if (distSqd < maxDistSqd) {
+					neighborPhotons[maxIndex] = p;
+					if(distSqd > maxRadiusSqd)
+						maxRadiusSqd = distSqd;
+				}
+			}
+		}
+	}
+
+	if(maxRadiusSqd > -1.0f)
+	{
+		accumColor = visualizeHue(sqrt(maxRadiusSqd)/RADIUS,0.0f,7500.0f);
+	}
+	else
+	{
+		accumColor = glm::vec3(0.0f,0.0f,0.0f);
+	}
+	flux = 1.0f;
+	return accumColor * flux;
+}
+
 // Caculate radiances from photons
 __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, glm::vec3 normal, photon* photons, int numTotalPhotons,
 															int* gridFirstPhotonIndices, int* gridIndices, gridAttributes grid, float flux) {
@@ -1017,7 +1114,7 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 		float maxRadiusSqd = -1.0f; 
 
 		// Find photons in neighboring cells
-		photon neighborPhotons[K];
+		photon neighborPhotons[PHOTON_K];
 		int neighborPhotonCount = 0;
 		for (int i=max(0, px-GRID_DELTA); i<min(grid.xdim, px+GRID_DELTA+1); ++i) {
 			for (int j=max(0, py-GRID_DELTA); j<min(grid.ydim, py+GRID_DELTA+1); ++j) {
@@ -1031,7 +1128,7 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 							// Check if the photon is on the same geometry as the intersection
 							if (p.geomid == intersectedGeom) {
 								// We only store K photons. If there are less than K photons stored in the array, add the current photon to the array
-								if (neighborPhotonCount < K) {
+								if (neighborPhotonCount < PHOTON_K) {
 									neighborPhotons[neighborPhotonCount] = p;
 									neighborPhotonCount++;
 									float distSqd = glm::dot(p.position - intersection, p.position - intersection);
@@ -1043,11 +1140,11 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 								else {
 									int maxIndex;
 									float maxDistSqd;
-									findMaxDistancePhotonIndex(neighborPhotons, K, intersection, maxIndex, maxDistSqd);
+									findMaxDistancePhotonIndex(neighborPhotons, PHOTON_K, intersection, maxIndex, maxDistSqd);
 									float distSqd = glm::dot(p.position - intersection, p.position - intersection);
 									if (distSqd < maxDistSqd) {
 										neighborPhotons[maxIndex] = p;
-										if(distSqd > maxRadiusSqd)
+										if(distSqd > maxRadiusSqd || (fabs(maxRadiusSqd - maxDistSqd) < EPSILON))
 											maxRadiusSqd = distSqd;
 									}
 								}
@@ -1070,31 +1167,37 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 			// Confirm cosine weighting
 			// Use k neighbors radius or grid radius as smoothing distance?
 			// -------------> why is the k neighbor radius resulting in a grided illumination!?? you can see it like voxelsations! 
-			accumColor += gaussianWeight(photonDistanceSqd, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
-			//accumColor += gaussianWeightJensen(photonDistanceSqd, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
-			//accumColor += gaussianWeight(photonDistanceSqd, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+
+			// accumColor += gaussianWeight(photonDistanceSqd, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+			// accumColor += gaussianWeightJensen(photonDistanceSqd, maxRadius) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+			 accumColor += gaussianWeight(photonDistanceSqd, RADIUS) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
+			// accumColor += 1.0f/(PI_F * maxRadiusSqd) * max(0.0f, glm::dot(normal, -p.din)) * p.color;
 		}
 		
 		// testing
-		// It seems constant for everything. figure out why!
 		/**************************************************/
-		
-		//if( maxRadiusSqd > -1.0)
-		//{
-		//	// Display radius in blue
-		//	accumColor = glm::vec3(0.0f,0.0f,(sqrt(maxRadiusSqd)/RADIUS)/3.0f);
+#if DEBUG
+		if( maxRadiusSqd > -1.0)
+		{
+			// Display radius in blue
+			// radius seems to be growing in the way it should't. fix it!
+			//accumColor = glm::vec3(0.0f,0.0f,(sqrt(maxRadiusSqd)/RADIUS)/5.0f);
+			accumColor = visualizeHue(sqrt(maxRadiusSqd)/RADIUS,0.0f,2.750f);
 
-		//	// Display number of Photons as a scale in blue
-		//	// accumColor = glm::vec3(0.0f,0.0f,neighborPhotonCount * 1.0f / K);
-		//}
-		//else
-		//{
-		//	accumColor = glm::vec3(1.0f,0.0f,0.0f);
-		//}
-		//flux = 1.0f;
-		
+			// Display number of Photons as a scale in blue
+			//accumColor = glm::vec3(0.0f,0.0f,neighborPhotonCount * 1.0f / PHOTON_K);
+			//accumColor = visualizeHue(neighborPhotonCount, 0, PHOTON_K);
+
+			// Display pi-r^2	
+			//accumColor = 1.0f/(PI_F * maxRadiusSqd) * glm::vec3(1.0f);
+		}
+		else
+		{
+			accumColor = glm::vec3(0.0f,0.0f,0.0f);
+		}
+		flux = 1.0f;
+#endif
 		/**************************************************/
-		
 	}
 	return accumColor * flux;
 }
@@ -1536,6 +1639,33 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 						glm::vec3 lightSourceSample, normal;
 						glm::vec2 uv; // for environment maps
 
+						// Using visibility factoring: visible solid angle divided by total hemispherical solid angle
+						// To simplify getting solid angle from light sources with arbitrary geometries, use bounding sphere
+						// to get random sample and then take solid angle of perpendicular circle.
+						AABB boundingbox = geoms[iter].boundingBox;
+						// Second factor added because get function assumes unit sphere
+						float radius = boundingbox.dimension.length()/2.0f;
+						float radiusScaled = radius * 1.0f/0.5f;
+						glm::vec3 center = boundingbox.xyzMin + boundingbox.dimension/2.0f;
+						
+						staticGeom boundingSphere;
+						// Set transformation to scale and translate using center and radius
+						boundingSphere.translation = center;
+						boundingSphere.scale = glm::vec3(radiusScaled);
+						boundingSphere.rotation = glm::vec3(0.0f);
+
+						boundingSphere.transform = glmMat4ToCudaMat4(buildTransformationMatrix(boundingSphere.translation,
+																							boundingSphere.rotation,boundingSphere.scale));
+
+						boundingSphere.type = SPHERE;
+						getRandomPointNormalUVOnSphere(boundingSphere, (time*index + iter*1.0f), lightSourceSample, normal, uv);
+
+						// cosine of largest circle inscribed in the sphere, perpendicular to the intersection point.
+						// Look up slide 62 of smallpt explanation
+						float cos_alpha = sqrt(1.0f - ((radius*radius)/(glm::dot(center - minIntersectionPoint, center - minIntersectionPoint))));
+						float solidAngle = TWO_PI * (1 - cos_alpha);
+
+						/*
 						// Get a random point on the light source
 						if(geoms[iter].type == SPHERE)
 						{
@@ -1545,7 +1675,8 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 						{
 							getRandomPointNormalUVOnCube(geoms[iter],time*index, lightSourceSample, normal, uv);
 						}
-
+						*/
+						
 						// Diffuse Lighting Calculation
 						glm::vec3 L = glm::normalize(lightSourceSample - minIntersectionPoint);
 
@@ -1562,16 +1693,17 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 
 						if(visible)
 						{
-							diffuseLight += lightColor * lightMaterial.emittance * glm::max(glm::dot(L,minNormal),0.0f);
+							float brdfTerm = ONE_OVER_PI;
+							diffuseLight += lightColor * lightMaterial.emittance * glm::max(glm::dot(L,minNormal),0.0f) * solidAngle*brdfTerm ;
 
-
+							/*
 							// Calculate Phong Specular Part only if exponent is greater than 0
 							if(m.specularExponent > FLOAT_EPSILON)
 							{
 								glm::vec3 reflectedLight = 2.0f * minNormal * glm::dot(minNormal, L) - L;
 								phongLight += lightColor * lightMaterial.emittance * pow(glm::max(glm::dot(reflectedLight,minNormal),0.0f),m.specularExponent);
 							}
-
+							*/
 						}
 					}
 				}
@@ -1584,8 +1716,8 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 												resolution, time, rayDepth, x, y);
 
 			// Compute direct illumination
-			// Direct illumination scaled down by 2*pi
-			glm::vec3 surfaceColor = emittance + (diffuseLight * diffuseColor +  phongLight * specularColor)/(lowerDirectScale);
+			// Direct illumination scaled down by some factor
+			glm::vec3 surfaceColor = emittance + (diffuseLight * diffuseColor /*+  phongLight * specularColor*/)/(lowerDirectScale);
 			// Compute indirect illumination if we are using photon map
 			if (mode == DISP_COMBINED) {
 				surfaceColor += gatherPhotons(intersectedGeom, minIntersectionPoint, minNormal, photons, numTotalPhotons, gridFirstPhotonIndices, gridIndices, grid, flux);
@@ -1701,7 +1833,7 @@ __global__ void renderKDHeatMap(glm::vec2 resolution, float time, cameraData cam
 										int numberOfGeoms, triangle* cudafaces, int numFaces, glm::vec3* cudavertices,
 										glm::vec3* cudanormals, glm::vec2* cudauvs, ray* rayPool, photon* photons, int numTotalPhotons, 
 										int* gridFirstPhotonIndices, int* gridIndices, gridAttributes grid, float flux,
-										KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex, int kdmode)
+										KDNodeGPU* cudakdtree, int treeRootIndex, int* cudaPrimIndex, int kdmode, int visMode)
 {
 
 	int x = (blockIdx.x * blockDim.x) + threadIdx.x;
@@ -1720,7 +1852,16 @@ __global__ void renderKDHeatMap(glm::vec2 resolution, float time, cameraData cam
 		float heatValue = getClosestIntersection(r, geoms, numberOfGeoms, cudafaces, numFaces, cudavertices, cudanormals, cudauvs,
 			minIntersectionPoint, minNormal, intersectedGeom, intersectedMaterial, minUV,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
 
-		colors[index] += heatValue * glm::vec3(0.25f,0.65f,0.85f);
+		if(visMode == VIS_LIN)
+		{
+			// visualize heat value as blue intensity
+			colors[index] = heatValue * glm::vec3(0.25f,0.65f,0.85f);
+		}
+		else if(visMode == VIS_HSV)
+		{
+			// visualize heat value as a hue from red to blue
+			colors[index] = heatValue > EPSILON ? visualizeHue(heatValue,0.0f,1.0f) : glm::vec3(0.0f);
+		}
 	}
 }
 
@@ -1808,7 +1949,7 @@ void cudaRaytraceCore(uchar4* PBOpos, camera* renderCam, int frame, int iteratio
 		{
 			renderKDHeatMap<<<fullBlocksPerGrid, threadsPerBlock>>>(renderCam->resolution, (float)iterations, cam, cudaimage, cudageoms, numGeoms,
 				cudafaces, numFaces, cudavertices, cudanormals, cudauvs, cudarays, cudaPhotonPoolCompact, numPhotonsCompact,
-				cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode);
+				cudaGridFirstPhotonIndex, cudaPhotonGridIndex, grid, flux,cudakdtree,treeRootIndex,cudaPrimIndex, kdmode, visMode);
 			cudaThreadSynchronize();
 			checkCUDAError("display photons kernel failed!");
 		}

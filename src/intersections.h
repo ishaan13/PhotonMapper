@@ -47,5 +47,9 @@ __host__ __device__ float planeIntersectionTest(glm::vec3 pointOnPlane, glm::vec
 
 __host__ __device__ void buildAABB(staticGeom& geom);
 
+__host__ __device__ cudaMat4 glmMat4ToCudaMat4(glm::mat4 a);
+
+__host__ __device__ glm::mat4 buildTransformationMatrix(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale);
+
 
 #endif
