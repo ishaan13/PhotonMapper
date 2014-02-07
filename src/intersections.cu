@@ -591,6 +591,7 @@ __host__ __device__ void buildAABB(staticGeom& geom) {
 	unitXYZmin = multiplyMV(geom.transform, glm::vec4(unitXYZmin, 1.0f));
 	unitXYZmax = multiplyMV(geom.transform, glm::vec4(unitXYZmax, 1.0f));
 
+	//geom.materialid==
 	//take min and max of points as bounds of box
 	geom.boundingBox.xyzMin = glm::min(unitXYZmin, unitXYZmax);
 	geom.boundingBox.xyzMax = glm::max(unitXYZmin, unitXYZmax);

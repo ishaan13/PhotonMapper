@@ -39,7 +39,7 @@
 
 // Photon Map Defines
 #define PHOTONCOMPACT 1
-#define PHOTON_K 45
+#define PHOTON_K 25
 #define GRID_DELTA 1
 
 // Switch Debug Compilation
@@ -71,14 +71,14 @@ extern int kdmode;
 
 extern int visMode;
 
-int numPhotons = 50000;
+int numPhotons = 100000;
 int numPhotonsCompact = numPhotons;
 
-int numBounces = 10;						//hard limit of n bounces for now
+int numBounces = 5;						//hard limit of n bounces for now
 float emitEnergyScale = 1.0;				//Empirically Verify this value
 
-//Lower Direct lighting by this contribution factor
-__device__ float lowerDirectScale = 1.0f;//(4.0f*PI_F);
+// Arbitrary. ought to be 1.
+__device__ float lowerDirectScale = 1.0f;
 
 float totalEnergy;	//total amount of energy in the scene, used for calculating flux per photon
 float flux;
@@ -1664,6 +1664,8 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 						// Look up slide 62 of smallpt explanation
 						float sin_alpha = ((radius*radius)/(glm::dot(center - minIntersectionPoint, center - minIntersectionPoint)));
 						float solidAngle;
+
+						// If the point is inside the bounding circle of the object, the solid angle is a full two pi
 						if(sin_alpha > 1.0f)
 							solidAngle = TWO_PI;
 						else
@@ -1671,8 +1673,6 @@ __global__ void raytraceRay(glm::vec2 resolution, float time, cameraData cam, in
 							float cos_alpha = sqrt(1.0f - sin_alpha);
 							solidAngle = TWO_PI * (1 - cos_alpha);
 						}
-						// somthing is zero above?? : possibly center - minIntersectionPoinnt is really small?
-						// That makes sense, if the radius is larger than the hypotenuse, the equation ought to be reversed. draw and confirm.
 
 						/*
 						// Get a random point on the light source
