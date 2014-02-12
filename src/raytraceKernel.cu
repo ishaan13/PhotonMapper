@@ -39,7 +39,7 @@
 
 // Photon Map Defines
 #define PHOTONCOMPACT 1
-#define PHOTON_K 25
+#define PHOTON_K 45
 #define GRID_DELTA 1
 
 // Switch Debug Compilation
@@ -71,10 +71,10 @@ extern int kdmode;
 
 extern int visMode;
 
-int numPhotons = 100000;
+int numPhotons = 50000;
 int numPhotonsCompact = numPhotons;
 
-int numBounces = 5;						//hard limit of n bounces for now
+int numBounces = 10;						//hard limit of n bounces for now
 float emitEnergyScale = 1.0;				//Empirically Verify this value
 
 // Arbitrary. ought to be 1.

@@ -28,7 +28,7 @@
 #define RAY_BIAS_AMOUNT             0.0002f
 #define NUDGE						0.00001f
 #define FLOAT_EPSILON				0.0005f
-#define MAX_RECURSION_DEPTH			20
+#define MAX_RECURSION_DEPTH			15
 #define STRAFE_AMOUNT				0.25f
 
 namespace utilityCore {

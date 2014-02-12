@@ -89,7 +89,7 @@ REFRIOR     0
 SCATTER     0        
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
-EMITTANCE   10
+EMITTANCE   150
 TEXTURE		-1
 
 MATERIAL 7				//light
@@ -197,7 +197,7 @@ SCALE       1 1 1
 OBJECT 8
 cube
 material 5
-frame 0
+frame 1
 TRANS 0 8 0
 ROTAT 0 0 0
 SCALE 1.2 1.2 1.2

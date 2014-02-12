@@ -5,7 +5,7 @@
 
 #define SPLIT_BINS 10
 #define MAX_PRIMS_PER_LEAF 5
-#define MAX_TREE_DEPTH 20
+#define MAX_TREE_DEPTH 25
 
 enum {X_AXIS, Y_AXIS, Z_AXIS};
 enum {LEFT, RIGHT, BOTTOM, TOP, BACK, FRONT};

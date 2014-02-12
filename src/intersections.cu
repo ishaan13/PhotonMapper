@@ -580,6 +580,10 @@ __host__ __device__ void getRandomPointNormalUVOnSphere(staticGeom sphere, float
 }
 
 
+// TODO: FIX THIS. This doesn't work for anything that is rotated.
+// Maybe works with scaled. I have a feeling this leads to incorrect results with cube light source since it's rotated some amount.
+// How do we check if it works for spheres?
+
 //finds the axis aligned bounding box given a geomtry
 __host__ __device__ void buildAABB(staticGeom& geom) {
 
