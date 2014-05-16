@@ -89,7 +89,7 @@ REFRIOR     0
 SCATTER     0        
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
-EMITTANCE   10
+EMITTANCE   13
 TEXTURE		-1
 
 MATERIAL 7				//light
@@ -121,8 +121,8 @@ TEXTURE		0
 CAMERA
 RES         1920 1080
 FOVY        20
-ITERATIONS  5000
-FILE        mega.png
+ITERATIONS  2500
+FILE        sigmega.png
 frame 0
 EYE         0 3.2 12
 VIEW        0 0 -1

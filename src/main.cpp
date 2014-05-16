@@ -118,6 +118,33 @@ int main(int argc, char** argv){
 //---------RUNTIME STUFF---------
 //-------------------------------
 
+void saveImage()
+{
+	//output image file
+	image outputImage(renderCam->resolution.x, renderCam->resolution.y);
+
+	for(int x=0; x<renderCam->resolution.x; x++){
+		for(int y=0; y<renderCam->resolution.y; y++){
+			int index = x + (y * renderCam->resolution.x);
+			outputImage.writePixelRGB(renderCam->resolution.x-1-x,y,renderCam->image[index]);
+		}
+	}
+
+	gammaSettings gamma;
+	gamma.applyGamma = true;
+	gamma.gamma = 1.0;//2.2;
+	gamma.divisor = iterations;
+	outputImage.setGammaSettings(gamma);
+	string filename = renderCam->imageName;
+	string s;
+	stringstream out;
+	out << iterations;
+	s = out.str();
+	utilityCore::replaceString(filename, ".png", "."+s+".png");
+	outputImage.saveImageRGB(filename);
+	cout << "Saved iteration " << s << " to " << filename << endl;
+}
+
 void runCuda(){
 	// Performance Analysis End
 	cudaEvent_t start,stop;
@@ -146,29 +173,7 @@ void runCuda(){
 #if OUTPUT_DATA
 		if (iterations == 800 || iterations == 1200 || iterations == 1600 || iterations == 2000) {
 			//output image file
-			image outputImage(renderCam->resolution.x, renderCam->resolution.y);
-
-			for(int x=0; x<renderCam->resolution.x; x++){
-				for(int y=0; y<renderCam->resolution.y; y++){
-					int index = x + (y * renderCam->resolution.x);
-					outputImage.writePixelRGB(renderCam->resolution.x-1-x,y,renderCam->image[index]);
-				}
-			}
-
-			gammaSettings gamma;
-			gamma.applyGamma = true;
-			gamma.gamma = 1.0;//2.2;
-			gamma.divisor = iterations;
-			outputImage.setGammaSettings(gamma);
-			string filename = renderCam->imageName;
-			string s;
-			stringstream out;
-			out << iterations;
-			s = out.str();
-			utilityCore::replaceString(filename, ".bmp", "."+s+".bmp");
-			utilityCore::replaceString(filename, ".png", "."+s+".png");
-			outputImage.saveImageRGB(filename);
-			cout << "Saved iteration " << s << " to " << filename << endl;
+			saveImage();
 		}
 
 #endif
@@ -408,29 +413,7 @@ void cpuRaytrace() {
 	//cout<<"iteration finished"<<endl;
 
 	//output image file
-	image outputImage(renderCam->resolution.x, renderCam->resolution.y);
-
-	for(int x=0; x<renderCam->resolution.x; x++){
-		for(int y=0; y<renderCam->resolution.y; y++){
-			int index = x + (y * renderCam->resolution.x);
-			//outputImage.writePixelRGB(renderCam->resolution.x-1-x,y,cpuImage[index]);
-			outputImage.writePixelRGB(x, y, cpuImage[index]);
-		}
-	}
-
-	gammaSettings gamma;
-	gamma.applyGamma = true;
-	gamma.gamma = 1.0;//2.2;
-	gamma.divisor = renderCam->iterations;
-	outputImage.setGammaSettings(gamma);
-	string filename = renderCam->imageName;
-	string s;
-	stringstream out;
-	out << targetFrame;
-	s = out.str();
-	utilityCore::replaceString(filename, ".bmp", "."+s+".bmp");
-	utilityCore::replaceString(filename, ".png", "."+s+".png");
-	outputImage.saveImageRGB(filename);
+	saveImage();
 }
 
 
@@ -447,6 +430,9 @@ void keyboard(unsigned char key, int x, int y)
 	{
 	case(27):
 		exit(1);
+		break;
+	case('i'):
+		saveImage();
 		break;
 	case('w'):
 		iterations = 1;
