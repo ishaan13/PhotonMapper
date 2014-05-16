@@ -1182,11 +1182,11 @@ __device__ glm::vec3 gatherPhotons(int intersectedGeom, glm::vec3 intersection, 
 			// Display radius in blue
 			// radius seems to be growing in the way it should't. fix it!
 			//accumColor = glm::vec3(0.0f,0.0f,(sqrt(maxRadiusSqd)/RADIUS)/5.0f);
-			accumColor = visualizeHue(sqrt(maxRadiusSqd)/RADIUS,0.0f,2.750f);
+			// accumColor = visualizeHue(sqrt(maxRadiusSqd)/RADIUS,0.0f,2.750f);
 
 			// Display number of Photons as a scale in blue
 			//accumColor = glm::vec3(0.0f,0.0f,neighborPhotonCount * 1.0f / PHOTON_K);
-			//accumColor = visualizeHue(neighborPhotonCount, 0, PHOTON_K);
+			accumColor = visualizeHue(neighborPhotonCount, 0, PHOTON_K);
 
 			// Display pi-r^2	
 			//accumColor = 1.0f/(PI_F * maxRadiusSqd) * glm::vec3(1.0f);

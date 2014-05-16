@@ -144,7 +144,7 @@ void runCuda(){
 			sendCurrentFrameDataToGPU();
 		}
 #if OUTPUT_DATA
-		if (iterations == 10 || iterations == 100 || iterations == 1000) {
+		if (iterations == 800 || iterations == 1200 || iterations == 1600 || iterations == 2000) {
 			//output image file
 			image outputImage(renderCam->resolution.x, renderCam->resolution.y);
 

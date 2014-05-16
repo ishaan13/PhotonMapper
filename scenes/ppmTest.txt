@@ -41,10 +41,10 @@ EMITTANCE   0
 TEXTURE		-1
 
 MATERIAL 3 				//blue glass
-RGB         0 0.75 1    
+RGB         0.5 0.875 1    
 SPECEX      0      
 SPECRGB     1 1 1          
-REFL        1       
+REFL        0.0       
 REFR        1        
 REFRIOR     1.49
 SCATTER     0        
@@ -58,7 +58,7 @@ RGB         1 0.5 0.7
 SPECEX      0      
 SPECRGB     1 1 1          
 REFL        1       
-REFR        1        
+REFR        0.0        
 REFRIOR     1.49
 SCATTER     0        
 ABSCOEFF    .02 5.1 5.7      
@@ -89,21 +89,21 @@ REFRIOR     0
 SCATTER     0        
 ABSCOEFF    0 0 0      
 RSCTCOEFF   0
-EMITTANCE   150
+EMITTANCE   20
 TEXTURE		-1
 
 MATERIAL 7				//light
-RGB         1 1 1       
+RGB         0.85 1 1    
 SPECEX      0      
-SPECRGB     0 0 0  
+SPECRGB     0.85 1 1          
 REFL        0       
-REFR        0        
-REFRIOR     0       
+REFR        1        
+REFRIOR     1.99
 SCATTER     0        
-ABSCOEFF    0 0 0      
-RSCTCOEFF   0
-EMITTANCE   1
-TEXTURE	   -1
+ABSCOEFF    .02 5.1 5.7      
+RSCTCOEFF   13
+EMITTANCE   0
+TEXTURE		-1
 
 MATERIAL 8				//texture
 RGB         1 1 1       
@@ -122,13 +122,13 @@ CAMERA
 RES         800 800
 FOVY        35
 ITERATIONS  500
-FILE        tetrahedron.png
+FILE        sppm.png
 frame 0
 EYE         0 5 12
 VIEW        0 0 -1
 UP          0 1 0
-APERTURE    0
-FOCUSPLANE  12.5
+APERTURE    1.50
+FOCUSPLANE  12.0
 
 OBJECT 0
 cube
@@ -180,25 +180,24 @@ SCALE       2 2 2
 
 OBJECT 6
 obj/tetrahedron.obj
-material 5
+material 3
 frame 0
 TRANS       -2.5 2 0
 ROTAT       15 45 75
 SCALE       2 4 6
 
 OBJECT 7
-sphere
+cube
 material 6
 frame 0
 TRANS       0 8 0
 ROTAT       0 0 0
-SCALE       1 1 1
+SCALE       0.5 0.5 0.5
 
 OBJECT 8
 cube
-material 5
-frame 1
+material 7
+frame 0
 TRANS 0 8 0
 ROTAT 0 0 0
 SCALE 1.2 1.2 1.2
-

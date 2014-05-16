@@ -119,7 +119,7 @@ EMITTANCE   0
 TEXTURE		0
 
 CAMERA
-RES         1280 720
+RES         1920 1080
 FOVY        20
 ITERATIONS  5000
 FILE        mega.png

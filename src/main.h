@@ -46,7 +46,7 @@
 
 
 #define CPUTRACE 0
-#define OUTPUT_DATA 0
+#define OUTPUT_DATA 1
 
 using namespace std;
 
@@ -152,7 +152,7 @@ enum {
 	VIS_NUM
 };
 
-int mode = DISP_RAYTRACE;
+int mode = DISP_COMBINED;
 int kdmode = KD_ON;
 int visMode = VIS_LIN;
 
